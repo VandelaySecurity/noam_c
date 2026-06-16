@@ -952,7 +952,8 @@ static int rbuDeltaCreate(
   unsigned int lenSrc,   /* Length of the source file */
   const char *zOut,      /* The target file */
   unsigned int lenOut,   /* Length of the target file */
-  char *zDelta           /* Write the delta into this buffer */
+  char *zDelta,          /* Write the delta into this buffer */
+  unsigned int maxDelta  /* Maximum size of the zDelta buffer */
 ){
   unsigned int i, base;
   char *zOrigDelta = zDelta;
@@ -961,6 +962,11 @@ static int rbuDeltaCreate(
   int *landmark;             /* Primary hash table */
   int *collide;              /* Collision chain */
   int lastRead = -1;         /* Last byte of zSrc read by a COPY command */
+
+  /* Check that the delta buffer is large enough for worst case */
+  if( maxDelta < lenOut + 100 ){
+    return -1;  /* Insufficient buffer size */
+  }
 
   /* Add the target file size to the beginning of the delta
   */
@@ -972,8 +978,13 @@ static int rbuDeltaCreate(
   ** literal segment for the entire target and exit.
   */
   if( lenSrc<=NHASH ){
+    unsigned int written;
     putInt(lenOut, &zDelta);
     *(zDelta++) = ':';
+    written = (unsigned int)(zDelta - zOrigDelta);
+    if( written + lenOut > maxDelta ){
+      return -1;  /* Buffer overflow would occur */
+    }
     memcpy(zDelta, zOut, lenOut);
     zDelta += lenOut;
     putInt(checksum(zOut, lenOut), &zDelta);
