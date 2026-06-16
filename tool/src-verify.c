@@ -864,11 +864,11 @@ int main(int argc, char **argv){
   if( !zDir ){
     goto usage;
   }
-  if( strlen(zDir)>1000 ){
+  if( strnlen(zDir, 1001)>1000 ){
     fprintf(stderr, "Directory argument too big: [%s]\n", zDir);
     return 1;
   }
-  nDir = (int)strlen(zDir);
+  nDir = (int)strnlen(zDir, 1001);
   if( nDir<0 ){
     fprintf(stderr, "Directory argument too short.\n");
     return 1;
