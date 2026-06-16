@@ -199,6 +199,7 @@ static void SHA1Update(
         context->count[1] += (len>>29)+1;
     j = (j >> 3) & 63;
     if ((j + len) > 63) {
+        if (j + (64-j) > sizeof(context->buffer)) return;
         (void)memcpy(&context->buffer[j], data, (i = 64-j));
         SHA1Transform(context->state, context->buffer);
         for ( ; i + 63 < len; i += 64)
@@ -207,6 +208,7 @@ static void SHA1Update(
     } else {
         i = 0;
     }
+    if (j + (len - i) > sizeof(context->buffer)) return;
     (void)memcpy(&context->buffer[j], &data[i], len - i);
 }
 
