@@ -504,7 +504,7 @@ static void decode_btree_page(
       zMap[cofst] = '[';
       zMap[cofst+n-1] = ']';
       sprintf(zBuf, "%d", i);
-      j = (int)strlen(zBuf);
+      j = (int)strnlen(zBuf, sizeof(zBuf));
       if( j<=n-2 ) memcpy(&zMap[cofst+1], zBuf, j);
     }
     printf(" %03x: cell[%d] %s\n", cofst, i, zDesc);
