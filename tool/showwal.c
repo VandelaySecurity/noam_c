@@ -181,21 +181,21 @@ static void print_decode_line(
   int i, j;
   int val = aData[ofst];
   char zBuf[100];
-  sprintf(zBuf, " %03x: %02x", ofst, aData[ofst]);
+  snprintf(zBuf, sizeof(zBuf), " %03x: %02x", ofst, aData[ofst]);
   i = (int)strlen(zBuf);
   for(j=1; j<4; j++){
     if( j>=nByte ){
-      sprintf(&zBuf[i], "   ");
+      snprintf(&zBuf[i], sizeof(zBuf) - i, "   ");
     }else{
-      sprintf(&zBuf[i], " %02x", aData[ofst+j]);
+      snprintf(&zBuf[i], sizeof(zBuf) - i, " %02x", aData[ofst+j]);
       val = val*256 + aData[ofst+j];
     }
     i += (int)strlen(&zBuf[i]);
   }
   if( asHex ){
-    sprintf(&zBuf[i], "  0x%08x", val);
+    snprintf(&zBuf[i], sizeof(zBuf) - i, "  0x%08x", val);
   }else{
-    sprintf(&zBuf[i], "   %9d", val);
+    snprintf(&zBuf[i], sizeof(zBuf) - i, "   %9d", val);
   }
   printf("%s  %s\n", zBuf, zMsg);
 }
