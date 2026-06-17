@@ -113,6 +113,7 @@ int main(int argc, char **argv){
       }else if( iVal==8 || iVal==9 ){
         printf("%s%d", zSep, ((int)iVal)-8);
       }else if( iVal<=7 ){
+        long long v;
         v = (signed char)aSample[y];
         for(j=1; j<sz; j++){
           v = (v<<8) + aSample[y+j];
@@ -120,7 +121,7 @@ int main(int argc, char **argv){
         if( iVal==7 ){
           double r;
           char *z;
-          memcpy(&r, &v, sizeof(r));
+          memcpy(&r, &v, sizeof(v));
           z = sqlite3_mprintf("%s%!.15g", zSep, r);
           printf("%s", z);
           sqlite3_free(z);
