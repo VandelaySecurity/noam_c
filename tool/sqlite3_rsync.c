@@ -2112,11 +2112,15 @@ int main(int argc, char const * const *argv){
     }
     if( strcmp(z, "-port")==0 || strcmp(z, "-p")==0 ){
       const char *zPort = cli_opt_val;
-      iPort = atoi(zPort);
-      if( iPort<1 || iPort>65535 ){
+      char *endptr;
+      long portLong;
+      errno = 0;
+      portLong = strtol(zPort, &endptr, 10);
+      if( errno==ERANGE || endptr==zPort || *endptr!='\0' || portLong<1 || portLong>65535 ){
         fprintf(stderr, "invalid TCP port number: \"%s\"\n", zPort);
         return 1;
       }
+      iPort = (int)portLong;
       continue;
     }
     if( strcmp(z, "-exe")==0 ){
