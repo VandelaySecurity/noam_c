@@ -4993,11 +4993,68 @@ static int file_cmd_link(Jim_Interp *interp, int argc, Jim_Obj *const *argv)
     dest = Jim_String(argv[0]);
     source = Jim_String(argv[1]);
 
+    char resolved_source[PATH_MAX];
+    char resolved_dest[PATH_MAX];
+    char base_dir[PATH_MAX];
+
+    /* Resolve the safe base directory (current working directory) */
+    if (realpath(".", base_dir) == NULL) {
+        Jim_SetResultFormatted(interp, "error resolving base directory: %s", strerror(errno));
+        return JIM_ERR;
+    }
+
+    /* Resolve source path */
+    if (realpath(source, resolved_source) == NULL) {
+        Jim_SetResultFormatted(interp, "invalid source path \"%s\": %s", source, strerror(errno));
+        return JIM_ERR;
+    }
+
+    /* Resolve destination path - handle non-existent destination */
+    if (realpath(dest, resolved_dest) == NULL) {
+        if (errno == ENOENT) {
+            /* Destination doesn't exist yet - resolve parent directory */
+            char dest_copy[PATH_MAX];
+            char *last_slash;
+            strncpy(dest_copy, dest, PATH_MAX - 1);
+            dest_copy[PATH_MAX - 1] = '\0';
+            
+            last_slash = strrchr(dest_copy, '/');
+            if (last_slash != NULL) {
+                *last_slash = '\0';
+                char resolved_parent[PATH_MAX];
+                if (realpath(dest_copy, resolved_parent) == NULL) {
+                    Jim_SetResultFormatted(interp, "invalid destination path \"%s\": %s", dest, strerror(errno));
+                    return JIM_ERR;
+                }
+                snprintf(resolved_dest, PATH_MAX, "%s/%s", resolved_parent, last_slash + 1);
+            } else {
+                /* No slash - file in current directory */
+                snprintf(resolved_dest, PATH_MAX, "%s/%s", base_dir, dest);
+            }
+        } else {
+            Jim_SetResultFormatted(interp, "invalid destination path \"%s\": %s", dest, strerror(errno));
+            return JIM_ERR;
+        }
+    }
+
+    /* Verify both paths are within the safe base directory */
+    size_t base_len = strlen(base_dir);
+    if (strncmp(resolved_source, base_dir, base_len) != 0 || 
+        (resolved_source[base_len] != '/' && resolved_source[base_len] != '\0')) {
+        Jim_SetResultFormatted(interp, "path traversal detected: paths must be within allowed directory");
+        return JIM_ERR;
+    }
+    if (strncmp(resolved_dest, base_dir, base_len) != 0 || 
+        (resolved_dest[base_len] != '/' && resolved_dest[base_len] != '\0')) {
+        Jim_SetResultFormatted(interp, "path traversal detected: paths must be within allowed directory");
+        return JIM_ERR;
+    }
+
     if (option == OPT_HARD) {
-        ret = link(source, dest);
+        ret = link(resolved_source, resolved_dest);
     }
     else {
-        ret = symlink(source, dest);
+        ret = symlink(resolved_source, resolved_dest);
     }
 
     if (ret != 0) {
