@@ -111,8 +111,7 @@ int main(int argc, char **argv){
       fprintf(stderr, "out of memory\n");
       exit(1);
     }
-    memcpy(zShm, argv[1], nName);
-    memcpy(&zShm[nName], "-shm", 5);
+    snprintf(zShm, nName + 100, "%s-shm", argv[1]);
     hShm = open(zShm, O_RDONLY, 0);
     if( hShm<0 ){
       fprintf(stderr, "cannot open %s\n", zShm);
