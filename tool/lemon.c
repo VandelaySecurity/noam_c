@@ -3666,7 +3666,7 @@ PRIVATE char *pathsearch(char *argv0, char *name, int modemask)
     *cp = c;
   }else{
     pathlist = getenv("PATH");
-    if( pathlist==0 ) pathlist = ".:/bin:/usr/bin";
+    if( pathlist==0 || lemonStrlen(pathlist) > 4096 ) pathlist = ".:/bin:/usr/bin";
     pathbuf = (char *) lemon_malloc( lemonStrlen(pathlist) + 1 );
     path = (char *)lemon_malloc( lemonStrlen(pathlist)+lemonStrlen(name)+2 );
     if( (pathbuf != 0) && (path!=0) ){
