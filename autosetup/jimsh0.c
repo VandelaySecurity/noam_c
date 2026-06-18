@@ -24539,14 +24539,42 @@ int Jim_MakeTempFile(Jim_Interp *interp, const char *filename_template, int unli
     return fd;
 }
 
+static int validate_safe_path(const char *filename, char *resolved_path, size_t resolved_size)
+{
+    if (realpath(filename, resolved_path) != NULL) {
+        if (resolved_path[0] == '/') {
+            return -1;
+        }
+        return 0;
+    }
+    else if (errno == ENOENT) {
+        if (strstr(filename, "..") != NULL || filename[0] == '/') {
+            return -1;
+        }
+        return 0;
+    }
+    return -1;
+}
+
 int Jim_OpenForWrite(const char *filename, int append)
 {
+    char safe_path[PATH_MAX];
+    if (validate_safe_path(filename, safe_path, sizeof(safe_path)) == -1) {
+        return -1;
+    }
+    if (realpath(filename, safe_path) != NULL) {
+        return open(safe_path, O_WRONLY | O_CREAT | (append ? O_APPEND : O_TRUNC), 0666);
+    }
     return open(filename, O_WRONLY | O_CREAT | (append ? O_APPEND : O_TRUNC), 0666);
 }
 
 int Jim_OpenForRead(const char *filename)
 {
-    return open(filename, O_RDONLY, 0);
+    char safe_path[PATH_MAX];
+    if (validate_safe_path(filename, safe_path, sizeof(safe_path)) == -1) {
+        return -1;
+    }
+    return open(safe_path, O_RDONLY, 0);
 }
 
 #endif
@@ -24576,7 +24604,6 @@ void *dlsym(void *handle, const char *symbol)
 {
     return GetProcAddress((HMODULE)handle, symbol);
 }
-
 char *dlerror(void)
 {
     static char msg[121];
