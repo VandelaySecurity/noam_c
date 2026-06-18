@@ -585,8 +585,16 @@ static void SHA1Transform(
   unsigned int qq[5]; /* a, b, c, d, e; */
   static int one = 1;
   unsigned int block[16];
+#if defined(_MSC_VER) && _MSC_VER >= 1400
+  memcpy_s(block, sizeof(block), buffer, 64);
+#else
   memcpy(block, buffer, 64);
-  memcpy(qq,state,5*sizeof(unsigned int));
+#endif
+#if defined(_MSC_VER) && _MSC_VER >= 1400
+  memcpy_s(qq, sizeof(qq), state, 5*sizeof(unsigned int));
+#else
+  memcpy(qq, state, 5*sizeof(unsigned int));
+#endif
 
   /* Copy context->state[] to working vars */
   /*
