@@ -664,7 +664,9 @@ static void SHA1Update(
         context->count[1] += (len>>29)+1;
     j = (j >> 3) & 63;
     if ((j + len) > 63) {
-        (void)memcpy(&context->buffer[j], data, (i = 64-j));
+        i = 64-j;
+        if (i > 64 - j) i = 64 - j;  /* Defensive check */
+        (void)memcpy(&context->buffer[j], data, i);
         SHA1Transform(context->state, context->buffer);
         for ( ; i + 63 < len; i += 64)
             SHA1Transform(context->state, &data[i]);
@@ -672,7 +674,9 @@ static void SHA1Update(
     } else {
         i = 0;
     }
-    (void)memcpy(&context->buffer[j], &data[i], len - i);
+    unsigned int copy_len = len - i;
+    if (copy_len > 64 - j) copy_len = 64 - j;  /* Prevent buffer overflow */
+    (void)memcpy(&context->buffer[j], &data[i], copy_len);
 }
 
 
