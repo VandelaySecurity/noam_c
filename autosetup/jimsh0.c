@@ -3794,6 +3794,7 @@ int Jim_aioInit(Jim_Interp *interp)
 #include <errno.h>
 #include <stdio.h>
 #include <string.h>
+#include <limits.h>
 
 
 #ifdef HAVE_DIRENT_H
@@ -3816,7 +3817,45 @@ int Jim_ReaddirCmd(Jim_Interp *interp, int argc, Jim_Obj *const *argv)
 
     dirPath = Jim_String(argv[1 + nocomplain]);
 
-    dirPtr = opendir(dirPath);
+    char resolvedPath[PATH_MAX];
+    char baseDir[PATH_MAX];
+    char resolvedBase[PATH_MAX];
+    
+    if (getcwd(baseDir, sizeof(baseDir)) == NULL) {
+        if (nocomplain) {
+            return JIM_OK;
+        }
+        Jim_SetResultString(interp, "failed to get current directory", -1);
+        return JIM_ERR;
+    }
+    
+    if (realpath(baseDir, resolvedBase) == NULL) {
+        if (nocomplain) {
+            return JIM_OK;
+        }
+        Jim_SetResultString(interp, "failed to resolve base directory", -1);
+        return JIM_ERR;
+    }
+    
+    if (realpath(dirPath, resolvedPath) == NULL) {
+        if (nocomplain) {
+            return JIM_OK;
+        }
+        Jim_SetResultString(interp, strerror(errno), -1);
+        return JIM_ERR;
+    }
+    
+    size_t baseLen = strlen(resolvedBase);
+    if (strncmp(resolvedPath, resolvedBase, baseLen) != 0 ||
+        (resolvedPath[baseLen] != '\0' && resolvedPath[baseLen] != '/')) {
+        if (nocomplain) {
+            return JIM_OK;
+        }
+        Jim_SetResultString(interp, "directory access outside allowed path", -1);
+        return JIM_ERR;
+    }
+
+    dirPtr = opendir(resolvedPath);
     if (dirPtr == NULL) {
         if (nocomplain) {
             return JIM_OK;
