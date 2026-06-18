@@ -106,6 +106,10 @@ int main(int argc, char **argv){
   }else{
     /* WAL mode */
     nName = (int)strlen(argv[1]);
+    if( nName > 4096 ){
+      fprintf(stderr, "database filename too long\n");
+      exit(1);
+    }
     zShm = malloc( nName + 100 );
     if( zShm==0 ){
       fprintf(stderr, "out of memory\n");
