@@ -430,7 +430,7 @@ int main(int argc, char **argv){
   for(i=0; i<nKeyword; i++){
     Keyword *p = &aKeywordTable[i];
     p->len = (int)strlen(p->zName);
-    assert( p->len<sizeof(p->zOrigName) );
+    assert( p->len+1 <= sizeof(p->zOrigName) );
     memcpy(p->zOrigName, p->zName, p->len+1);
     totalLen += p->len;
     p->hash = (charMap(p->zName[0])*HASH_C0) HASH_OP
