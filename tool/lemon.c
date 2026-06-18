@@ -154,17 +154,22 @@ static void lemon_free_all(void){
 */
 static void lemon_addtext(
   char *zBuf,           /* The buffer to which text is added */
+  int nBuf,             /* Total size of the buffer */
   int *pnUsed,          /* Slots of the buffer used so far */
   const char *zIn,      /* Text to add */
   int nIn,              /* Bytes of text to add.  -1 to use strlen() */
   int iWidth            /* Field width.  Negative to left justify */
 ){
   if( nIn<0 ) for(nIn=0; zIn[nIn]; nIn++){}
-  while( iWidth>nIn ){ zBuf[(*pnUsed)++] = ' '; iWidth--; }
+  while( iWidth>nIn && *pnUsed < nBuf - 1 ){ zBuf[(*pnUsed)++] = ' '; iWidth--; }
   if( nIn==0 ) return;
+  if( *pnUsed + nIn > nBuf - 1 ){
+    nIn = nBuf - 1 - *pnUsed;
+    if( nIn < 0 ) nIn = 0;
+  }
   memcpy(&zBuf[*pnUsed], zIn, nIn);
   *pnUsed += nIn;
-  while( (-iWidth)>nIn ){ zBuf[(*pnUsed)++] = ' '; iWidth++; }
+  while( (-iWidth)>nIn && *pnUsed < nBuf - 1 ){ zBuf[(*pnUsed)++] = ' '; iWidth++; }
   zBuf[*pnUsed] = 0;
 }
 static int lemon_vsprintf(char *str, const char *zFormat, va_list ap){
