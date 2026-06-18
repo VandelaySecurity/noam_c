@@ -88,7 +88,7 @@ static LogEst logEstFromDouble(double x){
   if( x<1.0 ) return logEstFromDouble(100.0*x) - 66;
   if( x<1024.0 ) return logEstFromInteger((sqlite3_uint64)(1024.0*x)) - 100;
   if( x<=2000000000.0 ) return logEstFromInteger((sqlite3_uint64)x);
-  memcpy(&a, &x, 8);
+  memcpy(&a, &x, sizeof(a));
   e = (a>>52) - 1022;
   return e*10;
 }
