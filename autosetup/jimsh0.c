@@ -4952,6 +4952,30 @@ static int file_cmd_rename(Jim_Interp *interp, int argc, Jim_Obj *const *argv)
     source = Jim_String(argv[0]);
     dest = Jim_String(argv[1]);
 
+    /* Validate source path */
+    if (source[0] == '/' || strstr(source, "..") != NULL) {
+        Jim_SetResultFormatted(interp, "error renaming: source path \"%#s\" contains invalid components", argv[0]);
+        return JIM_ERR;
+    }
+#if ISWINDOWS
+    if ((source[0] != '\0' && source[1] == ':')) {
+        Jim_SetResultFormatted(interp, "error renaming: source path \"%#s\" contains invalid components", argv[0]);
+        return JIM_ERR;
+    }
+#endif
+
+    /* Validate dest path */
+    if (dest[0] == '/' || strstr(dest, "..") != NULL) {
+        Jim_SetResultFormatted(interp, "error renaming: destination path \"%#s\" contains invalid components", argv[1]);
+        return JIM_ERR;
+    }
+#if ISWINDOWS
+    if ((dest[0] != '\0' && dest[1] == ':')) {
+        Jim_SetResultFormatted(interp, "error renaming: destination path \"%#s\" contains invalid components", argv[1]);
+        return JIM_ERR;
+    }
+#endif
+
     if (!force && access(dest, F_OK) == 0) {
         Jim_SetResultFormatted(interp, "error renaming \"%#s\" to \"%#s\": target exists", argv[0],
             argv[1]);
