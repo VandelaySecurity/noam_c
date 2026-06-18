@@ -299,7 +299,7 @@ static int callback(void *pCtx, int argc, char **argv, char **colnames){
   for(i=0; i<argc; i++){
     const char *z = argv[i] ? argv[i] : "";
     size_t sz = strlen(z);
-    if( (sqlite3_int64)sz+p->nUsed+p->szSep+1 > p->nAlloc ){
+    if( (sqlite3_int64)sz+p->nUsed+p->szSep+1 >= p->nAlloc ){
       char *zNew;
       p->nAlloc = p->nAlloc*2 + sz + p->szSep + 1;
       /* Using sqlite3_realloc64() would be better, but it is a recent
