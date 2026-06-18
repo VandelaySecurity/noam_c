@@ -1052,7 +1052,7 @@ int main(int argc, char **argv){
       zSql = &zIn[i];
       if( verboseFlag ){
         printf("INPUT (offset: %d, size: %d): [%s]\n",
-                i, (int)strlen(&zIn[i]), &zIn[i]);
+                i, (int)strnlen(&zIn[i], nIn - i), &zIn[i]);
       }else if( multiTest && !quietFlag ){
         if( oomFlag ){
           printf("%s\n", g.zTestName);
