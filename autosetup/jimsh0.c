@@ -3586,6 +3586,28 @@ static int JimAioOpenCommand(Jim_Interp *interp, int argc,
 
     filename = Jim_String(argv[1]);
 
+    /* Path traversal prevention: canonicalize and validate against base directory */
+    char canonical_path[PATH_MAX];
+    char base_dir[PATH_MAX];
+    
+    if (realpath(filename, canonical_path) == NULL) {
+        JimAioSetError(interp, argv[1]);
+        return JIM_ERR;
+    }
+    
+    if (getcwd(base_dir, sizeof(base_dir)) == NULL) {
+        Jim_SetResultString(interp, "failed to get current directory", -1);
+        return JIM_ERR;
+    }
+    
+    /* Verify canonical path is within base directory */
+    size_t base_len = strlen(base_dir);
+    if (strncmp(canonical_path, base_dir, base_len) != 0 ||
+        (canonical_path[base_len] != '\0' && canonical_path[base_len] != '/')) {
+        Jim_SetResultString(interp, "path traversal not allowed", -1);
+        return JIM_ERR;
+    }
+
 #ifdef jim_ext_tclcompat
     {
 
@@ -3614,7 +3636,7 @@ static int JimAioOpenCommand(Jim_Interp *interp, int argc,
         openflags = O_RDONLY;
     }
 
-    fd = open(filename, openflags, 0666);
+    fd = open(canonical_path, openflags, 0666);
     if (fd < 0) {
         JimAioSetError(interp, argv[1]);
         return JIM_ERR;
