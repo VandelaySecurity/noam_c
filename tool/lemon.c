@@ -120,7 +120,7 @@ static void *lemon_realloc(void *pOld, size_t nNew){
   p--;
   if( p->sz>=nNew ) return pOld;
   pNew = lemon_malloc( nNew );
-  memcpy(pNew, pOld, p->sz);
+  memcpy(pNew, pOld, (p->sz < nNew) ? p->sz : nNew);
   return pNew;
 }
 
