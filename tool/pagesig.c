@@ -28,12 +28,12 @@
 ** For blocks of more than 16 bytes, the signature is a hex dump of the
 ** first 8 bytes followed by a 64-bit hash of the entire block.
 */
-static void vlogSignature(unsigned char *p, int n, char *zCksum){
+static void vlogSignature(unsigned char *p, int n, char *zCksum, size_t zCksumSize){
   unsigned int s0 = 0, s1 = 0;
   unsigned int *pI;
   int i;
   if( n<=16 ){
-    for(i=0; i<n; i++) sprintf(zCksum+i*2, "%02x", p[i]);
+    for(i=0; i<n; i++) snprintf(zCksum+i*2, zCksumSize - i*2, "%02x", p[i]);
   }else{ 
     pI = (unsigned int*)p;
     for(i=0; i<n-7; i+=8){
@@ -41,8 +41,8 @@ static void vlogSignature(unsigned char *p, int n, char *zCksum){
       s1 += pI[1] + s0;
       pI += 2;
     }
-    for(i=0; i<8; i++) sprintf(zCksum+i*2, "%02x", p[i]);
-    sprintf(zCksum+i*2, "-%08x%08x", s0, s1);
+    for(i=0; i<8; i++) snprintf(zCksum+i*2, zCksumSize - i*2, "%02x", p[i]);
+    snprintf(zCksum+i*2, zCksumSize - i*2, "-%08x%08x", s0, s1);
   }
 }
 
