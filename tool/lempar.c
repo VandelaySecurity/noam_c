@@ -314,7 +314,12 @@ static int yyGrowStack(yyParser *p){
   if( p->yystack==p->yystk0 ){
     pNew = YYREALLOC(0, newSize*sizeof(pNew[0]), ParseCTX(p));
     if( pNew==0 ) return 1;
+#ifdef _MSC_VER
+    memcpy_s(pNew, newSize*sizeof(pNew[0]), p->yystack, oldSize*sizeof(pNew[0]));
+#else
+    assert(newSize >= oldSize);
     memcpy(pNew, p->yystack, oldSize*sizeof(pNew[0]));
+#endif
   }else{
     pNew = YYREALLOC(p->yystack, newSize*sizeof(pNew[0]), ParseCTX(p));
     if( pNew==0 ) return 1;
