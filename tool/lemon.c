@@ -3614,7 +3614,7 @@ void ReportOutput(struct lemon *lemp)
     int w;
     struct symbol *sp = lemp->symbols[i];
     if( sp->bContent ) continue;
-    w = (int)strlen(sp->name);
+    w = (int)strnlen(sp->name, 4096);
     if( n>0 && n+w>75 ){
       fprintf(fp,"\n");
       n = 0;
