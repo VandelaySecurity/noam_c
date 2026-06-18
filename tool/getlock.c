@@ -105,7 +105,11 @@ int main(int argc, char **argv){
     }
   }else{
     /* WAL mode */
-    nName = (int)strlen(argv[1]);
+    nName = (int)strnlen(argv[1], PATH_MAX);
+    if( nName >= PATH_MAX ){
+      fprintf(stderr, "path too long: %s\n", argv[1]);
+      exit(1);
+    }
     zShm = malloc( nName + 100 );
     if( zShm==0 ){
       fprintf(stderr, "out of memory\n");
