@@ -2590,7 +2590,9 @@ static int whereLoopXfer(sqlite3 *db, WhereLoop *pTo, WhereLoop *pFrom){
     memset(pTo, 0, WHERE_LOOP_XFER_SZ);
     return SQLITE_NOMEM_BKPT;
   }
+  int nSlot = pTo->nLSlot;
   memcpy(pTo, pFrom, WHERE_LOOP_XFER_SZ);
+  pTo->nLSlot = nSlot;
   memcpy(pTo->aLTerm, pFrom->aLTerm, pTo->nLTerm*sizeof(pTo->aLTerm[0]));
   if( pFrom->wsFlags & WHERE_VIRTUALTABLE ){
     pFrom->u.vtab.needFree = 0;
