@@ -533,7 +533,22 @@ static int SQLITE_TCLAPI btree_from_db(
     return TCL_ERROR;
   }
   if( argc==3 ){
-    iDb = atoi(argv[2]);
+    char *endptr;
+    long temp;
+    errno = 0;
+    temp = strtol(argv[2], &endptr, 10);
+
+    if (errno == ERANGE || temp < 0 || temp > INT_MAX || *endptr != '\0' || endptr == argv[2]) {
+      Tcl_AppendResult(interp, "Invalid database index: \"", argv[2], "\"", NULL);
+      return TCL_ERROR;
+    }
+
+    iDb = (int)temp;
+
+    if (iDb >= db->nDb) {
+      Tcl_AppendResult(interp, "Database index out of range: \"", argv[2], "\"", NULL);
+      return TCL_ERROR;
+    }
   }
 
   db = *((sqlite3 **)info.objClientData);
