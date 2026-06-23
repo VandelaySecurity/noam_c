@@ -1073,15 +1073,12 @@ static void inttoptrFunc(
   int argc,
   sqlite3_value **argv
 ){
+  union { sqlite3_int64 i; void *p; } u;
   void *p;
   sqlite3_int64 i64;
   i64 = sqlite3_value_int64(argv[0]);
-  if( sizeof(i64)==sizeof(p) ){
-    memcpy(&p, &i64, sizeof(p));
-  }else{
-    int i32 = i64 & 0xffffffff;
-    memcpy(&p, &i32, sizeof(p));
-  }
+  u.i = i64;
+  p = u.p;
   sqlite3_result_pointer(context, p, "carray", 0);
 }
 
