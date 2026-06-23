@@ -549,9 +549,27 @@ static int SQLITE_TCLAPI test_snprintf_int(
   char **argv            /* Text of each argument */
 ){
   char zStr[100];
-  int n = atoi(argv[1]);
-  const char *zFormat = argv[2];
-  int a1 = atoi(argv[3]);
+  char *endptr;
+  long n_long;
+  int n;
+  const char *zFormat;
+  long a1_long;
+  int a1;
+  errno = 0;
+  n_long = strtol(argv[1], &endptr, 10);
+  if (errno == ERANGE || *endptr != '\0' || n_long < INT_MIN || n_long > INT_MAX) {
+    Tcl_AppendResult(interp, "invalid integer for SIZE", NULL);
+    return TCL_ERROR;
+  }
+  n = (int)n_long;
+  zFormat = argv[2];
+  errno = 0;
+  a1_long = strtol(argv[3], &endptr, 10);
+  if (errno == ERANGE || *endptr != '\0' || a1_long < INT_MIN || a1_long > INT_MAX) {
+    Tcl_AppendResult(interp, "invalid integer for INT", NULL);
+    return TCL_ERROR;
+  }
+  a1 = (int)a1_long;
   if( n>sizeof(zStr) ) n = sizeof(zStr);
   sqlite3_snprintf(sizeof(zStr), zStr, "abcdefghijklmnopqrstuvwxyz");
   sqlite3_snprintf(n, zStr, zFormat, a1);
