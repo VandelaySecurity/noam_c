@@ -786,11 +786,15 @@ struct dstr {
   char *z;     /* The space */
 };
 
+#define MAX_DSTR_APPEND 1000000
+
 /*
 ** Append text to a dstr
 */
 static void dstrAppend(struct dstr *p, const char *z, int divider){
-  int n = (int)strlen(z);
+  int n;
+  if( z==0 ) return;
+  n = (int)strnlen(z, MAX_DSTR_APPEND);
   if( p->nUsed + n + 2 > p->nAlloc ){
     char *zNew;
     p->nAlloc = p->nAlloc*2 + n + 200;
@@ -1076,12 +1080,15 @@ static void inttoptrFunc(
   int argc,
   sqlite3_value **argv
 ){
-  union { sqlite3_int64 i; void *p; } u;
   void *p;
   sqlite3_int64 i64;
   i64 = sqlite3_value_int64(argv[0]);
-  u.i = i64;
-  p = u.p;
+  if( sizeof(i64)==sizeof(p) ){
+    memcpy(&p, &i64, sizeof(p));
+  }else{
+    int i32 = i64 & 0xffffffff;
+    memcpy(&p, &i32, sizeof(p));
+  }
   sqlite3_result_pointer(context, p, "carray", 0);
 }
 
