@@ -348,7 +348,7 @@ sqlite3_value *sqlite3_value_dup(const sqlite3_value *pOrig){
   pNew = sqlite3_malloc( sizeof(*pNew) );
   if( pNew==0 ) return 0;
   memset(pNew, 0, sizeof(*pNew));
-  memcpy(pNew, pOrig, MEMCELLSIZE);
+  memcpy(pNew, pOrig, sizeof(*pNew));
   pNew->flags &= ~MEM_Dyn;
   pNew->db = 0;
   if( pNew->flags&(MEM_Str|MEM_Blob) ){
