@@ -1329,7 +1329,7 @@ int sqlite3GetInt32(const char *zNum, int *pValue){
       u = u*16 + sqlite3HexToInt(zNum[i]);
     }
     if( (u&0x80000000)==0 && sqlite3Isxdigit(zNum[i])==0 ){
-      memcpy(pValue, &u, 4);
+      *pValue = (int)u;
       return 1;
     }else{
       return 0;
