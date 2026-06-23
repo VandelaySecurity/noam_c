@@ -214,8 +214,10 @@ static int exec_printf_cb(void *pArg, int argc, char **argv, char **name){
 static FILE *iotrace_file = 0;
 static void io_trace_callback(const char *zFormat, ...){
   va_list ap;
+  char buffer[4096];
   va_start(ap, zFormat);
-  vfprintf(iotrace_file, zFormat, ap);
+  vsnprintf(buffer, sizeof(buffer), zFormat, ap);
+  fprintf(iotrace_file, "%s", buffer);
   va_end(ap);
   fflush(iotrace_file);
 }
@@ -1059,7 +1061,7 @@ static void shellDtostr(
   char z[400];
   if( n<1 ) n = 1;
   if( n>350 ) n = 350;
-  snprintf(z, sizeof(z), "%#+.*e", n, r);
+  sprintf(z, "%#+.*e", n, r);
   sqlite3_result_text(pCtx, z, -1, SQLITE_TRANSIENT);
 }
 
@@ -1076,12 +1078,15 @@ static void inttoptrFunc(
   int argc,
   sqlite3_value **argv
 ){
-  union { sqlite3_int64 i; void *p; } u;
   void *p;
   sqlite3_int64 i64;
   i64 = sqlite3_value_int64(argv[0]);
-  u.i = i64;
-  p = u.p;
+  if( sizeof(i64)==sizeof(p) ){
+    memcpy(&p, &i64, sizeof(p));
+  }else{
+    int i32 = i64 & 0xffffffff;
+    memcpy(&p, &i32, sizeof(p));
+  }
   sqlite3_result_pointer(context, p, "carray", 0);
 }
 
