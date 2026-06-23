@@ -523,7 +523,7 @@ int sqlite3VdbeMemFinalize(Mem *pMem, FuncDef *pFunc){
   pFunc->xFinalize(&ctx); /* IMP: R-24505-23230 */
   assert( (pMem->flags & MEM_Dyn)==0 );
   if( pMem->szMalloc>0 ) sqlite3DbFreeNN(pMem->db, pMem->zMalloc);
-  memcpy(pMem, &t, sizeof(t));
+  *pMem = t;
   return ctx.isError;
 }
 
