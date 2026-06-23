@@ -284,7 +284,10 @@ static int SQLITE_TCLAPI clang_sanitize_address(
 #ifdef __SANITIZE_ADDRESS__
   res = 1;
 #endif
-  if( res==0 && getenv("OMIT_MISUSE")!=0 ) res = 1;
+  if( res==0 ){
+    const char *omit_misuse = getenv("OMIT_MISUSE");
+    if( omit_misuse!=0 ) res = 1;
+  }
   Tcl_SetObjResult(interp, Tcl_NewIntObj(res));
   return TCL_OK;
 }
