@@ -1615,7 +1615,7 @@ case OP_Variable: {            /* out2 */
   }
   pOut = &aMem[pOp->p2];
   if( VdbeMemDynamic(pOut) ) sqlite3VdbeMemSetNull(pOut);
-  memcpy(pOut, pVar, MEMCELLSIZE);
+  *pOut = *pVar;
   pOut->flags &= ~(MEM_Dyn|MEM_Ephem);
   pOut->flags |= MEM_Static|MEM_FromBind;
   UPDATE_MAX_BLOBSIZE(pOut);
