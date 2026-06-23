@@ -5099,6 +5099,7 @@ static int SQLITE_TCLAPI test_prepare_v2(
   const char *zSql;
   char *zCopy = 0;                /* malloc() copy of zSql */
   int bytes;
+  int zSqlLen;
   const char *zTail = 0;
   const char **pzTail;
   sqlite3_stmt *pStmt = 0;
@@ -5111,7 +5112,7 @@ static int SQLITE_TCLAPI test_prepare_v2(
     return TCL_ERROR;
   }
   if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) return TCL_ERROR;
-  zSql = Tcl_GetString(objv[2]);
+  zSql = Tcl_GetStringFromObj(objv[2], &zSqlLen);
   if( Tcl_GetIntFromObj(interp, objv[3], &bytes) ) return TCL_ERROR;
 
   /* Instead of using zSql directly, make a copy into a buffer obtained
@@ -5121,7 +5122,7 @@ static int SQLITE_TCLAPI test_prepare_v2(
     zCopy = malloc(bytes);
     memcpy(zCopy, zSql, bytes);
   }else{
-    int n = (int)strlen(zSql) + 1;
+    int n = zSqlLen + 1;
     zCopy = malloc(n);
     memcpy(zCopy, zSql, n);
   }
