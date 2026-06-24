@@ -17543,10 +17543,18 @@ int Jim_EvalFile(Jim_Interp *interp, const char *filename)
     Jim_Obj *filenameObj, *oldFilenameObj;
     int retcode = JIM_ERR;
     int readlen;
+    char *resolved_path = NULL;
 #define READ_BUF_SIZE 256
 
-   if ((fp = fopen(filename, "rt")) == NULL) {
+    resolved_path = realpath(filename, NULL);
+    if (resolved_path == NULL) {
+        Jim_SetResultFormatted(interp, "invalid file path \"%s\": %s", filename, strerror(errno));
+        return JIM_ERR;
+    }
+
+   if ((fp = fopen(resolved_path, "rt")) == NULL) {
         Jim_SetResultFormatted(interp, "couldn't read file \"%s\": %s", filename, strerror(errno));
+        free(resolved_path);
         return JIM_ERR;
     }
     scriptObjPtr = Jim_NewStringObj(interp, NULL, 0);
@@ -17558,11 +17566,13 @@ int Jim_EvalFile(Jim_Interp *interp, const char *filename)
     Jim_Free(buf);
     if (ferror(fp)) {
         fclose(fp);
+        free(resolved_path);
         Jim_SetResultFormatted(interp, "failed to load file \"%s\": %s", filename, strerror(errno));
         Jim_FreeNewObj(interp, scriptObjPtr);
         return retcode;
     }
     fclose(fp);
+    free(resolved_path);
 
 
     filenameObj = Jim_NewStringObj(interp, filename, -1);
