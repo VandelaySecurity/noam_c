@@ -4066,7 +4066,8 @@ static int SQLITE_TCLAPI test_bind_double(
       x |= aSpecialFp[i].iLower;
       assert( sizeof(value)==8 );
       assert( sizeof(x)==8 );
-      memcpy(&value, &x, 8);
+      assert( sizeof(value) == sizeof(x) );
+      memcpy(&value, &x, sizeof(value));
       break;
     }
   }
