@@ -3794,6 +3794,9 @@ case OP_MakeRecord: {
       *(zHdr++) = serial_type;
       if( serial_type>=14 && pRec->n>0 ){
         assert( pRec->z!=0 );
+        if( zPayload + pRec->n > (u8*)pOut->z + nByte ){
+          return SQLITE_CORRUPT;
+        }
         memcpy(zPayload, pRec->z, pRec->n);
         zPayload += pRec->n;
       }
@@ -3802,6 +3805,9 @@ case OP_MakeRecord: {
       if( pRec->n ){
         assert( pRec->z!=0 );
         assert( pRec->z!=(const char*)sqlite3CtypeMap );
+        if( zPayload + pRec->n > (u8*)pOut->z + nByte ){
+          return SQLITE_CORRUPT;
+        }
         memcpy(zPayload, pRec->z, pRec->n);
         zPayload += pRec->n;
       }
