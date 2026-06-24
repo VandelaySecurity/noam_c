@@ -24539,14 +24539,63 @@ int Jim_MakeTempFile(Jim_Interp *interp, const char *filename_template, int unli
     return fd;
 }
 
+static int Jim_ValidateFilePath(const char *filename, char *resolved_path, size_t resolved_size)
+{
+    char cwd[PATH_MAX];
+    
+    if (filename == NULL || filename[0] == '\0') {
+        return -1;
+    }
+    
+    if (filename[0] == '/') {
+        return -1;
+    }
+    
+#if defined(_WIN32) || defined(WIN32)
+    if (filename[0] != '\0' && filename[1] == ':') {
+        return -1;
+    }
+#endif
+    
+    if (strstr(filename, "..") != NULL) {
+        return -1;
+    }
+    
+    if (realpath(filename, resolved_path) == NULL) {
+        return -1;
+    }
+    
+    if (getcwd(cwd, sizeof(cwd)) == NULL) {
+        return -1;
+    }
+    
+    if (strncmp(resolved_path, cwd, strlen(cwd)) != 0) {
+        return -1;
+    }
+    
+    return 0;
+}
+
 int Jim_OpenForWrite(const char *filename, int append)
 {
-    return open(filename, O_WRONLY | O_CREAT | (append ? O_APPEND : O_TRUNC), 0666);
+    char resolved_path[PATH_MAX];
+    
+    if (Jim_ValidateFilePath(filename, resolved_path, sizeof(resolved_path)) != 0) {
+        return -1;
+    }
+    
+    return open(resolved_path, O_WRONLY | O_CREAT | (append ? O_APPEND : O_TRUNC), 0666);
 }
 
 int Jim_OpenForRead(const char *filename)
 {
-    return open(filename, O_RDONLY, 0);
+    char resolved_path[PATH_MAX];
+    
+    if (Jim_ValidateFilePath(filename, resolved_path, sizeof(resolved_path)) != 0) {
+        return -1;
+    }
+    
+    return open(resolved_path, O_RDONLY, 0);
 }
 
 #endif
