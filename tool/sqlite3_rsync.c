@@ -2098,7 +2098,15 @@ int main(int argc, char const * const *argv){
       continue;
     }
     if( strcmp(z, "-protocol")==0 ){
-      ctx.iProtocol = atoi(cli_opt_val);
+      char *endptr;
+      long protocol_val;
+      errno = 0;
+      protocol_val = strtol(cli_opt_val, &endptr, 10);
+      if( errno==ERANGE || *endptr!='\0' || endptr==cli_opt_val || protocol_val<INT_MIN || protocol_val>INT_MAX ){
+        fprintf(stderr, "invalid protocol number: \"%s\"\n", cli_opt_val);
+        return 1;
+      }
+      ctx.iProtocol = (int)protocol_val;
       if( ctx.iProtocol<1 ){
         ctx.iProtocol = 1;
       }else if( ctx.iProtocol>PROTOCOL_VERSION ){
