@@ -1776,7 +1776,7 @@ static int SQLITE_TCLAPI test_table_column_metadata(
   zTbl = Tcl_GetString(objv[3]);
   zCol = objc==5 ? Tcl_GetString(objv[4]) : 0;
 
-  if( strlen(zDb)==0 ) zDb = 0;
+  if( zDb[0]==0 ) zDb = 0;
 
   rc = sqlite3_table_column_metadata(db, zDb, zTbl, zCol, 
       &zDatatype, &zCollseq, &notnull, &primarykey, &autoincrement);
