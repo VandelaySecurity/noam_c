@@ -8975,14 +8975,15 @@ static int SQLITE_TCLAPI test_autovacuum_pages(
   sqlite3 *db;
   int rc;
   const char *zScript;
+  int scriptLen = 0;
   if( objc!=2 && objc!=3 ){
     Tcl_WrongNumArgs(interp, 1, objv, "DB ?SCRIPT?");
     return TCL_ERROR;
   }
   if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) return TCL_ERROR;
-  zScript = objc==3 ? Tcl_GetString(objv[2]) : 0;
+  zScript = objc==3 ? Tcl_GetStringFromObj(objv[2], &scriptLen) : 0;
   if( zScript ){
-    size_t nScript = strlen(zScript);
+    size_t nScript = (size_t)scriptLen;
     pData = sqlite3_malloc64( sizeof(*pData) + nScript + 1 );
     if( pData==0 ){
       Tcl_AppendResult(interp, "out of memory", (void*)0);
