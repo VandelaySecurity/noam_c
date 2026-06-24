@@ -63,37 +63,33 @@ static void print_decode_line(
   int i, j;
   int val = aData[ofst];
   char zBuf[100];
-  sprintf(zBuf, " %03x: %02x", ofst, aData[ofst]);
-  i = (int)strlen(zBuf);
+  i = snprintf(zBuf, sizeof(zBuf), " %03x: %02x", ofst, aData[ofst]);
   for(j=1; j<4; j++){
     if( j>=nByte ){
-      sprintf(&zBuf[i], "   ");
+      i += snprintf(&zBuf[i], sizeof(zBuf)-i, "   ");
     }else{
-      sprintf(&zBuf[i], " %02x", aData[ofst+j]);
+      i += snprintf(&zBuf[i], sizeof(zBuf)-i, " %02x", aData[ofst+j]);
       val = val*256 + aData[ofst+j];
     }
-    i += (int)strlen(&zBuf[i]);
   }
   if( nByte==8 ){
     for(j=4; j<8; j++){
-      sprintf(&zBuf[i], " %02x", aData[ofst+j]);
-      i += (int)strlen(&zBuf[i]);
+      i += snprintf(&zBuf[i], sizeof(zBuf)-i, " %02x", aData[ofst+j]);
     }
   }
   if( flg & FG_NBO ){
     assert( nByte==4 );
     memcpy(&val, aData+ofst, 4);
   }
-  sprintf(&zBuf[i], "            ");
-  i += 12;
+  i += snprintf(&zBuf[i], sizeof(zBuf)-i, "            ");
   if( flg & FG_PGSZ ){
     unsigned short sz;
     memcpy(&sz, aData+ofst, 2);
-    sprintf(&zBuf[i], "   %9d", sz==1 ? 65536 : sz);
+    snprintf(&zBuf[i], sizeof(zBuf)-i, "   %9d", sz==1 ? 65536 : sz);
   }else if( flg & FG_HEX ){
-    sprintf(&zBuf[i], "  0x%08x", val);
+    snprintf(&zBuf[i], sizeof(zBuf)-i, "  0x%08x", val);
   }else if( nByte<8 ){
-    sprintf(&zBuf[i], "   %9d", val);
+    snprintf(&zBuf[i], sizeof(zBuf)-i, "   %9d", val);
   }
   printf("%s  %s\n", zBuf, zMsg);
 }
