@@ -1522,12 +1522,12 @@ static void putValue(FILE *out, sqlite3_stmt *pStmt, int k){
   switch( iDType ){
     case SQLITE_INTEGER:
       iX = sqlite3_column_int64(pStmt, k);
-      memcpy(&uX, &iX, 8);
+      memcpy(&uX, &iX, sizeof(uX));
       for(j=56; j>=0; j-=8) putc((uX>>j)&0xff, out);
       break;
     case SQLITE_FLOAT:
       rX = sqlite3_column_double(pStmt, k);
-      memcpy(&uX, &rX, 8);
+      memcpy(&uX, &rX, sizeof(uX));
       for(j=56; j>=0; j-=8) putc((uX>>j)&0xff, out);
       break;
     case SQLITE_TEXT:
