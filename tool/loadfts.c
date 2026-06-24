@@ -171,20 +171,38 @@ int main(int argc, char **argv){
   int nCmd = 0;
   char **aCmd = 0;
 
+  char *endptr;
+  long lVal;
+
   if( argc % 2 ) showHelp(argv[0]);
 
   for(i=1; i<(argc-1); i+=2){
     char *zOpt = argv[i];
     char *zArg = argv[i+1];
     if( strcmp(zOpt, "-fts")==0 ){
-      iFts = atoi(zArg);
+      errno = 0;
+      lVal = strtol(zArg, &endptr, 10);
+      if (errno != 0 || endptr == zArg || *endptr != '\0' || lVal < INT_MIN || lVal > INT_MAX) {
+        showHelp(argv[0]);
+      }
+      iFts = (int)lVal;
       if( iFts!=3 && iFts!=4 && iFts!= 5) showHelp(argv[0]);
     }
     else if( strcmp(zOpt, "-trans")==0 ){
-      nRowPerTrans = atoi(zArg);
+      errno = 0;
+      lVal = strtol(zArg, &endptr, 10);
+      if (errno != 0 || endptr == zArg || *endptr != '\0' || lVal < 0 || lVal > INT_MAX) {
+        showHelp(argv[0]);
+      }
+      nRowPerTrans = (int)lVal;
     }
     else if( strcmp(zOpt, "-idx")==0 ){
-      bMap = atoi(zArg);
+      errno = 0;
+      lVal = strtol(zArg, &endptr, 10);
+      if (errno != 0 || endptr == zArg || *endptr != '\0' || lVal < INT_MIN || lVal > INT_MAX) {
+        showHelp(argv[0]);
+      }
+      bMap = (int)lVal;
       if( bMap!=0 && bMap!=1 ) showHelp(argv[0]);
     }
     else if( strcmp(zOpt, "-dir")==0 ){
