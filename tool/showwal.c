@@ -136,22 +136,19 @@ static void print_byte_range(
   int printOfst          /* Add this amount to the index on the left column */
 ){
   int i, j;
-  const char *zOfstFmt;
-
-  if( ((printOfst+nByte)&~0xfff)==0 ){
-    zOfstFmt = " %03x: ";
-  }else if( ((printOfst+nByte)&~0xffff)==0 ){
-    zOfstFmt = " %04x: ";
-  }else if( ((printOfst+nByte)&~0xfffff)==0 ){
-    zOfstFmt = " %05x: ";
-  }else if( ((printOfst+nByte)&~0xffffff)==0 ){
-    zOfstFmt = " %06x: ";
-  }else{
-    zOfstFmt = " %08x: ";
-  }
 
   for(i=0; i<nByte; i += perLine){
-    fprintf(stdout, zOfstFmt, i+printOfst);
+    if( ((printOfst+nByte)&~0xfff)==0 ){
+      fprintf(stdout, " %03x: ", i+printOfst);
+    }else if( ((printOfst+nByte)&~0xffff)==0 ){
+      fprintf(stdout, " %04x: ", i+printOfst);
+    }else if( ((printOfst+nByte)&~0xfffff)==0 ){
+      fprintf(stdout, " %05x: ", i+printOfst);
+    }else if( ((printOfst+nByte)&~0xffffff)==0 ){
+      fprintf(stdout, " %06x: ", i+printOfst);
+    }else{
+      fprintf(stdout, " %08x: ", i+printOfst);
+    }
     for(j=0; j<perLine; j++){
       if( i+j>nByte ){
         fprintf(stdout, "   ");
