@@ -1156,9 +1156,23 @@ static void page_usage_report(const char *zPrg, const char *zDbName){
         printf("%u,", x);
       }
       if( (s = strstr(z, " of page "))!=0 ){
-        printf("%d,", atoi(s+9));
+        char *endptr;
+        long val;
+        errno = 0;
+        val = strtol(s+9, &endptr, 10);
+        if (errno == ERANGE || val > INT_MAX || val < INT_MIN || endptr == s+9) {
+          val = 0;
+        }
+        printf("%d,", (int)val);
       }else if( (s = strstr(z, " of trunk page "))!=0 ){
-        printf("%d,", atoi(s+15));
+        char *endptr;
+        long val;
+        errno = 0;
+        val = strtol(s+15, &endptr, 10);
+        if (errno == ERANGE || val > INT_MAX || val < INT_MIN || endptr == s+15) {
+          val = 0;
+        }
+        printf("%d,", (int)val);
       }else{
         printf("0,");
       }
@@ -1170,7 +1184,14 @@ static void page_usage_report(const char *zPrg, const char *zDbName){
         printf("-1,");
       }
       if( strncmp(z,"overflow ", 9)==0 ){
-        printf("%d,", atoi(z+9));
+        char *endptr;
+        long val;
+        errno = 0;
+        val = strtol(z+9, &endptr, 10);
+        if (errno == ERANGE || val > INT_MAX || val < INT_MIN || endptr == z+9) {
+          val = -1;
+        }
+        printf("%d,", (int)val);
       }else{
         printf("-1,");
       }
@@ -1200,7 +1221,6 @@ static void ptrmap_coverage_report(const char *zDbName){
   int usable;
   int perPage;
   int i;
-
   /* Avoid the pathological case */
   if( g.mxPage<1 ){
     printf("empty database\n");
