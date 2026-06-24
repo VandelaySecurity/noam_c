@@ -4837,21 +4837,57 @@ static int file_cmd_delete(Jim_Interp *interp, int argc, Jim_Obj *const *argv)
         argv++;
     }
 
+    char *base_dir = realpath(".", NULL);
+    if (base_dir == NULL) {
+        Jim_SetResultFormatted(interp, "couldn't get current directory: %s", strerror(errno));
+        return JIM_ERR;
+    }
+
     while (argc--) {
         const char *path = Jim_String(argv[0]);
 
-        if (unlink(path) == -1 && errno != ENOENT) {
-            if (rmdir(path) == -1) {
+        char *canonical_path = realpath(path, NULL);
+        if (canonical_path == NULL) {
+            if (errno == ENOENT) {
+                if (!force) {
+                    free(base_dir);
+                    Jim_SetResultFormatted(interp, "couldn't delete file \"%s\": %s", path,
+                        strerror(errno));
+                    return JIM_ERR;
+                }
+                argv++;
+                continue;
+            } else {
+                free(base_dir);
+                Jim_SetResultFormatted(interp, "couldn't resolve path \"%s\": %s", path,
+                    strerror(errno));
+                return JIM_ERR;
+            }
+        }
+
+        if (strncmp(canonical_path, base_dir, strlen(base_dir)) != 0) {
+            free(canonical_path);
+            free(base_dir);
+            Jim_SetResultFormatted(interp, "path traversal attempt detected for \"%s\"", path);
+            return JIM_ERR;
+        }
+
+        if (unlink(canonical_path) == -1 && errno != ENOENT) {
+            if (rmdir(canonical_path) == -1) {
 
                 if (!force || Jim_EvalPrefix(interp, "file delete force", 1, argv) != JIM_OK) {
+                    free(canonical_path);
+                    free(base_dir);
                     Jim_SetResultFormatted(interp, "couldn't delete file \"%s\": %s", path,
                         strerror(errno));
                     return JIM_ERR;
                 }
             }
         }
+        free(canonical_path);
         argv++;
     }
+    free(base_dir);
     return JIM_OK;
 }
 
