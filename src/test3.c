@@ -44,6 +44,7 @@ static int SQLITE_TCLAPI btree_open(
   char zBuf[100];
   int n;
   char *zFilename;
+#define MAX_FILENAME_LENGTH 4096
   if( argc!=3 ){
     Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
        " FILENAME NCACHE FLAGS\"", NULL);
@@ -57,7 +58,11 @@ static int SQLITE_TCLAPI btree_open(
     sDb.mutex = sqlite3MutexAlloc(SQLITE_MUTEX_RECURSIVE);
     sqlite3_mutex_enter(sDb.mutex);
   }
-  n = (int)strlen(argv[1]);
+  n = (int)strnlen(argv[1], MAX_FILENAME_LENGTH);
+  if( n >= MAX_FILENAME_LENGTH ){
+    Tcl_AppendResult(interp, "filename too long", NULL);
+    return TCL_ERROR;
+  }
   zFilename = sqlite3_malloc( n+2 );
   if( zFilename==0 ) return TCL_ERROR;
   memcpy(zFilename, argv[1], n+1);
