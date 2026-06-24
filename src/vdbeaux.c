@@ -5419,8 +5419,9 @@ static int vdbeSkipField(
   if( bIntegrity==0 ) return 1;
   if( (pMem1->flags & MEM_Real) && (pMem2->flags & MEM_Real) ){
     u64 m1, m2;
-    memcpy(&m1,&pMem1->u.r,8);
-    memcpy(&m2,&pMem2->u.r,8);
+    assert( sizeof(pMem1->u.r)==8 );
+    memcpy(&m1,&pMem1->u.r,sizeof(pMem1->u.r));
+    memcpy(&m2,&pMem2->u.r,sizeof(pMem2->u.r));
     if( (m1<m2 ? m2-m1 : m1-m2) <= BTREE_ULPDISTORTION ){
       return 1;
     }
