@@ -343,7 +343,7 @@ static i64 describeContent(
       }
       pData += size;
     }
-    j = (int)strlen(zDesc);
+    j = (int)strnlen(zDesc, 4096);
     zDesc += j;
     nDesc += j;
   }
