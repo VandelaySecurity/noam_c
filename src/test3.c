@@ -60,7 +60,12 @@ static int SQLITE_TCLAPI btree_open(
   n = (int)strlen(argv[1]);
   zFilename = sqlite3_malloc( n+2 );
   if( zFilename==0 ) return TCL_ERROR;
+#if defined(_MSC_VER)
+  memcpy_s(zFilename, n+2, argv[1], n+1);
+#else
+  assert( n+2 >= n+1 );  /* Verify destination buffer is large enough */
   memcpy(zFilename, argv[1], n+1);
+#endif
   zFilename[n+1] = 0;
   rc = sqlite3BtreeOpen(sDb.pVfs, zFilename, &sDb, &pBt, 0, 
      SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_MAIN_DB);
