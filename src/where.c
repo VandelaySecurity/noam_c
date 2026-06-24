@@ -194,7 +194,7 @@ int sqlite3WhereUsesDeferredSeek(WhereInfo *pWInfo){
 ** Move the content of pSrc into pDest
 */
 static void whereOrMove(WhereOrSet *pDest, WhereOrSet *pSrc){
-  pDest->n = pSrc->n;
+  pDest->n = pSrc->n < N_OR_COST ? pSrc->n : N_OR_COST;
   memcpy(pDest->a, pSrc->a, pDest->n*sizeof(pDest->a[0]));
 }
 
