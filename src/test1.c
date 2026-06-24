@@ -8875,7 +8875,7 @@ static int SQLITE_TCLAPI test_decode_hexdb(
     while( zIn[i]==' ' || zIn[i]=='\t' ){ i++; }
     if( a==0 ){
       int pgsz;
-      rc = sscanf(zIn+i, "| size %d pagesize %d", &n, &pgsz);
+      rc = sscanf(zIn+i, "| size %10d pagesize %10d", &n, &pgsz);
       if( rc!=2 ) continue;
       if( pgsz<512 || pgsz>65536 || (pgsz&(pgsz-1))!=0 ){
         Tcl_AppendResult(interp, "bad 'pagesize' field", (void*)0);
@@ -8894,12 +8894,12 @@ static int SQLITE_TCLAPI test_decode_hexdb(
       memset(a, 0, n);
       continue;
     }
-    rc = sscanf(zIn+i, "| page %d offset %d", &j, &k);
+    rc = sscanf(zIn+i, "| page %10d offset %10d", &j, &k);
     if( rc==2 ){
       iOffset = k;
       continue;
     }
-    rc = sscanf(zIn+i,"| %d: %x %x %x %x %x %x %x %x %x %x %x %x %x %x %x %x",
+    rc = sscanf(zIn+i,"| %10d: %8x %8x %8x %8x %8x %8x %8x %8x %8x %8x %8x %8x %8x %8x %8x %8x",
                 &j, &x[0], &x[1], &x[2], &x[3], &x[4], &x[5], &x[6], &x[7],
                 &x[8], &x[9], &x[10], &x[11], &x[12], &x[13], &x[14], &x[15]);
     if( rc==17 ){
