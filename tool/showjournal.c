@@ -52,18 +52,18 @@ static unsigned print_decode_line(
   int i, j;
   unsigned val = aData[ofst];
   char zBuf[100];
-  sprintf(zBuf, " %05x: %02x", ofst, aData[ofst]);
+  snprintf(zBuf, sizeof(zBuf), " %05x: %02x", ofst, aData[ofst]);
   i = (int)strlen(zBuf);
   for(j=1; j<4; j++){
     if( j>=nByte ){
-      sprintf(&zBuf[i], "   ");
+      snprintf(&zBuf[i], sizeof(zBuf) - i, "   ");
     }else{
-      sprintf(&zBuf[i], " %02x", aData[ofst+j]);
+      snprintf(&zBuf[i], sizeof(zBuf) - i, " %02x", aData[ofst+j]);
       val = val*256 + aData[ofst+j];
     }
     i += (int)strlen(&zBuf[i]);
   }
-  sprintf(&zBuf[i], "   %10u", val);
+  snprintf(&zBuf[i], sizeof(zBuf) - i, "   %10u", val);
   printf("%s  %s\n", zBuf, zMsg);
   return val;
 }
