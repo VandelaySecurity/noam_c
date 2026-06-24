@@ -1339,7 +1339,10 @@ int sqlite3VdbeMemSetStr(
       return SQLITE_NOMEM_BKPT;
     }
     assert( pMem->z!=0 );
-    memcpy(pMem->z, z, nAlloc);
+    memcpy(pMem->z, z, nByte);
+    if( flags&MEM_Term ){
+      memset(pMem->z + nByte, 0, (enc==SQLITE_UTF8?1:2));
+    }
   }else{
     sqlite3VdbeMemRelease(pMem);
     pMem->z = (char *)z;
