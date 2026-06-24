@@ -179,7 +179,7 @@ int sqlite3VdbeMemValidStrRep(Mem *p){
   if( p->db==0 ){
     return 1;  /* db->nFpDigit required to validate p->z[] */
   }
-  memcpy(&tmp, p, sizeof(tmp));
+  tmp = *p;
   vdbeMemRenderNum(sizeof(zBuf), zBuf, &tmp);
   z = p->z;
   i = j = 0;
