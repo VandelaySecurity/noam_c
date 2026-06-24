@@ -4952,18 +4952,61 @@ static int file_cmd_rename(Jim_Interp *interp, int argc, Jim_Obj *const *argv)
     source = Jim_String(argv[0]);
     dest = Jim_String(argv[1]);
 
-    if (!force && access(dest, F_OK) == 0) {
+    /* Path traversal protection: canonicalize and validate paths */
+    char resolved_source[PATH_MAX];
+    char resolved_dest[PATH_MAX];
+    char base_dir[PATH_MAX];
+
+    if (getcwd(base_dir, sizeof(base_dir)) == NULL) {
+        Jim_SetResultFormatted(interp, "error getting current directory: %s", strerror(errno));
+        return JIM_ERR;
+    }
+
+    if (realpath(source, resolved_source) == NULL) {
+        Jim_SetResultFormatted(interp, "invalid path \"%s\": %s", source, strerror(errno));
+        return JIM_ERR;
+    }
+
+    if (strncmp(resolved_source, base_dir, strlen(base_dir)) != 0) {
+        Jim_SetResultFormatted(interp, "path \"%s\" is outside allowed directory", source);
+        return JIM_ERR;
+    }
+
+    /* For dest, use realpath on parent directory if dest doesn't exist yet */
+    char *dest_copy = strdup(dest);
+    char *dest_parent = dirname(dest_copy);
+    char resolved_dest_parent[PATH_MAX];
+    
+    if (realpath(dest_parent, resolved_dest_parent) == NULL) {
+        free(dest_copy);
+        Jim_SetResultFormatted(interp, "invalid destination path \"%s\": %s", dest, strerror(errno));
+        return JIM_ERR;
+    }
+    free(dest_copy);
+
+    if (strncmp(resolved_dest_parent, base_dir, strlen(base_dir)) != 0) {
+        Jim_SetResultFormatted(interp, "path \"%s\" is outside allowed directory", dest);
+        return JIM_ERR;
+    }
+
+    /* Reconstruct validated dest path */
+    dest_copy = strdup(dest);
+    char *dest_basename = basename(dest_copy);
+    snprintf(resolved_dest, sizeof(resolved_dest), "%s/%s", resolved_dest_parent, dest_basename);
+    free(dest_copy);
+
+    if (!force && access(resolved_dest, F_OK) == 0) {
         Jim_SetResultFormatted(interp, "error renaming \"%#s\" to \"%#s\": target exists", argv[0],
             argv[1]);
         return JIM_ERR;
     }
 #if ISWINDOWS
-    if (access(dest, F_OK) == 0) {
+    if (access(resolved_dest, F_OK) == 0) {
 
-        remove(dest);
+        remove(resolved_dest);
     }
 #endif
-    if (rename(source, dest) != 0) {
+    if (rename(resolved_source, resolved_dest) != 0) {
         Jim_SetResultFormatted(interp, "error renaming \"%#s\" to \"%#s\": %s", argv[0], argv[1],
             strerror(errno));
         return JIM_ERR;
