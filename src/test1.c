@@ -5126,10 +5126,18 @@ static int SQLITE_TCLAPI test_prepare_v2(
   ** to spot buffer overreads.  */
   if( bytes>=0 ){
     zCopy = malloc(bytes);
+    if( zCopy == 0 ){
+      Tcl_AppendResult(interp, "out of memory", NULL);
+      return TCL_ERROR;
+    }
     memcpy(zCopy, zSql, bytes);
   }else{
     int n = (int)strlen(zSql) + 1;
     zCopy = malloc(n);
+    if( zCopy == 0 ){
+      Tcl_AppendResult(interp, "out of memory", NULL);
+      return TCL_ERROR;
+    }
     memcpy(zCopy, zSql, n);
   }
   pzTail = objc>=5 ? &zTail : 0;
