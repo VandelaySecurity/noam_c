@@ -646,7 +646,7 @@ int main(int argc, char **argv){
   for(i=j=0; i<nKeyword; i++){
     char *zToken = aKeywordTable[i].zTokenType;
     if( j==0 ) printf("  ");
-    printf("%s,%*s", zToken, (int)(14-strlen(zToken)), "");
+    printf("%s,%*s", zToken, (int)(14-strnlen(zToken, 256)), "");
     j++;
     if( j>=5 ){
       printf("\n");
