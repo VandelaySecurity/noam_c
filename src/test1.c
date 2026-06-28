@@ -5069,8 +5069,9 @@ static int SQLITE_TCLAPI test_prepare(
     if( bytes>=0 ){
       bytes = bytes - (int)(zTail-zSql);
     }
-    if( (int)strnlen(zTail, bytes)<bytes ){
-      bytes = (int)strnlen(zTail, bytes);
+    const char *null_pos = memchr(zTail, '\0', bytes);
+    if( null_pos ){
+      bytes = (int)(null_pos - zTail);
     }
     Tcl_ObjSetVar2(interp, objv[4], 0, Tcl_NewStringObj(zTail, bytes), 0);
   }
