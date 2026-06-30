@@ -888,8 +888,9 @@ static void tkt2213Function(
   if( zText1!=zText2 || zText2!=zText3 ){
     sqlite3_result_error(context, "tkt2213 is not fixed", -1);
   }else{
-    char *zCopy = (char *)sqlite3_malloc(nText);
+    char *zCopy = (char *)sqlite3_malloc(nText + 1);
     memcpy(zCopy, zText1, nText);
+    zCopy[nText] = '\0';
     sqlite3_result_text(context, zCopy, nText, sqlite3_free);
   }
 }
