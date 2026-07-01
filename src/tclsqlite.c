@@ -1005,7 +1005,23 @@ static int tclSqlCollate(
   Tcl_ListObjAppendElement(p->interp, pCmd, Tcl_NewStringObj(zB, nB));
   Tcl_EvalObjEx(p->interp, pCmd, TCL_EVAL_DIRECT);
   Tcl_DecrRefCount(pCmd);
-  return (atoi(Tcl_GetStringResult(p->interp)));
+  const char *zResult = Tcl_GetStringResult(p->interp);
+  char *endptr;
+  long result;
+
+  errno = 0;
+  result = strtol(zResult, &endptr, 10);
+
+  /* Check for conversion errors */
+  if (errno == ERANGE || endptr == zResult || *endptr != '\0') {
+    /* Conversion failed or overflow occurred - return 0 as safe default */
+    return 0;
+  }
+
+  /* Clamp to valid collation return range [-1, 0, 1] */
+  if (result < -1) return -1;
+  if (result > 1) return 1;
+  return (int)result;
 }
 
 /*
