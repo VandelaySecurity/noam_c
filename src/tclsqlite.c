@@ -2377,7 +2377,8 @@ static int dbQrf(SqliteDb *pDb, int objc, Tcl_Obj *const*objv){
       i++;
     }else if( strcmp(zArg,"-version")==0 ){
       /* Undocumented. Testing use only */
-      qrf.iVersion = atoi(Tcl_GetString(objv[i+1]));
+      rc = Tcl_GetIntFromObj(pDb->interp, objv[i+1], &qrf.iVersion);
+      if( rc ) goto format_failed;
       i++;
     }else{
       Tcl_AppendResult(pDb->interp, "unknown option: ", zArg, (char*)0);
