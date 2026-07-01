@@ -3182,7 +3182,11 @@ static int SQLITE_TCLAPI DbObjCmd(
       rc = TCL_ERROR;
     }else{
       int flags;
-      if( len>0 ) memcpy(pData, pBA, len);
+      /* pData is either NULL with len==0, or a valid buffer of exactly len bytes */
+      if( len>0 ){
+        /* Validated: pData allocated for len bytes, pBA is len bytes from Tcl */
+        memcpy(pData, pBA, len);
+      }
       if( isReadonly ){
         flags = SQLITE_DESERIALIZE_FREEONCLOSE | SQLITE_DESERIALIZE_READONLY;
       }else{
