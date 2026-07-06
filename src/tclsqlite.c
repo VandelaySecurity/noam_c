@@ -2655,7 +2655,8 @@ static int SQLITE_TCLAPI DbObjCmd(
       zBusy = Tcl_GetStringFromObj(objv[2], &len);
       if( zBusy && len>0 ){
         pDb->zBusy = Tcl_Alloc( len + 1 );
-        memcpy(pDb->zBusy, zBusy, len+1);
+        memcpy(pDb->zBusy, zBusy, len);
+        pDb->zBusy[len] = '\0';
       }else{
         pDb->zBusy = 0;
       }
