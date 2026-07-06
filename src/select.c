@@ -2419,7 +2419,12 @@ void sqlite3SubqueryColumnTypes(
       pCol->zCnName = sqlite3DbReallocOrFree(db, pCol->zCnName, n+k+2);
       pCol->colFlags &= ~(COLFLAG_HASTYPE|COLFLAG_HASCOLL);
       if( pCol->zCnName ){
+#ifdef __STDC_LIB_EXT1__
+        memcpy_s(&pCol->zCnName[n+1], k+1, zType, k+1);
+#else
+        assert( k+1 <= (i64)((n+k+2) - (n+1)) );
         memcpy(&pCol->zCnName[n+1], zType, k+1);
+#endif
         pCol->colFlags |= COLFLAG_HASTYPE;
       }
     }
