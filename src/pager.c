@@ -3060,8 +3060,13 @@ static int readDbPage(PgHdr *pPg){
       */
       memset(pPager->dbFileVers, 0xff, sizeof(pPager->dbFileVers));
     }else{
-      u8 *dbFileVers = &((u8*)pPg->pData)[24];
-      memcpy(&pPager->dbFileVers, dbFileVers, sizeof(pPager->dbFileVers));
+      if( pPager->pageSize >= 24 + sizeof(pPager->dbFileVers) ){
+        u8 *dbFileVers = &((u8*)pPg->pData)[24];
+        memcpy(&pPager->dbFileVers, dbFileVers, sizeof(pPager->dbFileVers));
+      }else{
+        /* Page too small to contain valid file version bytes - treat as corrupt */
+        memset(pPager->dbFileVers, 0xff, sizeof(pPager->dbFileVers));
+      }
     }
   }
   PAGER_INCR(sqlite3_pager_readdb_count);
