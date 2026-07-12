@@ -93,9 +93,9 @@ static void resolveAlias(
       assert( !ExprHasProperty(pExpr, EP_IntValue) );
       pDup = sqlite3ExprAddCollateString(pParse, pDup, pExpr->u.zToken);
     }
-    memcpy(&temp, pDup, sizeof(Expr));
-    memcpy(pDup, pExpr, sizeof(Expr));
-    memcpy(pExpr, &temp, sizeof(Expr));
+    temp = *pDup;
+    *pDup = *pExpr;
+    *pExpr = temp;
     if( ExprHasProperty(pExpr, EP_WinFunc) ){
       if( ALWAYS(pExpr->y.pWin!=0) ){
         pExpr->y.pWin->pOwner = pExpr;
