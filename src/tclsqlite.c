@@ -4557,7 +4557,9 @@ int SQLITE_CDECL TCLSH_MAIN(int argc, char **argv){
 #endif
 
 #if !defined(_WIN32_WCE)
-  if( getenv("SQLITE_DEBUG_BREAK") ){
+  const char *debug_break_env;
+  debug_break_env = getenv("SQLITE_DEBUG_BREAK");
+  if( debug_break_env && (strcmp(debug_break_env, "1") == 0 || strcmp(debug_break_env, "true") == 0) ){
     if( isatty(0) && isatty(2) ){
       fprintf(stderr,
           "attach debugger to process %d and press any key to continue.\n",
