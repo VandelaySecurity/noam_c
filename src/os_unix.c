@@ -8138,7 +8138,10 @@ static int proxyGetDbPathForUnixFile(unixFile *pFile, char *dbPath){
   if( pFile->pMethod == &dotlockIoMethods ){
     /* dot lock style uses the locking context to store the dot lock
     ** file path */
-    int len = strlen((char *)pFile->lockingContext) - strlen(DOTLOCK_SUFFIX);
+    int len = strnlen((char *)pFile->lockingContext, MAXPATHLEN) - strlen(DOTLOCK_SUFFIX);
+    if( len < 0 || len > MAXPATHLEN ){
+      return SQLITE_ERROR;
+    }
     memcpy(dbPath, (char *)pFile->lockingContext, len + 1);
   }else{
     /* all other styles use the locking context to store the db file path */
