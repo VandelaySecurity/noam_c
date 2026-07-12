@@ -8130,7 +8130,7 @@ static int proxyGetDbPathForUnixFile(unixFile *pFile, char *dbPath){
   if( pFile->pMethod == &afpIoMethods ){
     /* afp style keeps a reference to the db path in the filePath field
     ** of the struct */
-    assert( (int)strlen((char*)pFile->lockingContext)<=MAXPATHLEN );
+    assert( (int)strnlen((char*)pFile->lockingContext, MAXPATHLEN+1)<=MAXPATHLEN );
     strlcpy(dbPath, ((afpLockingContext *)pFile->lockingContext)->dbPath,
             MAXPATHLEN);
   } else
@@ -8138,11 +8138,11 @@ static int proxyGetDbPathForUnixFile(unixFile *pFile, char *dbPath){
   if( pFile->pMethod == &dotlockIoMethods ){
     /* dot lock style uses the locking context to store the dot lock
     ** file path */
-    int len = strlen((char *)pFile->lockingContext) - strlen(DOTLOCK_SUFFIX);
+    int len = strnlen((char *)pFile->lockingContext, MAXPATHLEN+1) - strlen(DOTLOCK_SUFFIX);
     memcpy(dbPath, (char *)pFile->lockingContext, len + 1);
   }else{
     /* all other styles use the locking context to store the db file path */
-    assert( strlen((char*)pFile->lockingContext)<=MAXPATHLEN );
+    assert( strnlen((char*)pFile->lockingContext, MAXPATHLEN+1)<=MAXPATHLEN );
     strlcpy(dbPath, (char *)pFile->lockingContext, MAXPATHLEN);
   }
   return SQLITE_OK;
