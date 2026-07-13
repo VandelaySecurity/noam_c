@@ -403,7 +403,7 @@ static void *memsys5Realloc(void *pPrior, int nBytes){
   }
   p = memsys5Malloc(nBytes);
   if( p ){
-    memcpy(p, pPrior, nOld);
+    memcpy(p, pPrior, nOld<nBytes ? nOld : nBytes);
     memsys5Free(pPrior);
   }
   return p;
@@ -433,7 +433,6 @@ static int memsys5Roundup(int n){
   if( (iFullSz/2)>=(i64)n ) return iFullSz/2;
   return iFullSz;
 }
-
 /*
 ** Return the ceiling of the logarithm base 2 of iValue.
 **
