@@ -720,7 +720,8 @@ static SQLITE_NOINLINE void *dbReallocFinish(sqlite3 *db, void *p, u64 n){
     if( isLookaside(db, p) ){
       pNew = sqlite3DbMallocRawNN(db, n);
       if( pNew ){
-        memcpy(pNew, p, lookasideMallocSize(db, p));
+        u64 oldSize = lookasideMallocSize(db, p);
+        memcpy(pNew, p, oldSize < n ? oldSize : n);
         sqlite3DbFree(db, p);
       }
     }else{
@@ -750,7 +751,6 @@ void *sqlite3DbReallocOrFree(sqlite3 *db, void *p, u64 n){
   }
   return pNew;
 }
-
 /*
 ** Make a copy of a string in memory obtained from sqliteMalloc(). These 
 ** functions call sqlite3MallocRaw() directly instead of sqliteMalloc(). This
