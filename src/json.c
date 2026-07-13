@@ -2672,6 +2672,10 @@ static void jsonBlobEdit(
     pParse->delta += d;
   }
   if( nIns && aIns ){
+    if( (u64)iDel + (u64)nIns > pParse->nBlobAlloc ){
+      jsonBlobExpand(pParse, iDel + nIns);
+      if( pParse->oom ) return;
+    }
     memcpy(&pParse->aBlob[iDel], aIns, nIns);
   }
 }
