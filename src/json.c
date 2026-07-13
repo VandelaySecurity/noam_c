@@ -638,7 +638,7 @@ static void jsonPrintf(int N, JsonString *p, const char *zFormat, ...){
   va_start(ap, zFormat);
   sqlite3_vsnprintf(N, p->zBuf+p->nUsed, zFormat, ap);
   va_end(ap);
-  p->nUsed += (int)strlen(p->zBuf+p->nUsed);
+  p->nUsed += (int)strnlen(p->zBuf+p->nUsed, N);
 }
 
 /* Append a single character
