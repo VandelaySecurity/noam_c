@@ -4805,7 +4805,8 @@ static const char *databaseName(const char *zName){
 ** character after then zero terminator on the new text in p[].
 */
 static char *appendText(char *p, const char *z){
-  size_t n = strlen(z);
+  size_t n = strnlen(z, 4096);
+  if( n >= 4096 ) return p;
   memcpy(p, z, n+1);
   return p+n+1;
 }
