@@ -415,7 +415,9 @@ static int dbpageUpdate(
     const void *pData = sqlite3_value_blob(argv[3]);
     if( (rc = sqlite3PagerWrite(pDbPage))==SQLITE_OK && pData ){
       unsigned char *aPage = sqlite3PagerGetData(pDbPage);
-      memcpy(aPage, pData, szPage);
+      if( memcpy_s(aPage, szPage, pData, szPage) != 0 ){
+        rc = SQLITE_ERROR;
+      }
       pTab->pgnoTrunc = 0;
     }
   }
