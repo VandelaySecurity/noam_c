@@ -655,8 +655,11 @@ static int kvvfsWriteJrnl(
   sqlite_int64 iOfst
 ){
   KVVfsFile *pFile = (KVVfsFile*)pProtoFile;
-  sqlite3_int64 iEnd = iOfst+iAmt;
+  sqlite3_int64 iEnd;
   SQLITE_KV_LOG(("xWrite('%s-journal',%d,%lld)\n", pFile->zClass, iAmt, iOfst));
+  if( iOfst<0 || iAmt<0 ) return SQLITE_IOERR_WRITE;
+  if( iAmt>0 && iOfst > (0x10000000 - iAmt) ) return SQLITE_FULL;
+  iEnd = iOfst+iAmt;
   if( iEnd>=0x10000000 ) return SQLITE_FULL;
   if( pFile->aJrnl==0 || pFile->nJrnl<iEnd ){
     char *aNew = sqlite3_realloc(pFile->aJrnl, iEnd);
