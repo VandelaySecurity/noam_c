@@ -3094,14 +3094,19 @@ static u32 jsonLookupStep(
         nIns = ix.nBlob + nKey + v.nBlob;
         jsonBlobEdit(pParse, j, 0, 0, nIns);
         if( !pParse->oom ){
-          assert( pParse->aBlob!=0 ); /* Because pParse->oom!=0 */
-          assert( ix.aBlob!=0 );      /* Because pPasre->oom!=0 */
-          memcpy(&pParse->aBlob[j], ix.aBlob, ix.nBlob);
-          k = j + ix.nBlob;
-          memcpy(&pParse->aBlob[k], zKey, nKey);
-          k += nKey;
-          memcpy(&pParse->aBlob[k], v.aBlob, v.nBlob);
-          if( ALWAYS(pParse->delta) ) jsonAfterEditSizeAdjust(pParse, iRoot);
+          if( j + nIns > pParse->nBlobAlloc ){
+            pParse->oom = 1;
+          }
+          if( !pParse->oom ){
+            assert( pParse->aBlob!=0 ); /* Because pParse->oom!=0 */
+            assert( ix.aBlob!=0 );      /* Because pPasre->oom!=0 */
+            memcpy(&pParse->aBlob[j], ix.aBlob, ix.nBlob);
+            k = j + ix.nBlob;
+            memcpy(&pParse->aBlob[k], zKey, nKey);
+            k += nKey;
+            memcpy(&pParse->aBlob[k], v.aBlob, v.nBlob);
+            if( ALWAYS(pParse->delta) ) jsonAfterEditSizeAdjust(pParse, iRoot);
+          }
         }
       }
       jsonParseReset(&v);
