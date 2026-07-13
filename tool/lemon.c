@@ -3080,6 +3080,37 @@ static void preprocess_input(char *z){
   }
 }
 
+/* Validate that the input file path is safe and does not contain
+** directory traversal sequences or absolute paths.
+** Returns 0 on success, -1 on failure.
+*/
+static int validate_input_path(const char *filename)
+{
+  const char *p;
+  
+  if( filename==0 || filename[0]==0 ){
+    return -1;
+  }
+  
+  /* Reject absolute paths */
+  if( filename[0]=='/' ){
+    return -1;
+  }
+  
+  /* Check for ".." components in the path */
+  p = filename;
+  while( *p ){
+    if( p[0]=='.' && p[1]=='.' ){
+      if( (p==filename || p[-1]=='/') && (p[2]==0 || p[2]=='/') ){
+        return -1;
+      }
+    }
+    p++;
+  }
+  
+  return 0;
+}
+
 /* In spite of its name, this function is really a scanner.  It read
 ** in the entire input file (all at once) then tokenizes it.  Each
 ** token is passed to the function "parseonetoken" which builds all
@@ -3101,6 +3132,13 @@ void Parse(struct lemon *gp)
   ps.filename = gp->filename;
   ps.errorcnt = 0;
   ps.state = INITIALIZE;
+
+  /* Validate the input file path */
+  if( validate_input_path(ps.filename) != 0 ){
+    ErrorMsg(ps.filename, 0, "Invalid or unsafe file path.");
+    gp->errorcnt++;
+    return;
+  }
 
   /* Begin by reading the input file */
   fp = fopen(ps.filename,"rb");
