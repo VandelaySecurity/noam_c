@@ -343,7 +343,7 @@ int sqlite3_initialize(void){
     double y;
     assert(sizeof(x)==8);
     assert(sizeof(x)==sizeof(y));
-    memcpy(&y, &x, 8);
+    memcpy(&y, &x, sizeof(y));
     assert( sqlite3IsNaN(y) );
   }
 #endif
