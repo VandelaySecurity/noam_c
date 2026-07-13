@@ -6803,7 +6803,15 @@ static int unixOpen(
     /* SQLITE_FORCE_PROXY_LOCKING==1 means force always use proxy, 0 means
     ** never use proxy, NULL means use proxy for non-local files only.  */
     if( envforce!=NULL ){
-      useProxy = atoi(envforce)>0;
+      char *endptr;
+      long val;
+      errno = 0;
+      val = strtol(envforce, &endptr, 10);
+      if (endptr != envforce && errno != ERANGE) {
+        useProxy = (val > 0);
+      } else {
+        useProxy = 0;  /* treat invalid input as 0/false */
+      }
     }else{
       useProxy = !(fsInfo.f_flags&MNT_LOCAL);
     }
