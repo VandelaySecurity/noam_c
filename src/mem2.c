@@ -281,7 +281,7 @@ static void *sqlite3MemMalloc(int nByte){
       pHdr->nBacktrace = 0;
     }
     if( mem.nTitle ){
-      memcpy(z, mem.zTitle, mem.nTitle);
+      memcpy_s(z, mem.nTitle, mem.zTitle, mem.nTitle);
     }
     pHdr->iSize = nByte;
     adjustStats(nByte, +1);
