@@ -6642,7 +6642,7 @@ static int unixOpen(
     /* Database filenames are double-zero terminated if they are not
     ** URIs with parameters.  Hence, they can always be passed into
     ** sqlite3_uri_parameter(). */
-    assert( (flags & SQLITE_OPEN_URI) || zName[strlen(zName)+1]==0 );
+    assert( (flags & SQLITE_OPEN_URI) || zName[strnlen(zName, pVfs->mxPathname)+1]==0 );
 
   }else if( !zName ){
     /* If zName is NULL, the upper layer is requesting a temp file. */
@@ -6670,7 +6670,7 @@ static int unixOpen(
 
     /* Generated temporary filenames are always double-zero terminated
     ** for use by sqlite3_uri_parameter(). */
-    assert( zName[strlen(zName)+1]==0 );
+    assert( zName[strnlen(zName, pVfs->mxPathname)+1]==0 );
   }
 
   /* Determine the value of the flags parameter passed to POSIX function
