@@ -7137,6 +7137,9 @@ static int unixRandomness(sqlite3_vfs *NotUsed, int nBuf, char *zBuf){
     if( fd<0 ){
       time_t t;
       time(&t);
+      if( (size_t)nBuf < sizeof(t) + sizeof(randomnessPid) ){
+        return nBuf;
+      }
       memcpy(zBuf, &t, sizeof(t));
       memcpy(&zBuf[sizeof(t)], &randomnessPid, sizeof(randomnessPid));
       assert( sizeof(t)+sizeof(randomnessPid)<=(size_t)nBuf );
