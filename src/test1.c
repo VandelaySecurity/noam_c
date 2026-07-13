@@ -317,6 +317,10 @@ static int SQLITE_TCLAPI test_exec_printf(
     return TCL_ERROR;
   }
   if( getDbPointer(interp, argv[1], &db) ) return TCL_ERROR;
+  if( strstr(argv[2], "%s") != 0 ){
+    Tcl_AppendResult(interp, "unsafe format specifier %s not allowed; use %q for SQL-safe quoting", 0);
+    return TCL_ERROR;
+  }
   Tcl_DStringInit(&str);
   zSql = sqlite3_mprintf(argv[2], argv[3]);
   rc = sqlite3_exec(db, zSql, exec_printf_cb, &str, &zErr);
