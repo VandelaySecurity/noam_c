@@ -1189,7 +1189,10 @@ static int jsonBlobMakeEditable(JsonParse *pParse, u32 nExtra){
     return 0;
   }
   assert( pParse->nBlobAlloc >= pParse->nBlob + nExtra );
-  memcpy(pParse->aBlob, aOld, pParse->nBlob);
+  if( pParse->nBlob>0 ){
+    assert( aOld!=0 );
+    memcpy(pParse->aBlob, aOld, pParse->nBlob);
+  }
   return 1;
 }
 
