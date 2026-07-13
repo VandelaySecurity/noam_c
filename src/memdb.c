@@ -259,10 +259,15 @@ static int memdbRead(
   memdbEnter(p);
   if( iOfst+iAmt>p->sz ){
     memset(zBuf, 0, iAmt);
-    if( iOfst<p->sz ) memcpy(zBuf, p->aData+iOfst, p->sz - iOfst);
+    if( iOfst<p->sz ){
+      sqlite3_int64 nCopy = p->sz - iOfst;
+      assert( nCopy <= iAmt );  /* Guaranteed by outer condition iOfst+iAmt>p->sz */
+      memcpy(zBuf, p->aData+iOfst, nCopy);
+    }
     memdbLeave(p);
     return SQLITE_IOERR_SHORT_READ;
   }
+  assert( iAmt >= 0 );  /* Caller contract: zBuf must be at least iAmt bytes */
   memcpy(zBuf, p->aData+iOfst, iAmt);
   memdbLeave(p);
   return SQLITE_OK;
