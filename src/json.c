@@ -2266,7 +2266,10 @@ static u32 jsonTranslateBlobToText(
     }
     case JSONB_TEXT:
     case JSONB_TEXTJ: {
-      if( pOut->nUsed+sz+2<=pOut->nAlloc || jsonStringGrow(pOut, sz+2)==0 ){
+      if( pOut->nUsed+sz+2 > pOut->nAlloc ){
+        if( jsonStringGrow(pOut, sz+2) ) break;
+      }
+      if( pOut->nUsed+sz+2 <= pOut->nAlloc ){
         pOut->zBuf[pOut->nUsed] = '"';
         memcpy(pOut->zBuf+pOut->nUsed+1,(const char*)&pParse->aBlob[i+n],sz);
         pOut->zBuf[pOut->nUsed+sz+1] = '"';
