@@ -705,7 +705,10 @@ static int sqlite3LoadExtension(
     return SQLITE_NOMEM_BKPT;
   }
   if( db->nExtension>0 ){
-    memcpy(aHandle, db->aExtension, sizeof(handle)*db->nExtension);
+    if( memcpy_s(aHandle, sizeof(handle)*(db->nExtension+1), db->aExtension, sizeof(handle)*db->nExtension) != 0 ){
+      sqlite3DbFree(db, aHandle);
+      return SQLITE_NOMEM_BKPT;
+    }
   }
   sqlite3DbFree(db, db->aExtension);
   db->aExtension = aHandle;
