@@ -1572,6 +1572,17 @@ static void replaceFunc(
     }
   }
   assert( j+nStr-i+1<=nOut );
+  if( j + (nStr - i) > nOut ){
+    sqlite3_int64 nNeeded = j + (nStr - i) + 1;
+    u8 *zOld = zOut;
+    zOut = sqlite3Realloc(zOut, (int)nNeeded);
+    if( zOut==0 ){
+      sqlite3_result_error_nomem(context);
+      sqlite3_free(zOld);
+      return;
+    }
+    nOut = nNeeded;
+  }
   memcpy(&zOut[j], &zStr[i], nStr-i);
   j += nStr - i;
   assert( j<=nOut );
