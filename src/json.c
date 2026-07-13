@@ -3096,10 +3096,28 @@ static u32 jsonLookupStep(
         if( !pParse->oom ){
           assert( pParse->aBlob!=0 ); /* Because pParse->oom!=0 */
           assert( ix.aBlob!=0 );      /* Because pPasre->oom!=0 */
+          if( j + ix.nBlob > pParse->nBlob ){
+            pParse->oom = 1;
+            jsonParseReset(&v);
+            jsonParseReset(&ix);
+            return JSON_LOOKUP_ERROR;
+          }
           memcpy(&pParse->aBlob[j], ix.aBlob, ix.nBlob);
           k = j + ix.nBlob;
+          if( k + nKey > pParse->nBlob ){
+            pParse->oom = 1;
+            jsonParseReset(&v);
+            jsonParseReset(&ix);
+            return JSON_LOOKUP_ERROR;
+          }
           memcpy(&pParse->aBlob[k], zKey, nKey);
           k += nKey;
+          if( k + v.nBlob > pParse->nBlob ){
+            pParse->oom = 1;
+            jsonParseReset(&v);
+            jsonParseReset(&ix);
+            return JSON_LOOKUP_ERROR;
+          }
           memcpy(&pParse->aBlob[k], v.aBlob, v.nBlob);
           if( ALWAYS(pParse->delta) ) jsonAfterEditSizeAdjust(pParse, iRoot);
         }
