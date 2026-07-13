@@ -569,7 +569,7 @@ static int sqlite3LoadExtension(
   const char *zEntry;
   char *zAltEntry = 0;
   void **aHandle;
-  u64 nMsg = strlen(zFile);
+  u64 nMsg = strnlen(zFile, 4096);
   int ii;
   int rc;
 
