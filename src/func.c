@@ -1697,8 +1697,18 @@ static void concatFuncCore(
       const char *v = (const char*)sqlite3_value_text(argv[i]);
       if( v!=0 ){
         if( bNotNull && nSep>0 ){
+          if( j+nSep > n ){
+            sqlite3_free(z);
+            sqlite3_result_error_nomem(context);
+            return;
+          }
           memcpy(&z[j], zSep, nSep);
           j += nSep;
+        }
+        if( j+k > n ){
+          sqlite3_free(z);
+          sqlite3_result_error_nomem(context);
+          return;
         }
         memcpy(&z[j], v, k);
         j += k;
