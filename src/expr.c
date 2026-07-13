@@ -1693,6 +1693,11 @@ static Expr *exprDup(
     assert( nToken>=0 );
     if( nToken>0 ){
       char *zToken = pNew->u.zToken = (char*)&sEdupBuf.zAlloc[nNewSize];
+      if( (int)(sEdupBuf.zEnd - &sEdupBuf.zAlloc[nNewSize]) < nToken ){
+        /* Buffer overflow would occur - handle error */
+        sqlite3DbFree(db, pNew);
+        return 0;
+      }
       memcpy(zToken, p->u.zToken, nToken);
       nNewSize += nToken;
     }
