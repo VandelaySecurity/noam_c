@@ -535,10 +535,11 @@ static void *memsys3Realloc(void *pPrior, int nBytes){
   memsys3Enter();
   p = memsys3MallocUnsafe(nBytes);
   if( p ){
+    int nNew = memsys3Size(p);
     if( nOld<nBytes ){
-      memcpy(p, pPrior, nOld);
+      memcpy(p, pPrior, nOld<nNew ? nOld : nNew);
     }else{
-      memcpy(p, pPrior, nBytes);
+      memcpy(p, pPrior, nBytes<nNew ? nBytes : nNew);
     }
     memsys3FreeUnsafe(pPrior);
   }
