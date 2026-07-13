@@ -3333,7 +3333,26 @@ PRIVATE char *file_makename(struct lemon *lemp, const char *suffix)
     lemon_strcpy(name, outputDir);
     lemon_strcat(name, "/");
   }
-  lemon_strcat(name,filename);
+  /* Extract basename to prevent path traversal */
+  const char *base_filename = filename;
+  const char *last_slash = strrchr(filename, '/');
+#ifdef _WIN32
+  const char *last_backslash = strrchr(filename, '\\');
+  if( last_backslash && (!last_slash || last_backslash > last_slash) ){
+    last_slash = last_backslash;
+  }
+#endif
+  if( last_slash ){
+    base_filename = last_slash + 1;
+  }
+  /* Reject ".." path components */
+  if( strcmp(base_filename, "..") == 0 || 
+      strncmp(base_filename, "../", 3) == 0 ||
+      strstr(base_filename, "/..") != 0 ){
+    fprintf(stderr,"Path traversal attempt detected in filename.\n");
+    exit(1);
+  }
+  lemon_strcat(name,base_filename);
   cp = strrchr(name,'.');
   if( cp ) *cp = 0;
   lemon_strcat(name,suffix);
