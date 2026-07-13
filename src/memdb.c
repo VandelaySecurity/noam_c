@@ -783,7 +783,12 @@ unsigned char *sqlite3_serialize(
       pOut = pStore->aData;
     }else{
       pOut = sqlite3_malloc64( pStore->sz );
-      if( pOut ) memcpy(pOut, pStore->aData, pStore->sz);
+      if( pOut ){
+        if( memcpy_s(pOut, pStore->sz, pStore->aData, pStore->sz) != 0 ){
+          sqlite3_free(pOut);
+          pOut = 0;
+        }
+      }
     }
     return pOut;
   }
