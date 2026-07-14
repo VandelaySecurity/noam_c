@@ -846,7 +846,17 @@ static int booleanValue(char *zArg){
   int i;
   if( zArg==0 ) return 0;
   for(i=0; zArg[i]>='0' && zArg[i]<='9'; i++){}
-  if( i>0 && zArg[i]==0 ) return atoi(zArg);
+  if( i>0 && zArg[i]==0 ){
+    char *endptr;
+    long val;
+    errno = 0;
+    val = strtol(zArg, &endptr, 10);
+    if( errno==ERANGE || val>INT_MAX || val<INT_MIN ){
+      errorMessage("numeric value out of range: [%s]", zArg);
+      return 0;
+    }
+    return (int)val != 0 ? 1 : 0;
+  }
   if( sqlite3_stricmp(zArg, "on")==0 || sqlite3_stricmp(zArg,"yes")==0 ){
     return 1;
   }
