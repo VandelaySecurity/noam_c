@@ -517,7 +517,7 @@ static int test_obj_eq_string(Tcl_Obj *p, const char *z){
   Tcl_Size nObj;
   char *zObj;
 
-  n = (Tcl_Size)strlen(z);
+  n = (Tcl_Size)strnlen(z, 4096);
   zObj = Tcl_GetStringFromObj(p, &nObj);
 
   return (nObj==n && (n==0 || 0==memcmp(zObj, z, n)));
