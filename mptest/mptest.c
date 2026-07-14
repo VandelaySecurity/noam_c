@@ -926,7 +926,14 @@ static void runScript(
     ** Pause for N milliseconds
     */
     if( strcmp(zCmd, "sleep")==0 ){
-      sqlite3_sleep(atoi(azArg[0]));
+      char *endptr;
+      errno = 0;
+      long val = strtol(azArg[0], &endptr, 10);
+      if (errno == ERANGE || endptr == azArg[0] || (*endptr != '\0' && !ISSPACE(*endptr)) || val < 0) {
+        logMessage("ERROR: --sleep argument must be a non-negative integer");
+        val = 0;
+      }
+      sqlite3_sleep((int)val);
     }else 
 
     /*
@@ -936,7 +943,14 @@ static void runScript(
     ** SQLite.  (In other words, simulate a crash.)
     */
     if( strcmp(zCmd, "exit")==0 ){
-      int rc = atoi(azArg[0]);
+      char *endptr;
+      errno = 0;
+      long val = strtol(azArg[0], &endptr, 10);
+      if (errno == ERANGE || endptr == azArg[0] || (*endptr != '\0' && !ISSPACE(*endptr)) || val < 0 || val > 255) {
+        logMessage("ERROR: --exit argument must be a valid integer 0-255");
+        val = 1; /* default error exit code */
+      }
+      int rc = (int)val;
       finishScript(iClient, taskId, 1);
       if( rc==0 ) sqlite3_close(g.db);
       exit(rc);
