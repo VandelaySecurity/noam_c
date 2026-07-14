@@ -6652,7 +6652,7 @@ static int allocateBtreePage(
             releasePage(pNewTrunk);
             goto end_allocate_page;
           }
-          memcpy(&pNewTrunk->aData[0], &pTrunk->aData[0], 4);
+          put4byte(&pNewTrunk->aData[0], get4byte(&pTrunk->aData[0]));
           put4byte(&pNewTrunk->aData[4], k-1);
           memcpy(&pNewTrunk->aData[8], &pTrunk->aData[12], (k-1)*4);
           releasePage(pNewTrunk);
