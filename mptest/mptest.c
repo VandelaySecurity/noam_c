@@ -653,9 +653,47 @@ static void startClient(int iClient){
     }
     if( g.iTrace>=2 ) logMessage("system('%q')", zSys);
 #if !defined(_WIN32)
-    zSys = sqlite3_mprintf("%z &", zSys);
-    rc = system(zSys);
-    if( rc ) errorMessage("system() fails with error code %d", rc);
+    {
+      char *argv[10];
+      char *zClient;
+      char *zTrace;
+      int argc = 0;
+      pid_t pid;
+      
+      argv[argc++] = g.argv0;
+      argv[argc++] = g.zDbFile;
+      argv[argc++] = "--client";
+      zClient = sqlite3_mprintf("%d", iClient);
+      argv[argc++] = zClient;
+      argv[argc++] = "--trace";
+      zTrace = sqlite3_mprintf("%d", g.iTrace);
+      argv[argc++] = zTrace;
+      if( g.bSqlTrace ){
+        argv[argc++] = "--sqltrace";
+      }
+      if( g.bSync ){
+        argv[argc++] = "--sync";
+      }
+      if( g.zVfs ){
+        argv[argc++] = "--vfs";
+        argv[argc++] = g.zVfs;
+      }
+      argv[argc] = NULL;
+      
+      pid = fork();
+      if( pid < 0 ){
+        errorMessage("fork() fails with error code %d", errno);
+      }else if( pid == 0 ){
+        /* Child process */
+        execv(g.argv0, argv);
+        /* If execv returns, it failed */
+        _exit(1);
+      }
+      /* Parent process continues */
+      
+      sqlite3_free(zClient);
+      sqlite3_free(zTrace);
+    }
 #else
     {
       STARTUPINFOA startupInfo;
