@@ -421,7 +421,7 @@ static void stringFree(String *p){
 /* Append n bytes of text to a string.  If n<0 append the entire string. */
 static void stringAppend(String *p, const char *z, int n){
   if( n<0 ) n = (int)strlen(z);
-  if( p->n+n>=p->nAlloc ){
+  if( p->n+n+1 > p->nAlloc ){
     int nAlloc = p->nAlloc*2 + n + 100;
     char *zNew = sqlite3_realloc(p->z, nAlloc);
     if( zNew==0 ) fatalError("out of memory");
