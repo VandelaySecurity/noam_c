@@ -9064,11 +9064,16 @@ static int balance_deeper(MemPage *pRoot, MemPage **ppChild){
   TRACE(("BALANCE: copy root %u into %u\n", pRoot->pgno, pChild->pgno));
 
   /* Copy the overflow cells from pRoot to pChild */
-  memcpy(pChild->aiOvfl, pRoot->aiOvfl,
-         pRoot->nOverflow*sizeof(pRoot->aiOvfl[0]));
-  memcpy(pChild->apOvfl, pRoot->apOvfl,
-         pRoot->nOverflow*sizeof(pRoot->apOvfl[0]));
-  pChild->nOverflow = pRoot->nOverflow;
+  if( pRoot->nOverflow > MX_CELL(pBt) ){
+    rc = SQLITE_CORRUPT;
+  }
+  if( rc==SQLITE_OK ){
+    memcpy(pChild->aiOvfl, pRoot->aiOvfl,
+           pRoot->nOverflow*sizeof(pRoot->aiOvfl[0]));
+    memcpy(pChild->apOvfl, pRoot->apOvfl,
+           pRoot->nOverflow*sizeof(pRoot->apOvfl[0]));
+    pChild->nOverflow = pRoot->nOverflow;
+  }
 
   /* Zero the contents of pRoot. Then install pChild as the right-child. */
   zeroPage(pRoot, pChild->aData[0] & ~PTF_LEAF);
