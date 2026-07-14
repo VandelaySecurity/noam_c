@@ -2021,6 +2021,14 @@ static int SQLITE_TCLAPI test_sqlite3changeset_start(
     pNew->in.nStream = test_tcl_integer(interp, SESSION_STREAM_TCL_VAR);
     pNew->in.nData = nChangeset;
     pNew->in.aData = (unsigned char*)&pNew[1];
+    {
+      size_t available = nAlloc - sizeof(TestChangeIter);
+      if( available < (size_t)nChangeset ){
+        ckfree(pNew);
+        Tcl_AppendResult(interp, "buffer size mismatch", (char*)0);
+        return TCL_ERROR;
+      }
+    }
     memcpy(pNew->in.aData, pChangeset, nChangeset);
   }
 
