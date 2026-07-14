@@ -123,7 +123,8 @@ static CollSeq *findCollSeqEntry(
       pColl[1].enc = SQLITE_UTF16LE;
       pColl[2].zName = (char*)&pColl[3];
       pColl[2].enc = SQLITE_UTF16BE;
-      memcpy(pColl[0].zName, zName, nName);
+      assert( nName == sqlite3Strlen30(zName) + 1 );
+      sqlite3_snprintf(nName, pColl[0].zName, "%s", zName);
       pDel = sqlite3HashInsert(&db->aCollSeq, pColl[0].zName, pColl);
 
       /* If a malloc() failure occurred in sqlite3HashInsert(), it will 
