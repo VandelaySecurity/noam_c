@@ -1212,7 +1212,7 @@ static int SQLITE_TCLAPI test_sqlite3session_foreach(
 
   while( objc>1 ){
     char *zOpt = Tcl_GetString(objv[1]);
-    int nOpt = (int)strlen(zOpt);
+    int nOpt = (int)strnlen(zOpt, 256);
     if( zOpt[0]!='-' ) break;
     if( nOpt<=7 && 0==sqlite3_strnicmp(zOpt, "-invert", nOpt) ){
       isInvert = 1;
