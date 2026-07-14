@@ -926,7 +926,15 @@ static void runScript(
     ** Pause for N milliseconds
     */
     if( strcmp(zCmd, "sleep")==0 ){
-      sqlite3_sleep(atoi(azArg[0]));
+      char *endptr;
+      long sleep_ms;
+      errno = 0;
+      sleep_ms = strtol(azArg[0], &endptr, 10);
+      if (errno == ERANGE || *endptr != '\0' || sleep_ms < 0 || sleep_ms > INT_MAX) {
+        logMessage("ERROR: Invalid sleep duration: %s", azArg[0]);
+      } else {
+        sqlite3_sleep((int)sleep_ms);
+      }
     }else 
 
     /*
@@ -936,7 +944,16 @@ static void runScript(
     ** SQLite.  (In other words, simulate a crash.)
     */
     if( strcmp(zCmd, "exit")==0 ){
-      int rc = atoi(azArg[0]);
+      char *endptr;
+      long rc_long;
+      int rc;
+      errno = 0;
+      rc_long = strtol(azArg[0], &endptr, 10);
+      if (errno == ERANGE || *endptr != '\0' || rc_long < INT_MIN || rc_long > INT_MAX) {
+        rc = 1; /* default error exit code on parse failure */
+      } else {
+        rc = (int)rc_long;
+      }
       finishScript(iClient, taskId, 1);
       if( rc==0 ) sqlite3_close(g.db);
       exit(rc);
