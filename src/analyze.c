@@ -318,6 +318,7 @@ static void sampleClear(sqlite3 *db, StatSample *p){
 #ifdef SQLITE_ENABLE_STAT4
 static void sampleSetRowid(sqlite3 *db, StatSample *p, int n, const u8 *pData){
   assert( db!=0 );
+  if( n < 0 || n > 1000000000 ) return;
   if( p->nRowid ) sqlite3DbFree(db, p->u.aRowid);
   p->u.aRowid = sqlite3DbMallocRawNN(db, n);
   if( p->u.aRowid ){
