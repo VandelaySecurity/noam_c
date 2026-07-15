@@ -5318,7 +5318,7 @@ static int sessionChangesetApply(
           rc = SQLITE_NOMEM;
           break;
         }
-        nTab = (int)strlen(zTab);
+        nTab = (int)strnlen(zTab, SQLITE_MAX_LENGTH);
         sApply.azCol = (const char **)zTab;
       }else{
         int nMinCol = 0;
