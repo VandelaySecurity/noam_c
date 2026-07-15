@@ -6590,11 +6590,47 @@ static void sessionAppendPartialUpdate(
   u8 *aChange, int nChange,       /* Record to rebase against */
   int *pRc                        /* IN/OUT: Return Code */
 ){
-  sessionBufferGrow(pBuf, 2+nRec+nChange, pRc);
+  int nRequired = 2;
+  u8 *a1_temp = aRec;
+  u8 *a2_temp = aChange;
+  int i;
+  int bData_temp = 0;
+
+  for(i=0; i<pIter->nCol; i++){
+    int n1 = sessionSerialLen(a1_temp);
+    int n2 = sessionSerialLen(a2_temp);
+    if( pIter->abPK[i] || a2_temp[0]==0 ){
+      if( !pIter->abPK[i] && a1_temp[0] ) bData_temp = 1;
+      nRequired += n1;
+    }else if( a2_temp[0]!=0xFF && a1_temp[0] ){
+      bData_temp = 1;
+      nRequired += n2;
+    }else{
+      nRequired += 1;
+    }
+    a1_temp += n1;
+    a2_temp += n2;
+  }
+
+  if( bData_temp ){
+    a2_temp = aChange;
+    for(i=0; i<pIter->nCol; i++){
+      int n1 = sessionSerialLen(a1_temp);
+      int n2 = sessionSerialLen(a2_temp);
+      if( pIter->abPK[i] || a2_temp[0]!=0xFF ){
+        nRequired += n1;
+      }else{
+        nRequired += 1;
+      }
+      a1_temp += n1;
+      a2_temp += n2;
+    }
+  }
+
+  sessionBufferGrow(pBuf, nRequired, pRc);
   if( *pRc==SQLITE_OK ){
     int bData = 0;
     u8 *pOut = &pBuf->aBuf[pBuf->nBuf];
-    int i;
     u8 *a1 = aRec;
     u8 *a2 = aChange;
 
