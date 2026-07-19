@@ -2723,7 +2723,6 @@ static void qrfInitialize(
   const sqlite3_qrf_spec *pSpec, /* Format specification */
   char **pzErr                   /* Write errors here */
 ){
-  size_t sz;                     /* Size of pSpec[], based on pSpec->iVersion */
   memset(p, 0, sizeof(*p));
   p->pzErr = pzErr;
   if( pSpec->iVersion>1 ){
@@ -2742,8 +2741,7 @@ static void qrfInitialize(
   p->iErr = SQLITE_OK;
   p->nCol = sqlite3_column_count(p->pStmt);
   p->nRow = 0;
-  sz = sizeof(sqlite3_qrf_spec);
-  memcpy(&p->spec, pSpec, sz);
+  p->spec = *pSpec;
   if( p->spec.zNull==0 ) p->spec.zNull = "";
   p->mxWidth = p->spec.nScreenWidth;
   if( p->mxWidth<=0 ) p->mxWidth = QRF_MAX_WIDTH;
