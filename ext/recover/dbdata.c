@@ -496,9 +496,9 @@ static void dbdataValue(
           }
     
           if( eType==7 ){
-            double r;
-            memcpy(&r, &v, sizeof(r));
-            sqlite3_result_double(pCtx, r);
+            union { sqlite3_uint64 u; double r; } u;
+            u.u = v;
+            sqlite3_result_double(pCtx, u.r);
           }else{
             sqlite3_result_int64(pCtx, (sqlite3_int64)v);
           }
