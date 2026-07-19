@@ -2647,7 +2647,7 @@ static void qrfOneSimpleRow(Qrf *p){
       }
       if( p->nRow ) sqlite3_str_append(p->pOut, "\n", 1);
       pVal = sqlite3_str_new(p->db);
-      nSep = (int)strlen(p->spec.zColumnSep);
+      nSep = (int)strnlen(p->spec.zColumnSep, 128);
       mxW = p->mxWidth - (nSep + p->u.sLine.mxColWth);
       bWW = p->spec.bWordWrap==QRF_Yes;
       for(i=0; i<p->nCol; i++){
