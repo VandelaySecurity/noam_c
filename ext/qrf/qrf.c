@@ -2143,9 +2143,9 @@ static void qrfColumnar(Qrf *p){
       }
       break;
   }
-  szRowStart = (int)strlen(rowStart);
-  szRowSep = (int)strlen(rowSep);
-  szColSep = (int)strlen(colSep);
+  szRowStart = (int)strnlen(rowStart, 256);
+  szRowSep = (int)strnlen(rowSep, 256);
+  szColSep = (int)strnlen(colSep, 256);
 
   bWW = (p->spec.bWordWrap==QRF_Yes && data.bMultiRow);
   if( p->spec.eStyle==QRF_STYLE_Column
