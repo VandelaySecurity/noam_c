@@ -87,6 +87,8 @@ int main(int argc, char **argv){
   int rc = SQLITE_OK;
   sqlite3_int64 nProgress = 0;
   int nArgc = argc-2;
+  char *endptr;
+  long lval;
 
   if( argc<3 ) usage(argv[0]);
   for(i=1; i<nArgc; i++){
@@ -100,12 +102,24 @@ int main(int argc, char **argv){
       zPreSql = argv[i];
     }else if( nArg>1 && nArg<=5 && 0==memcmp(zArg, "-step", nArg) && i<nArg-1 ){
       i++;
-      nStep = atoi(argv[i]);
+      errno = 0;
+      lval = strtol(argv[i], &endptr, 10);
+      if (errno == ERANGE || *endptr != '\0' || lval < 0 || lval > INT_MAX) {
+        fprintf(stderr, "Error: invalid value for -step: %s\n", argv[i]);
+        usage(argv[0]);
+      }
+      nStep = (int)lval;
     }else if( nArg>1 && nArg<=9 
            && 0==memcmp(zArg, "-statstep", nArg) && i<nArg-1 
     ){
       i++;
-      nStatStep = atoi(argv[i]);
+      errno = 0;
+      lval = strtol(argv[i], &endptr, 10);
+      if (errno == ERANGE || *endptr != '\0' || lval < 0 || lval > INT_MAX) {
+        fprintf(stderr, "Error: invalid value for -statstep: %s\n", argv[i]);
+        usage(argv[0]);
+      }
+      nStatStep = (int)lval;
     }else{
       usage(argv[0]);
     }
