@@ -2213,6 +2213,14 @@ static void zipfileFinal(sqlite3_context *pCtx){
     eocd.nSize = p->cds.n;
     eocd.iOffset = p->body.n;
 
+    if( p->body.n < 0 || p->cds.n < 0 
+        || p->body.n > 0x7FFFFFFF 
+        || p->cds.n > 0x7FFFFFFF 
+        || p->body.n + p->cds.n > 0x7FFFFFFF - ZIPFILE_EOCD_FIXED_SZ ){
+      sqlite3_result_error(pCtx, "zipfile aggregate data too large", -1);
+      goto zipfile_final_cleanup;
+    }
+
     nZip = p->body.n + p->cds.n + ZIPFILE_EOCD_FIXED_SZ;
     aZip = (u8*)sqlite3_malloc64(nZip);
     if( aZip==0 ){
@@ -2225,6 +2233,7 @@ static void zipfileFinal(sqlite3_context *pCtx){
     }
   }
 
+zipfile_final_cleanup:
   sqlite3_free(p->body.a);
   sqlite3_free(p->cds.a);
 }
