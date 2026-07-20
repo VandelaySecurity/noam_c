@@ -1472,7 +1472,7 @@ static int zipfileGetMode(
   }else{
     const char zTemplate[11] = "-rwxrwxrwx";
     int i;
-    if( strlen(z)!=10 ) goto parse_error;
+    if( strnlen(z, 11)!=10 ) goto parse_error;
     switch( z[0] ){
       case '-': mode |= S_IFREG; break;
       case 'd': mode |= S_IFDIR; break;
