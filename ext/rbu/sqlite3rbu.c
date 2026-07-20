@@ -982,7 +982,8 @@ static void rbuTargetNameFunc(
         sqlite3_result_text(pCtx, zIn, -1, SQLITE_STATIC);
       }
     }else{
-      if( strlen(zIn)>4 && memcmp("data", zIn, 4)==0 ){
+      int nIn = sqlite3_value_bytes(argv[0]);
+      if( strnlen(zIn, nIn)>4 && memcmp("data", zIn, 4)==0 ){
         int i;
         for(i=4; zIn[i]>='0' && zIn[i]<='9'; i++);
         if( zIn[i]=='_' && zIn[i+1] ){
