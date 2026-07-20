@@ -4422,7 +4422,7 @@ static int sessionUpdateFind(
     }
 
     if( pUp==0 ){
-      int nByte = sizeof(SessionUpdate) * nU32*sizeof(u32);
+      int nByte = sizeof(SessionUpdate) + nU32*sizeof(u32);
       int bStat1 = (sqlite3_stricmp(pIter->zTab, "sqlite_stat1")==0);
       pUp = (SessionUpdate*)sqlite3_malloc(nByte);
       if( pUp==0 ){
@@ -4433,6 +4433,7 @@ static int sessionUpdateFind(
 
         memset(&buf, 0, sizeof(buf));
         pUp->aMask = (u32*)&pUp[1];
+        /* pUp->aMask points to nU32*sizeof(u32) bytes allocated immediately after pUp */
         memcpy(pUp->aMask, p->aUpdateMask, nU32*sizeof(u32));
 
         sessionAppendStr(&buf, "UPDATE main.", &rc);
