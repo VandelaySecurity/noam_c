@@ -219,7 +219,7 @@ static qrfEQPGraphRow *qrfEqpNextRow(Qrf *p, int iEqpId, qrfEQPGraphRow *pOld){
 */
 static void qrfEqpRenderLevel(Qrf *p, int iEqpId){
   qrfEQPGraphRow *pRow, *pNext;
-  i64 n = strlen(p->u.pGraph->zPrefix);
+  i64 n = strnlen(p->u.pGraph->zPrefix, sizeof(p->u.pGraph->zPrefix));
   char *z;
   for(pRow = qrfEqpNextRow(p, iEqpId, 0); pRow; pRow = pNext){
     pNext = qrfEqpNextRow(p, iEqpId, pRow);
