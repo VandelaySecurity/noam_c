@@ -172,7 +172,7 @@ static void qrfEqpAppend(Qrf *p, int iEqpId, int p2, const char *zText){
     memset(p->u.pGraph, 0, sizeof(qrfEQPGraph) );
   }
   nText = strlen(zText);
-  pNew = sqlite3_malloc64( sizeof(*pNew) + nText );
+  pNew = sqlite3_malloc64( sizeof(*pNew) + nText + 1 );
   if( pNew==0 ){
     qrfOom(p);
     return;
