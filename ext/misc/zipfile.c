@@ -1825,12 +1825,18 @@ static int zipfileAppendEOCD(ZipfileTab *pTab, ZipfileEOCD *p){
 ** Serialize the CDS structure into buffer aBuf[]. Return the number
 ** of bytes written.
 */
-static int zipfileSerializeCDS(ZipfileEntry *pEntry, u8 *aBuf){
+static int zipfileSerializeCDS(ZipfileEntry *pEntry, u8 *aBuf, int nBuf){
   u8 *a = aBuf;
   ZipfileCDS *pCDS = &pEntry->cds;
+  int nRequired;
 
   if( pEntry->aExtra==0 ){
     pCDS->nExtra = 9;
+  }
+
+  nRequired = ZIPFILE_CDS_FIXED_SZ + (int)pCDS->nFile + (int)pCDS->nExtra + (int)pCDS->nComment;
+  if( nRequired > nBuf ){
+    return -1;
   }
 
   zipfileWrite32(a, ZIPFILE_SIGNATURE_CDS);
@@ -1852,6 +1858,7 @@ static int zipfileSerializeCDS(ZipfileEntry *pEntry, u8 *aBuf){
   zipfileWrite32(a, pCDS->iExternalAttr);
   zipfileWrite32(a, pCDS->iOffset);
 
+  if( (a - aBuf) + pCDS->nFile > nBuf ) return -1;
   memcpy(a, pCDS->zFile, pCDS->nFile);
   a += pCDS->nFile;
 
@@ -1881,7 +1888,11 @@ static int zipfileCommit(sqlite3_vtab *pVtab){
 
     /* Write out all entries */
     for(p=pTab->pFirstEntry; rc==SQLITE_OK && p; p=p->pNext){
-      int n = zipfileSerializeCDS(p, pTab->aBuffer);
+      int n = zipfileSerializeCDS(p, pTab->aBuffer, sizeof(pTab->aBuffer));
+      if( n < 0 ){
+        rc = SQLITE_ERROR;
+        break;
+      }
       rc = zipfileAppendData(pTab, pTab->aBuffer, n);
       nEntry++;
     }
