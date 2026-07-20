@@ -627,6 +627,10 @@ static int rbuDeltaApply(
           /* ERROR: copy extends past end of input */
           return -1;
         }
+        if( zOut + cnt > zOrigOut + limit ){
+          /* ERROR: copy would exceed output buffer */
+          return -1;
+        }
         memcpy(zOut, &zSrc[ofst], cnt);
         zOut += cnt;
         break;
@@ -640,6 +644,10 @@ static int rbuDeltaApply(
         }
         if( (int)cnt>lenDelta ){
           /* ERROR: insert count exceeds size of delta */
+          return -1;
+        }
+        if( zOut + cnt > zOrigOut + limit ){
+          /* ERROR: insert would exceed output buffer */
           return -1;
         }
         memcpy(zOut, zDelta, cnt);
@@ -672,7 +680,6 @@ static int rbuDeltaApply(
   /* ERROR: unterminated delta */
   return -1;
 }
-
 static int rbuDeltaOutputSize(const char *zDelta, int lenDelta){
   int size;
   size = rbuDeltaGetInt(&zDelta, &lenDelta);
