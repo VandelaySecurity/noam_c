@@ -1639,7 +1639,7 @@ static int zipfileUpdate(
   /* If this is a DELETE or UPDATE, find the archive entry to delete. */
   if( sqlite3_value_type(apVal[0])!=SQLITE_NULL ){
     const char *zDelete = (const char*)sqlite3_value_text(apVal[0]);
-    int nDelete = (int)strlen(zDelete);
+    int nDelete = (int)strnlen(zDelete, SQLITE_MAX_LENGTH);
     if( nVal>1 ){
       const char *zUpdate = (const char*)sqlite3_value_text(apVal[1]);
       if( zUpdate && zipfileComparePath(zUpdate, zDelete, nDelete)!=0 ){
