@@ -1707,7 +1707,7 @@ static int zipfileUpdate(
     if( rc==SQLITE_OK ){
       zPath = (const char*)sqlite3_value_text(apVal[2]);
       if( zPath==0 ) zPath = "";
-      nPath = (int)strlen(zPath);
+      nPath = (int)strnlen(zPath, ZIPFILE_MX_NAME + 1);
       if( nPath>ZIPFILE_MX_NAME ){
         zipfileTableErr(pTab, "filename too long; max: %d bytes",
                         ZIPFILE_MX_NAME);
@@ -1728,7 +1728,7 @@ static int zipfileUpdate(
           rc = SQLITE_NOMEM;
           nPath = 0;
         }else{
-          nPath = (int)strlen(zPath);
+          nPath = (int)strnlen(zPath, ZIPFILE_MX_NAME + 1);
         }
       }
     }
