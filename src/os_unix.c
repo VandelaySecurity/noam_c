@@ -3193,8 +3193,27 @@ static int afpLock(sqlite3_file *id, int eFileLock){
       
     mask = (sizeof(long)==8) ? LARGEST_INT64 : 0x7fffffff;
     /* Now get the read-lock SHARED_LOCK */
-    /* note that the quality of the randomness doesn't matter that much */
-    lk = random();
+#if defined(__OpenBSD__) || defined(__FreeBSD__) || defined(__NetBSD__) || defined(__APPLE__)
+    lk = arc4random();
+#else
+    {
+      int urandom_fd = open("/dev/urandom", O_RDONLY);
+      if (urandom_fd >= 0) {
+        unsigned int rand_val;
+        ssize_t n = read(urandom_fd, &rand_val, sizeof(rand_val));
+        close(urandom_fd);
+        if (n == sizeof(rand_val)) {
+          lk = (long)rand_val;
+        } else {
+          /* Fallback: use time-based seed as last resort */
+          lk = (long)(time(NULL) ^ getpid());
+        }
+      } else {
+        /* Fallback if /dev/urandom unavailable */
+        lk = (long)(time(NULL) ^ getpid());
+      }
+    }
+#endif
     pInode->sharedByte = (lk & mask)%(SHARED_SIZE - 1);
     lrc1 = afpSetLock(context->dbPath, pFile,
           SHARED_FIRST+pInode->sharedByte, 1, 1);
