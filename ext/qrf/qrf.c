@@ -162,6 +162,7 @@ static void qrfStrErr(Qrf *p, sqlite3_str *pStr){
 static void qrfEqpAppend(Qrf *p, int iEqpId, int p2, const char *zText){
   qrfEQPGraphRow *pNew;
   sqlite3_int64 nText;
+#define QRF_MAX_TEXT_LEN (1024*1024)
   if( zText==0 ) return;
   if( p->u.pGraph==0 ){
     p->u.pGraph = sqlite3_malloc64( sizeof(qrfEQPGraph) );
@@ -171,7 +172,11 @@ static void qrfEqpAppend(Qrf *p, int iEqpId, int p2, const char *zText){
     }
     memset(p->u.pGraph, 0, sizeof(qrfEQPGraph) );
   }
-  nText = strlen(zText);
+  nText = strnlen(zText, QRF_MAX_TEXT_LEN);
+  if( nText >= QRF_MAX_TEXT_LEN ){
+    qrfError(p, SQLITE_TOOBIG, "query plan text too long");
+    return;
+  }
   pNew = sqlite3_malloc64( sizeof(*pNew) + nText );
   if( pNew==0 ){
     qrfOom(p);
