@@ -2170,6 +2170,11 @@ static void zipfileStep(sqlite3_context *pCtx, int nVal, sqlite3_value **apVal){
   /* Append the data to the body of the new archive */
   if( nData>0 ){
     if( (rc = zipfileBufferGrow(&p->body, nData)) ) goto zipfile_step_out;
+    /* Validate buffer capacity before memcpy */
+    if( p->body.n > SIZE_MAX - nData || p->body.nAlloc < p->body.n + nData ){
+      rc = SQLITE_ERROR;
+      goto zipfile_step_out;
+    }
     memcpy(&p->body.a[p->body.n], aData, nData);
     p->body.n += nData;
   }
