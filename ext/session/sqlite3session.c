@@ -5801,16 +5801,30 @@ static int sessionChangeMerge(
           if( *a1==0xFF || (pTab->abPK[i]==0 && bIndirect) ){
             *pOut++ = 0xFF;
           }else if( *a2==0 ){
+            if( pOut + n1 > pNew->aRecord + nRec + pExist->nRecord ){
+              rc = SQLITE_CORRUPT;
+              sqlite3_free(pNew);
+              pNew = 0;
+              break;
+            }
             memcpy(pOut, a1, n1);
             pOut += n1;
           }else{
+            if( pOut + n2 > pNew->aRecord + nRec + pExist->nRecord ){
+              rc = SQLITE_CORRUPT;
+              sqlite3_free(pNew);
+              pNew = 0;
+              break;
+            }
             memcpy(pOut, a2, n2);
             pOut += n2;
           }
           a1 += n1;
           a2 += n2;
         }
-        pNew->nRecord = pOut - pNew->aRecord;
+        if( pNew ){
+          pNew->nRecord = pOut - pNew->aRecord;
+        }
       }
       sqlite3_free(pExist);
     }
