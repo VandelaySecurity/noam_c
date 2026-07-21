@@ -136,7 +136,8 @@ static int vtablog_string_parameter(
   char **pzVal             /* Write the dequoted string value here */
 ){
   const char *zValue;
-  zValue = vtablog_parameter(zParam,(int)strlen(zParam),zArg);
+  /* Limit parameter name length to prevent buffer over-read if not null-terminated */
+  zValue = vtablog_parameter(zParam,(int)strnlen(zParam, 256),zArg);
   if( zValue==0 ) return 0;
   if( *pzVal ){
     *pzErr = sqlite3_mprintf("more than one '%s' parameter", zParam);
