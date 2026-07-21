@@ -446,7 +446,11 @@ static int vtshimCopyModule(
   if( !pMod || !ppMod ) return SQLITE_ERROR;
   p = sqlite3_malloc64( sizeof(*p) );
   if( p==0 ) return SQLITE_NOMEM;
+#if defined(__STDC_LIB_EXT1__) || defined(_MSC_VER)
+  memcpy_s(p, sizeof(*p), pMod, sizeof(*p));
+#else
   memcpy(p, pMod, sizeof(*p));
+#endif
   *ppMod = p;
   return SQLITE_OK;
 }
