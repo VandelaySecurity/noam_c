@@ -6652,6 +6652,11 @@ static int allocateBtreePage(
             releasePage(pNewTrunk);
             goto end_allocate_page;
           }
+          if( k > (pBt->usableSize - 12)/4 + 1 ){
+            releasePage(pNewTrunk);
+            rc = SQLITE_CORRUPT_PGNO(iTrunk);
+            goto end_allocate_page;
+          }
           memcpy(&pNewTrunk->aData[0], &pTrunk->aData[0], 4);
           put4byte(&pNewTrunk->aData[4], k-1);
           memcpy(&pNewTrunk->aData[8], &pTrunk->aData[12], (k-1)*4);
