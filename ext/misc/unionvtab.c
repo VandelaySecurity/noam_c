@@ -822,10 +822,28 @@ static void unionConfigureVtab(
               rc = sqlite3_bind_text(pStmt, iParam, zVal, -1, SQLITE_TRANSIENT);
             }
           }else if( nOpt==7 && 0==sqlite3_strnicmp(zOpt, "maxopen", 7) ){
-            pTab->nMaxOpen = atoi(zVal);
-            if( pTab->nMaxOpen<=0 ){
+            char *endptr;
+            long maxopen_val;
+            errno = 0;
+            maxopen_val = strtol(zVal, &endptr, 10);
+            
+            /* Check for parse errors: no digits consumed, or trailing garbage */
+            if( endptr == zVal || (*endptr != '\0' && !union_isspace(*endptr)) ){
+              *pzErr = sqlite3_mprintf("swarmvtab: invalid maxopen value");
+              rc = SQLITE_ERROR;
+            }
+            /* Check for overflow/underflow */
+            else if( errno == ERANGE || maxopen_val > INT_MAX || maxopen_val < INT_MIN ){
+              *pzErr = sqlite3_mprintf("swarmvtab: maxopen value out of range");
+              rc = SQLITE_ERROR;
+            }
+            /* Check for non-positive values */
+            else if( maxopen_val <= 0 ){
               *pzErr = sqlite3_mprintf("swarmvtab: illegal maxopen value");
               rc = SQLITE_ERROR;
+            }
+            else{
+              pTab->nMaxOpen = (int)maxopen_val;
             }
           }else if( nOpt==7 && 0==sqlite3_strnicmp(zOpt, "missing", 7) ){
             if( pTab->pNotFound ){
