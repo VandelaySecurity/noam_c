@@ -113,7 +113,11 @@ static DIR *opendir(const char *zDirName){
     sqlite3_free(b1);
     return NULL;
   }
-  memcpy(data.name, b1, (sz+1)*sizeof(b1[0]));
+  if( memcpy_s(data.name, sizeof(data.name), b1, (sz+1)*sizeof(b1[0])) != 0 ){
+    closedir(pDir);
+    sqlite3_free(b1);
+    return NULL;
+  }
   sqlite3_free(b1);
   pDir->d_handle = _wfindfirst(data.name, &data);
   if( pDir->d_handle<0 ){
