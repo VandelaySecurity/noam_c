@@ -2142,7 +2142,7 @@ static void zipfileStep(sqlite3_context *pCtx, int nVal, sqlite3_value **apVal){
         rc = SQLITE_NOMEM;
         goto zipfile_step_out;
       }
-      nName = (int)strlen(zName);
+      nName = (int)strnlen(zName, 65536);
     }else{
       while( nName>1 && zName[nName-2]=='/' ) nName--;
     }
