@@ -92,7 +92,7 @@ static const char *vtablog_skip_whitespace(const char *z){
 
 /* Remove trailing whitespace from the end of string z[] */
 static void vtablog_trim_whitespace(char *z){
-  size_t n = strlen(z);
+  size_t n = strnlen(z, 1000000000);
   while( n>0 && isspace((unsigned char)z[n]) ) n--;
   z[n] = 0;
 }
