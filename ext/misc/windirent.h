@@ -98,7 +98,7 @@ static DIR *opendir(const char *zDirName){
   if( pDir==0 ) return 0;
   memset(pDir, 0, sizeof(DIR));
   memset(&data, 0, sizeof(data));
-  sz = strlen(zDirName);
+  sz = strnlen(zDirName, MAX_PATH);
   b1 = sqlite3_malloc64( (sz+3)*sizeof(b1[0]) );
   if( b1==0 ){
     closedir(pDir);
