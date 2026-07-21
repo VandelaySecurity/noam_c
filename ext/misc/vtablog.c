@@ -92,7 +92,7 @@ static const char *vtablog_skip_whitespace(const char *z){
 
 /* Remove trailing whitespace from the end of string z[] */
 static void vtablog_trim_whitespace(char *z){
-  size_t n = strlen(z);
+  size_t n = strnlen(z, 1000000);
   while( n>0 && isspace((unsigned char)z[n]) ) n--;
   z[n] = 0;
 }
@@ -104,7 +104,7 @@ static void vtablog_dequote(char *z){
   size_t i, n;
 
   if( cQuote!='\'' && cQuote!='"' ) return;
-  n = strlen(z);
+  n = strnlen(z, 1000000);
   if( n<2 || z[n-1]!=z[0] ) return;
   for(i=1, j=0; i<n-1; i++){
     if( z[i]==cQuote && z[i+1]==cQuote ) i++;
