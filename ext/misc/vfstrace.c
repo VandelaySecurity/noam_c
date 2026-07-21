@@ -1150,7 +1150,11 @@ int vfstrace_register(
 
   pRoot = sqlite3_vfs_find(zOldVfsName);
   if( pRoot==0 ) return SQLITE_NOTFOUND;
+  if( zTraceName==0 ) return SQLITE_NOMEM;
   nName = strlen(zTraceName);
+  if( nName > (SIZE_MAX - sizeof(*pNew) - sizeof(*pInfo) - 1) ){
+    return SQLITE_NOMEM;
+  }
   nByte = sizeof(*pNew) + sizeof(*pInfo) + nName + 1;
   pNew = sqlite3_malloc64( nByte );
   if( pNew==0 ) return SQLITE_NOMEM;
