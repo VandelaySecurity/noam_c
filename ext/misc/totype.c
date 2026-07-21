@@ -471,9 +471,17 @@ static void torealFunc(
             for(i=0; i<sizeof(double); i++){
               zBlobRev[i] = zBlob[sizeof(double)-1-i];
             }
+#ifdef _MSC_VER
+            memcpy_s(&rVal, sizeof(rVal), zBlobRev, sizeof(double));
+#else
             memcpy(&rVal, zBlobRev, sizeof(double));
+#endif
           }else{
+#ifdef _MSC_VER
+            memcpy_s(&rVal, sizeof(rVal), zBlob, sizeof(double));
+#else
             memcpy(&rVal, zBlob, sizeof(double));
+#endif
           }
           sqlite3_result_double(context, rVal);
         }
