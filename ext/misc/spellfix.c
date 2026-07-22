@@ -2433,6 +2433,10 @@ static void spellfix1RunQuery(MatchQuery *p, const char *zQuery, int nQuery){
   }
 #endif
   assert( p->nRun<SPELLFIX_MX_RUN );
+  if( iScope+1 > SPELLFIX_MX_HASH ){
+    p->rc = SQLITE_NOMEM;
+    return;
+  }
   memcpy(p->azPrior[p->nRun++], zHash1, iScope+1);
   if( sqlite3_bind_text(pStmt, 1, zHash1, -1, SQLITE_STATIC)==SQLITE_NOMEM
    || sqlite3_bind_text(pStmt, 2, zHash2, -1, SQLITE_STATIC)==SQLITE_NOMEM
