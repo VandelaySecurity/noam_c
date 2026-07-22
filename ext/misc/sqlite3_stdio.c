@@ -225,7 +225,7 @@ int sqlite3_fputs(const char *z, FILE *out){
     /* One must use UTF16 in order to get unicode support when writing
     ** to the console on Windows. 
     */
-    int sz = (int)strlen(z);
+    int sz = (int)strnlen(z, INT_MAX);
     wchar_t *b1 = sqlite3_malloc64( (sz+1)*sizeof(wchar_t) );
     if( b1==0 ) return 0;
     sz = MultiByteToWideChar(CP_UTF8, 0, z, sz, b1, sz);
@@ -255,7 +255,6 @@ int sqlite3_fputs(const char *z, FILE *out){
     return 0;
   }
 }
-
 
 /*
 ** Work-alikes for fprintf() and vfprintf() from the standard C library.
