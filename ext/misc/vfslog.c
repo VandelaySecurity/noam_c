@@ -261,7 +261,8 @@ static void vlogLogClose(VLogLog *p){
 ** Open a VLogLog object on the given file
 */
 static VLogLog *vlogLogOpen(const char *zFilename){
-  int nName = (int)strlen(zFilename);
+  if( zFilename==0 ) return 0;
+  int nName = (int)strnlen(zFilename, 8192);
   int isJournal = 0;
   sqlite3_mutex *pMutex;
   VLogLog *pLog, *pTemp;
