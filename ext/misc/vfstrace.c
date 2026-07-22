@@ -1147,10 +1147,12 @@ int vfstrace_register(
   vfstrace_info *pInfo;
   size_t nName;
   size_t nByte;
+#define VFSTRACE_MAX_NAME 256
 
   pRoot = sqlite3_vfs_find(zOldVfsName);
   if( pRoot==0 ) return SQLITE_NOTFOUND;
-  nName = strlen(zTraceName);
+  nName = strnlen(zTraceName, VFSTRACE_MAX_NAME);
+  if( nName >= VFSTRACE_MAX_NAME ) return SQLITE_ERROR;
   nByte = sizeof(*pNew) + sizeof(*pInfo) + nName + 1;
   pNew = sqlite3_malloc64( nByte );
   if( pNew==0 ) return SQLITE_NOMEM;
@@ -1180,7 +1182,7 @@ int vfstrace_register(
     if( pNew->iVersion>=3 ){
       pNew->xSetSystemCall = pRoot->xSetSystemCall==0 ? 0 : 
                                    vfstraceSetSystemCall;
-      pNew->xGetSystemCall = pRoot->xGetSystemCall==0 ? 0 : 
+      pNew->xGetSystemCall = pRoot->xGetSystemCall==0 ? 0 :
                                    vfstraceGetSystemCall;
       pNew->xNextSystemCall = pRoot->xNextSystemCall==0 ? 0 : 
                                    vfstraceNextSystemCall;
