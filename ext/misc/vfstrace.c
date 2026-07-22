@@ -790,7 +790,7 @@ static int vfstraceShmLock(sqlite3_file *pFile, int ofst, int n, int flags){
   char zLck[100];
   int i = 0;
   vfstraceOnOff(pInfo, VTR_SHMLOCK);
-  memcpy(zLck, "|0", 3);
+  sqlite3_snprintf(sizeof(zLck), zLck, "|0");
   if( flags & SQLITE_SHM_UNLOCK )    strappend(zLck, &i, "|UNLOCK");
   if( flags & SQLITE_SHM_LOCK )      strappend(zLck, &i, "|LOCK");
   if( flags & SQLITE_SHM_SHARED )    strappend(zLck, &i, "|SHARED");
