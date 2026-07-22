@@ -125,15 +125,13 @@ FILE *sqlite3_popen(const char *zCommand, const char *zMode){
   wchar_t *b1, *b2;
   int sz1, sz2;
 
-  sz1 = (int)strlen(zCommand);
-  sz2 = (int)strlen(zMode);
-  b1 = sqlite3_malloc64( (sz1+1)*sizeof(b1[0]) );
-  b2 = sqlite3_malloc64( (sz2+1)*sizeof(b1[0]) );
+  sz1 = MultiByteToWideChar(CP_UTF8, 0, zCommand, -1, NULL, 0);
+  sz2 = MultiByteToWideChar(CP_UTF8, 0, zMode, -1, NULL, 0);
+  b1 = sqlite3_malloc64( sz1*sizeof(wchar_t) );
+  b2 = sqlite3_malloc64( sz2*sizeof(wchar_t) );
   if( b1 && b2 ){
-    sz1 = MultiByteToWideChar(CP_UTF8, 0, zCommand, sz1, b1, sz1);
-    b1[sz1] = 0;
-    sz2 = MultiByteToWideChar(CP_UTF8, 0, zMode, sz2, b2, sz2);
-    b2[sz2] = 0;
+    MultiByteToWideChar(CP_UTF8, 0, zCommand, -1, b1, sz1);
+    MultiByteToWideChar(CP_UTF8, 0, zMode, -1, b2, sz2);
     fp = _wpopen(b1, b2);
   }
   sqlite3_free(b1);
