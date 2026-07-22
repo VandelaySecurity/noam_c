@@ -612,6 +612,7 @@ static int tmstmpWrite(
 ){
   TmstmpFile *p = (TmstmpFile*)pFile;
   sqlite3_file *pSub = ORIGFILE(pFile);
+  if( zBuf==0 ) return SQLITE_IOERR_WRITE;
   if( !p->hasCorrectReserve ){
     /* The database does not have the correct reserve size.  No-op */
   }else if( p->isWal ){
@@ -620,10 +621,12 @@ static int tmstmpWrite(
       /* A frame header */
       u32 x = 0;
       p->iFrame = (iOfst - 32)/(p->pgsz+24)+1;
-      p->pgno = tmstmpGetU32((const u8*)zBuf);
-      p->salt1 = tmstmpGetU32(((const u8*)zBuf)+8);
-      memcpy(&x, ((const u8*)zBuf)+4, 4);
-      p->isCommit = (x!=0);
+      if( iAmt>=12 ){
+        p->pgno = tmstmpGetU32((const u8*)zBuf);
+        p->salt1 = tmstmpGetU32(((const u8*)zBuf)+8);
+        memcpy(&x, ((const u8*)zBuf)+4, 4);
+        p->isCommit = (x!=0);
+      }
       p->iOfst = iOfst;
     }else if( iAmt>=512 && iOfst==p->iOfst+24 ){
       unsigned char s[TMSTMP_RESERVE];
