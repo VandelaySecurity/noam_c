@@ -4817,10 +4817,17 @@ static int sessionRebaseAdd(
     if( p->bRebaseStarted==0 ){
       /* Append a table-header to the rebase buffer */
       const char *zTab = pIter->zTab;
+      if( zTab==0 ) zTab = "";
       sessionAppendByte(&p->rebase, 'T', &rc);
       sessionAppendVarint(&p->rebase, p->nCol, &rc);
       sessionAppendBlob(&p->rebase, p->abPK, p->nCol, &rc);
-      sessionAppendBlob(&p->rebase, (u8*)zTab, (int)strlen(zTab)+1, &rc);
+      int nTab = 0;
+      while( nTab<1024 && zTab[nTab] ) nTab++;
+      if( nTab>=1024 ){
+        rc = SQLITE_ERROR;
+      }else{
+        sessionAppendBlob(&p->rebase, (u8*)zTab, nTab+1, &rc);
+      }
       p->bRebaseStarted = 1;
     }
 
