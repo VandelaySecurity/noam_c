@@ -239,7 +239,7 @@ static const char *vfstraceNextSystemCall(sqlite3_vfs*, const char *zName);
 static const char *fileTail(const char *z){
   size_t i;
   if( z==0 ) return 0;
-  i = strlen(z)-1;
+  i = strnlen(z, 4096)-1;
   while( i>0 && z[i-1]!='/' ){ i--; }
   return &z[i];
 }
