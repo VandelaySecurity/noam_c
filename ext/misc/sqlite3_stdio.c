@@ -272,8 +272,11 @@ int sqlite3_fprintf(FILE *out, const char *zFormat, ...){
     va_start(ap, zFormat);
     z = sqlite3_vmprintf(zFormat, ap);
     va_end(ap);
+    if( z == NULL ){
+      return -1;
+    }
     sqlite3_fputs(z, out);
-    rc = (int)strlen(z);
+    rc = (int)strnlen(z, INT_MAX);
     sqlite3_free(z);
   }else{
     /* Writing to a file or other destination, just write bytes without
@@ -293,8 +296,11 @@ int sqlite3_vfprintf(FILE *out, const char *zFormat, va_list ap){
     */
     char *z;
     z = sqlite3_vmprintf(zFormat, ap);
+    if( z == NULL ){
+      return -1;
+    }
     sqlite3_fputs(z, out);
-    rc = (int)strlen(z);
+    rc = (int)strnlen(z, INT_MAX);
     sqlite3_free(z);
   }else{
     /* Writing to a file or other destination, just write bytes without
@@ -303,7 +309,6 @@ int sqlite3_vfprintf(FILE *out, const char *zFormat, va_list ap){
   }
   return rc;
 }
-
 /*
 ** Set the mode for an output stream.  mode argument is typically _O_BINARY or
 ** _O_TEXT.
