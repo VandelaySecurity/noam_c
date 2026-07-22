@@ -226,9 +226,11 @@ int sqlite3_fputs(const char *z, FILE *out){
     ** to the console on Windows. 
     */
     int sz = (int)strlen(z);
-    wchar_t *b1 = sqlite3_malloc64( (sz+1)*sizeof(wchar_t) );
+    int wcharCount = MultiByteToWideChar(CP_UTF8, 0, z, sz, NULL, 0);
+    if( wcharCount == 0 ) return 0;
+    wchar_t *b1 = sqlite3_malloc64( (wcharCount+1)*sizeof(wchar_t) );
     if( b1==0 ) return 0;
-    sz = MultiByteToWideChar(CP_UTF8, 0, z, sz, b1, sz);
+    sz = MultiByteToWideChar(CP_UTF8, 0, z, sz, b1, wcharCount);
     b1[sz] = 0;
 
 #ifdef SQLITE_USE_W32_FOR_CONSOLE_IO
