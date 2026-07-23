@@ -2409,7 +2409,7 @@ static void spellfix1RunQuery(MatchQuery *p, const char *zQuery, int nQuery){
     p->rc = SQLITE_NOMEM;
     return;
   }
-  nClass = (int)strlen(zClass);
+  nClass = (int)strnlen(zClass, SPELLFIX_MX_HASH);
   if( nClass>SPELLFIX_MX_HASH-2 ){
     nClass = SPELLFIX_MX_HASH-2;
     zClass[nClass] = 0;
