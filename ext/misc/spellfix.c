@@ -2762,9 +2762,9 @@ static int spellfix1Column(
     case SPELLFIX_COL_MATCHLEN: {
       int iMatchlen = pCur->a[pCur->iRow].iMatchlen;
       if( iMatchlen<0 ){
-        int nPattern = (int)strlen(pCur->zPattern);
+        int nPattern = (int)strnlen(pCur->zPattern, 4096);
         char *zWord = pCur->a[pCur->iRow].zWord;
-        int nWord = (int)strlen(zWord);
+        int nWord = (int)strnlen(zWord, 4096);
 
         if( nPattern>0 && pCur->zPattern[nPattern-1]=='*' ){
           char *zTranslit;
