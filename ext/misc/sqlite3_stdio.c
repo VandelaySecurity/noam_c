@@ -99,8 +99,11 @@ FILE *sqlite3_fopen(const char *zFilename, const char *zMode){
   wchar_t *b1, *b2;
   int sz1, sz2;
 
-  sz1 = (int)strlen(zFilename);
-  sz2 = (int)strlen(zMode);
+  if( !zFilename || !zMode ) return 0;
+  sz1 = (int)strnlen(zFilename, 4096);
+  if( sz1 >= 4096 ) return 0;
+  sz2 = (int)strnlen(zMode, 4096);
+  if( sz2 >= 4096 ) return 0;
   b1 = sqlite3_malloc64( (sz1+1)*sizeof(b1[0]) );
   b2 = sqlite3_malloc64( (sz2+1)*sizeof(b1[0]) );
   if( b1 && b2 ){
@@ -125,8 +128,11 @@ FILE *sqlite3_popen(const char *zCommand, const char *zMode){
   wchar_t *b1, *b2;
   int sz1, sz2;
 
-  sz1 = (int)strlen(zCommand);
-  sz2 = (int)strlen(zMode);
+  if( !zCommand || !zMode ) return 0;
+  sz1 = (int)strnlen(zCommand, 4096);
+  if( sz1 >= 4096 ) return 0;
+  sz2 = (int)strnlen(zMode, 4096);
+  if( sz2 >= 4096 ) return 0;
   b1 = sqlite3_malloc64( (sz1+1)*sizeof(b1[0]) );
   b2 = sqlite3_malloc64( (sz2+1)*sizeof(b1[0]) );
   if( b1 && b2 ){
