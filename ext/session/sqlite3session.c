@@ -6054,6 +6054,13 @@ static int sessionChangesetFindTable(
     return SQLITE_OK;
   }
 
+  if( pIter && nCol<0 ){
+    return SQLITE_ERROR;
+  }
+  if( nCol>(SQLITE_MAX_COLUMN-1) || nTab>(SQLITE_MAX_LENGTH-1) ){
+    return SQLITE_TOOBIG;
+  }
+
   /* If one was not found above, create a new table now */
   if( !pTab ){
     SessionTable **ppNew;
