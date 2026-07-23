@@ -787,9 +787,8 @@ static int editDist3ConfigLoad(
       pLang->iSubCost = iCost;
     }else{
       EditDist3Cost *pCost;
-      int nExtra = nFrom + nTo - 4;
-      if( nExtra<0 ) nExtra = 0;
-      pCost = sqlite3_malloc64( sizeof(*pCost) + nExtra );
+      int nExtra = nFrom + nTo;
+      pCost = sqlite3_malloc64( sizeof(*pCost) - sizeof(pCost->a) + nExtra );
       if( pCost==0 ){ rc = SQLITE_NOMEM; break; }
       pCost->nFrom = (u8)nFrom;
       pCost->nTo = (u8)nTo;
