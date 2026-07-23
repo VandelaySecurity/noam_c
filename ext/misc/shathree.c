@@ -755,7 +755,7 @@ static void sha3QueryFunc(
     nCol = sqlite3_column_count(pStmt);
     z = sqlite3_sql(pStmt);
     if( z ){
-      n = (int)strlen(z);
+      n = (int)strnlen(z, 0x7FFFFFFF);
       sha3_step_vformat(&cx,"S%d:",n);
       SHA3Update(&cx,(unsigned char*)z,n);
     }
