@@ -171,7 +171,11 @@ static void hash_step(
   }else{
     i = 0;
   }
-  (void)memcpy(&p->buffer[j], &data[i], len - i);
+  unsigned int bytes_to_copy = len - i;
+  if (j + bytes_to_copy > 64) {
+    bytes_to_copy = 64 - j;  /* Truncate to available space */
+  }
+  (void)memcpy(&p->buffer[j], &data[i], bytes_to_copy);
 }
 
 /* Compute a string using sqlite3_vsnprintf() and hash it */
