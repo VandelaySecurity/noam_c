@@ -2056,7 +2056,15 @@ static int spellfix1Init(
   int rc = SQLITE_OK;
   int i;
 
-  nDbName = (int)strlen(zDbName);
+  if( zDbName==0 ){
+    *pzErr = sqlite3_mprintf("database name is NULL");
+    return SQLITE_ERROR;
+  }
+  if( zTableName==0 ){
+    *pzErr = sqlite3_mprintf("table name is NULL");
+    return SQLITE_ERROR;
+  }
+  nDbName = (int)strnlen(zDbName, 1000);
   pNew = sqlite3_malloc64( sizeof(*pNew) + nDbName + 1);
   if( pNew==0 ){
     rc = SQLITE_NOMEM;
