@@ -900,7 +900,7 @@ static EditDist3FromString *editDist3FromStringNew(
   int i;
 
   if( z==0 ) return 0;
-  if( n<0 ) n = (int)strlen(z);
+  if( n<0 ) n = (int)strnlen(z, 0x7fffffff);
   pStr = sqlite3_malloc64( sizeof(*pStr) + sizeof(pStr->a[0])*n + n + 1 );
   if( pStr==0 ) return 0;
   pStr->a = (EditDist3From*)&pStr[1];
