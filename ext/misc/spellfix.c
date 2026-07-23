@@ -2421,6 +2421,9 @@ static void spellfix1RunQuery(MatchQuery *p, const char *zQuery, int nQuery){
       iScope = nClass;
     }
   }
+  if( iScope > SPELLFIX_MX_HASH - 2 ){
+    iScope = SPELLFIX_MX_HASH - 2;
+  }
   memcpy(zHash1, zClass, iScope);
   sqlite3_free(zClass);
   zHash1[iScope] = 0;
