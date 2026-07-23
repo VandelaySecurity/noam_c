@@ -635,7 +635,11 @@ static void sha3UpdateFromValue(SHA3Context *p, sqlite3_value *pVal){
       int j;
       unsigned char x[9];
       sqlite3_int64 v = sqlite3_value_int64(pVal);
-      memcpy(&u, &v, 8);
+#ifdef _MSC_VER
+      memcpy_s(&u, sizeof(u), &v, sizeof(v));
+#else
+      memcpy(&u, &v, sizeof(v));
+#endif
       for(j=8; j>=1; j--){
         x[j] = u & 0xff;
         u >>= 8;
@@ -649,7 +653,11 @@ static void sha3UpdateFromValue(SHA3Context *p, sqlite3_value *pVal){
       int j;
       unsigned char x[9];
       double r = sqlite3_value_double(pVal);
-      memcpy(&u, &r, 8);
+#ifdef _MSC_VER
+      memcpy_s(&u, sizeof(u), &r, sizeof(r));
+#else
+      memcpy(&u, &r, sizeof(r));
+#endif
       for(j=8; j>=1; j--){
         x[j] = u & 0xff;
         u >>= 8;
