@@ -279,7 +279,7 @@ static int qpvtabFilter(
   qpvtab_cursor *pCur = (qpvtab_cursor *)pVtabCursor;
   pCur->iRowid = 0;
   pCur->zData = idxStr;
-  pCur->nData = (int)strlen(idxStr);
+  pCur->nData = (int)strnlen(idxStr, 1000000);
   pCur->flags = idxNum;
   return SQLITE_OK;
 }
