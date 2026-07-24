@@ -162,6 +162,7 @@ static void jsonExpand(
       while( (y&0xff)==((y>>16)&0xff) || ((y>>8)&0xff)==((y>>16)&0xff) ){
         y += 0x10000;
       }
+      if( n+1 > sizeof(zBuf) ) continue;
       memcpy(zBuf, z, n+1);
       z = zBuf;
       zX = strstr(z,"XX");
@@ -172,6 +173,7 @@ static void jsonExpand(
       }
     }else if( (zX = strstr(z,"DD"))!=0 ){
       unsigned int y = prngInt(p);
+      if( n+1 > sizeof(zBuf) ) continue;
       memcpy(zBuf, z, n+1);
       z = zBuf;
       zX = strstr(z,"DD");
