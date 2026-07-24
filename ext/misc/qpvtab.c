@@ -229,7 +229,15 @@ static int qpvtabColumn(
     if( zEnd==z ){
       sqlite3_result_null(ctx);
     }else if( i==QPVTAB_IX || i==QPVTAB_OP || i==QPVTAB_UX ){
-      sqlite3_result_int(ctx, atoi(z));
+      char *endptr;
+      long val;
+      errno = 0;
+      val = strtol(z, &endptr, 10);
+      if( errno==ERANGE || endptr==z || val<INT_MIN || val>INT_MAX ){
+        sqlite3_result_null(ctx);
+      }else{
+        sqlite3_result_int(ctx, (int)val);
+      }
     }else{
       sqlite3_result_text64(ctx, z, zEnd-z, SQLITE_TRANSIENT, SQLITE_UTF8);
     }
