@@ -181,7 +181,7 @@ static int prefixesFilter(
   sqlite3_free(pCur->zStr);
   if( argc>0 ){
     pCur->zStr = sqlite3_mprintf("%s", sqlite3_value_text(argv[0]));
-    pCur->nStr = pCur->zStr ? (int)strlen(pCur->zStr) : 0;
+    pCur->nStr = pCur->zStr ? (int)strnlen(pCur->zStr, 0x7fffffff) : 0;
   }else{
     pCur->zStr = 0;
     pCur->nStr = 0;
