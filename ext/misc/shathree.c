@@ -617,7 +617,7 @@ static void sha3_step_vformat(
   va_start(ap, zFormat);
   sqlite3_vsnprintf(sizeof(zBuf),zBuf,zFormat,ap);
   va_end(ap);
-  n = (int)strlen(zBuf);
+  n = (int)strnlen(zBuf, sizeof(zBuf));
   SHA3Update(p, (unsigned char*)zBuf, n);
 }
 
