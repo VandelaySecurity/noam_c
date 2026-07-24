@@ -389,7 +389,7 @@ static int re_append(ReCompiled *p, int op, int arg){
 ** under construction.
 */
 static void re_copy(ReCompiled *p, int iStart, unsigned int N){
-  if( p->nState+N>=p->nAlloc && re_resize(p, p->nAlloc*2+N) ) return;
+  if( p->nState+N>p->nAlloc && re_resize(p, p->nAlloc*2+N) ) return;
   memcpy(&p->aOp[p->nState], &p->aOp[iStart], N*sizeof(p->aOp[0]));
   memcpy(&p->aArg[p->nState], &p->aArg[iStart], N*sizeof(p->aArg[0]));
   p->nState += N;
