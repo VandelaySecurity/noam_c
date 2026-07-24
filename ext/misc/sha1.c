@@ -324,7 +324,7 @@ static void sha1QueryFunc(
     nCol = sqlite3_column_count(pStmt);
     z = sqlite3_sql(pStmt);
     if( z==0 ) z = "";
-    n = (int)strlen(z);
+    n = (int)strnlen(z, 0x7fffffff);
     hash_step_vformat(&cx,"S%d:",n);
     hash_step(&cx,(unsigned char*)z,n);
 
