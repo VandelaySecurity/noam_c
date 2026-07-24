@@ -183,9 +183,13 @@ static void jsonExpand(
     }
     assert( strstr(z, "XX")==0 );
     assert( strstr(z, "DD")==0 );
-    if( j+n<STRSZ ){
-      memcpy(&zDest[j], z, n);
-      j += (int)n;
+    if( j < STRSZ-1 ){
+      size_t copyLen = n;
+      if( j + copyLen > STRSZ - 1 ){
+        copyLen = STRSZ - 1 - j;
+      }
+      memcpy(&zDest[j], z, copyLen);
+      j += (int)copyLen;
     }
   }
   zDest[STRSZ-1] = 0;
