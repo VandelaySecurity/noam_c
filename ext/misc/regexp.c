@@ -695,7 +695,7 @@ static const char *re_compile(
   }
   pRe->sIn.z = (unsigned char*)zIn;
   pRe->sIn.i = 0;
-  pRe->sIn.mx = (int)strlen(zIn);
+  pRe->sIn.mx = (int)strnlen(zIn, INT_MAX);
   zErr = re_subcompile_re(pRe);
   if( zErr ){
     re_free(pRe);
