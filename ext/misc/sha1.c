@@ -342,7 +342,9 @@ static void sha1QueryFunc(
             int j;
             unsigned char x[9];
             sqlite3_int64 v = sqlite3_column_int64(pStmt,i);
-            memcpy(&u, &v, 8);
+            union { sqlite3_int64 i; sqlite3_uint64 u; } iu;
+            iu.i = v;
+            u = iu.u;
             for(j=8; j>=1; j--){
               x[j] = u & 0xff;
               u >>= 8;
@@ -356,7 +358,9 @@ static void sha1QueryFunc(
             int j;
             unsigned char x[9];
             double r = sqlite3_column_double(pStmt,i);
-            memcpy(&u, &r, 8);
+            union { double d; sqlite3_uint64 u; } du;
+            du.d = r;
+            u = du.u;
             for(j=8; j>=1; j--){
               x[j] = u & 0xff;
               u >>= 8;
