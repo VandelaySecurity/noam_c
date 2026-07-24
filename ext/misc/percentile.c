@@ -160,8 +160,10 @@ static const PercentileFunc aPercentFunc[] = {
 */
 static int percentIsInfinity(double r){
   sqlite3_uint64 u;
+  union { double d; sqlite3_uint64 u; } converter;
   assert( sizeof(u)==sizeof(r) );
-  memcpy(&u, &r, sizeof(u));
+  converter.d = r;
+  u = converter.u;
   return ((u>>52)&0x7ff)==0x7ff;
 }
 
