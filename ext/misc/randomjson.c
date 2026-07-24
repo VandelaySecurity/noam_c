@@ -138,7 +138,7 @@ static void jsonExpand(
 
   j = 0;
   if( zSrc==0 ) zSrc = "%";
-  if( strlen(zSrc)>=STRSZ/10 ) r = 0;
+  if( strnlen(zSrc, STRSZ)>=STRSZ/10 ) r = 0;
   for(i=0; zSrc[i]; i++){
     if( zSrc[i]!='%' ){
       if( j<STRSZ ) zDest[j++] = zSrc[i];
