@@ -212,7 +212,7 @@ static int re_match(ReCompiled *pRe, const unsigned char *zIn, int nIn){
 
   in.z = zIn;
   in.i = 0;
-  in.mx = nIn>=0 ? nIn : (int)strlen((char const*)zIn);
+  in.mx = nIn>=0 ? nIn : (int)strnlen((char const*)zIn, 0x7fffffff);
 
   /* Look for the initial prefix match, if there is one. */
   if( pRe->nInit ){
