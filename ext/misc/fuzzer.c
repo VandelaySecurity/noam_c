@@ -629,6 +629,12 @@ static int fuzzerRender(
   n = pStem->n;
   z = *pzBuf;
   if( n<0 ){
+    if( (*pnBuf)<pStem->nBasis+1 ){
+      (*pzBuf) = sqlite3_realloc64((*pzBuf), pStem->nBasis+101);
+      if( (*pzBuf)==0 ) return SQLITE_NOMEM;
+      (*pnBuf) = pStem->nBasis+101;
+      z = *pzBuf;
+    }
     memcpy(z, pStem->zBasis, pStem->nBasis+1);
   }else{
     memcpy(z, pStem->zBasis, n);
