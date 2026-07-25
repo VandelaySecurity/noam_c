@@ -209,7 +209,11 @@ static void ieee754func(
     a = m & ((((sqlite3_int64)1)<<52)-1);
     a |= e<<52;
     if( isNeg ) a |= ((sqlite3_uint64)1)<<63;
-    memcpy(&r, &a, sizeof(r));
+    {
+      union { sqlite3_uint64 u; double d; } u;
+      u.u = a;
+      r = u.d;
+    }
     sqlite3_result_double(context, r);
   }
 }
@@ -233,7 +237,11 @@ static void ieee754func_from_blob(
     for(i=0; i<sizeof(r); i++){
       v = (v<<8) | x[i];
     }
-    memcpy(&r, &v, sizeof(r));
+    {
+      union { sqlite3_uint64 u; double d; } u;
+      u.u = v;
+      r = u.d;
+    }
     sqlite3_result_double(context, r);
   }
 }
