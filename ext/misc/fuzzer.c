@@ -873,13 +873,19 @@ static fuzzer_stem *fuzzerNewStem(
   fuzzer_stem *pNew;
   fuzzer_rule *pRule;
   unsigned int h;
+  size_t wordLen;
 
+  wordLen = strlen(zWord);
   pNew = sqlite3_malloc64( sizeof(*pNew) + strlen(zWord) + 1 );
   if( pNew==0 ) return 0;
+  if( wordLen > (size_t)((fuzzer_len)-1) ){
+    sqlite3_free(pNew);
+    return 0;
+  }
   memset(pNew, 0, sizeof(*pNew));
   pNew->zBasis = (char*)&pNew[1];
-  pNew->nBasis = (fuzzer_len)strlen(zWord);
-  memcpy(pNew->zBasis, zWord, pNew->nBasis+1);
+  pNew->nBasis = (fuzzer_len)wordLen;
+  memcpy(pNew->zBasis, zWord, wordLen+1);
   pRule = pCur->pVtab->pRule;
   while( fuzzerSkipRule(pRule, pNew, pCur->iRuleset) ){
     pRule = pRule->pNext;
