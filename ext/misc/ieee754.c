@@ -316,9 +316,9 @@ static void ieee754inc(
   UNUSED_PARAMETER(argc);
   r = sqlite3_value_double(argv[0]);
   N = sqlite3_value_int64(argv[1]);
-  memcpy(&m1, &r, 8);
+  memcpy(&m1, &r, sizeof(r));
   m2 = m1 + N;
-  memcpy(&r2, &m2, 8);
+  memcpy(&r2, &m2, sizeof(m2));
   sqlite3_result_double(context, r2);
 }
 
