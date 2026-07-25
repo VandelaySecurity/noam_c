@@ -515,7 +515,7 @@ static int fuzzerConnect(
   }else{
     sqlite3_int64 nModule;        /* Length of zModule, in bytes */
 
-    nModule = strlen(zModule);
+    nModule = strnlen(zModule, 1024);
     pNew = sqlite3_malloc64( sizeof(*pNew) + nModule + 1);
     if( pNew==0 ){
       rc = SQLITE_NOMEM;
