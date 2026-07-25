@@ -1001,7 +1001,7 @@ static int fuzzerFilter(
 
   /* If the query term is longer than FUZZER_MX_OUTPUT_LENGTH bytes, this
   ** query will return zero rows.  */
-  if( (int)strlen(zWord)<FUZZER_MX_OUTPUT_LENGTH ){
+  if( (int)strnlen(zWord, FUZZER_MX_OUTPUT_LENGTH)<FUZZER_MX_OUTPUT_LENGTH ){
     pCur->pStem = pStem = fuzzerNewStem(pCur, zWord, (fuzzer_cost)0);
     if( pStem==0 ) return SQLITE_NOMEM;
     pStem->pRule = &pCur->nullRule;
