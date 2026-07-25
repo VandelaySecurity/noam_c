@@ -314,11 +314,12 @@ static void ieee754inc(
   sqlite3_uint64 m1, m2;
   double r2;
   UNUSED_PARAMETER(argc);
+  _Static_assert(sizeof(double) == sizeof(sqlite3_uint64), "ieee754inc requires double and sqlite3_uint64 to be the same size");
   r = sqlite3_value_double(argv[0]);
   N = sqlite3_value_int64(argv[1]);
-  memcpy(&m1, &r, 8);
+  memcpy(&m1, &r, sizeof(m1));
   m2 = m1 + N;
-  memcpy(&r2, &m2, 8);
+  memcpy(&r2, &m2, sizeof(r2));
   sqlite3_result_double(context, r2);
 }
 
