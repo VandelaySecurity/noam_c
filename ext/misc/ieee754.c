@@ -130,6 +130,7 @@ static void ieee754func(
     }else{
       isNeg = 0;
     }
+    assert( sizeof(a)==sizeof(r) );
     memcpy(&a,&r,sizeof(a));
     if( a==0 ){
       e = 0;
