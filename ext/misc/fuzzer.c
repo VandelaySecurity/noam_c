@@ -874,11 +874,11 @@ static fuzzer_stem *fuzzerNewStem(
   fuzzer_rule *pRule;
   unsigned int h;
 
-  pNew = sqlite3_malloc64( sizeof(*pNew) + strlen(zWord) + 1 );
+  pNew = sqlite3_malloc64( sizeof(*pNew) + strnlen(zWord, FUZZER_MX_LENGTH) + 1 );
   if( pNew==0 ) return 0;
   memset(pNew, 0, sizeof(*pNew));
   pNew->zBasis = (char*)&pNew[1];
-  pNew->nBasis = (fuzzer_len)strlen(zWord);
+  pNew->nBasis = (fuzzer_len)strnlen(zWord, FUZZER_MX_LENGTH);
   memcpy(pNew->zBasis, zWord, pNew->nBasis+1);
   pRule = pCur->pVtab->pRule;
   while( fuzzerSkipRule(pRule, pNew, pCur->iRuleset) ){
@@ -904,7 +904,6 @@ static int fuzzerNext(sqlite3_vtab_cursor *cur){
   fuzzer_stem *pStem, *pNew;
 
   pCur->iRowid++;
-
   /* Use the element the cursor is currently point to to create
   ** a new stem and insert the new stem into the priority queue.
   */
