@@ -563,7 +563,7 @@ char *sqlite3_normalize(const char *zSql){
   sqlite3_int64 n;      /* Size of the next token */
   int k;                /* Loop counter */
 
-  nSql = strlen(zSql);
+  nSql = strnlen(zSql, SQLITE_MAX_SQL_LENGTH);
   nZ = nSql;
   z = sqlite3_malloc64( nZ+2 );
   if( z==0 ) return 0;
