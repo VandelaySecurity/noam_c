@@ -450,7 +450,7 @@ static char *fuzzerDequote(const char *zIn){
   sqlite3_int64 nIn;              /* Size of input string, in bytes */
   char *zOut;                     /* Output (dequoted) string */
 
-  nIn = strlen(zIn);
+  nIn = strnlen(zIn, 1000000);
   zOut = sqlite3_malloc64(nIn+1);
   if( zOut ){
     char q = zIn[0];              /* Quote character (if any ) */
