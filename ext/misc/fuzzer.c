@@ -306,11 +306,13 @@ static int fuzzerLoadOneRule(
   int nFrom;                      /* Size of string zFrom, in bytes */
   int nTo;                        /* Size of string zTo, in bytes */
   fuzzer_rule *pRule = 0;         /* New rule object to return */
+  int nFromMax = sqlite3_column_bytes(pStmt, 1);
+  int nToMax = sqlite3_column_bytes(pStmt, 2);
 
   if( zFrom==0 ) zFrom = "";
   if( zTo==0 ) zTo = "";
-  nFrom = (int)strlen(zFrom);
-  nTo = (int)strlen(zTo);
+  nFrom = (int)strnlen(zFrom, nFromMax);
+  nTo = (int)strnlen(zTo, nToMax);
 
   /* Silently ignore null transformations */
   if( strcmp(zFrom, zTo)==0 ){
