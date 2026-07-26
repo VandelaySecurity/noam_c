@@ -591,6 +591,10 @@ static int delta_apply(
           /* ERROR: insert count exceeds size of delta */
           return -1;
         }
+        if( (zOut + cnt) > (zOrigOut + limit) ){
+          /* ERROR: insert would write past end of output buffer */
+          return -1;
+        }
         memcpy(zOut, zDelta, cnt);
         zOut += cnt;
         zDelta += cnt;
@@ -621,7 +625,6 @@ static int delta_apply(
   /* ERROR: unterminated delta */
   return -1;
 }
-
 /*
 ** SQL functions:  delta_create(X,Y)
 **
