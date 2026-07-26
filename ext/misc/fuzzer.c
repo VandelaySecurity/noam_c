@@ -309,8 +309,8 @@ static int fuzzerLoadOneRule(
 
   if( zFrom==0 ) zFrom = "";
   if( zTo==0 ) zTo = "";
-  nFrom = (int)strlen(zFrom);
-  nTo = (int)strlen(zTo);
+  nFrom = (int)strnlen(zFrom, sqlite3_column_bytes(pStmt, 1));
+  nTo = (int)strnlen(zTo, sqlite3_column_bytes(pStmt, 2));
 
   /* Silently ignore null transformations */
   if( strcmp(zFrom, zTo)==0 ){
