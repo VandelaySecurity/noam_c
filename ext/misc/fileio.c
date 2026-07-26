@@ -1113,25 +1113,12 @@ static char *portable_realpath(const char *zPath){
 #if !defined(_WIN32)       /* BEGIN unix */
 
   char *zOut = 0;          /* Result */
-  char *z;                 /* Temporary buffer */
-#if defined(PATH_MAX)
-  char zBuf[PATH_MAX+1];   /* Space for the temporary buffer */
-#endif
 
   if( zPath==0 ) return 0;
-#if defined(PATH_MAX)
-  z = realpath(zPath, zBuf);
+  char *z = realpath(zPath, NULL);
   if( z ){
-    zOut = sqlite3_mprintf("%s", zBuf);
-  }
-#endif /* defined(PATH_MAX) */
-  if( zOut==0 ){
-    /* Try POSIX.1-2008 malloc behavior */
-    z = realpath(zPath, NULL);
-    if( z ){
-      zOut = sqlite3_mprintf("%s", z);
-      free(z);
-    }
+    zOut = sqlite3_mprintf("%s", z);
+    free(z);
   }
   return zOut;
 
