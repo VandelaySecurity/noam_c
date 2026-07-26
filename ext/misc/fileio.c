@@ -1187,7 +1187,7 @@ static void realpathFunc(
   if( zPath==0 ) return;
   if( zPath[0]==0 ) zPath = ".";
   zCopy = sqlite3_mprintf("%s",zPath);
-  len = strlen(zCopy);
+  len = strnlen(zCopy, PATH_MAX);
   while( len>1 && (zCopy[len-1]=='/' || (isWin && zCopy[len-1]=='\\')) ){
     len--;
   }
