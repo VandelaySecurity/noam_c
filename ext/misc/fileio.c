@@ -384,7 +384,7 @@ static int makeDirectory(
   if( zCopy==0 ){
     rc = SQLITE_NOMEM;
   }else{
-    int nCopy = (int)strlen(zCopy);
+    int nCopy = (int)strnlen(zCopy, PATH_MAX);
     int i = 1;
 
     while( rc==SQLITE_OK ){
