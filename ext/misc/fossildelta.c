@@ -576,6 +576,10 @@ static int delta_apply(
           /* ERROR: copy extends past end of input */
           return -1;
         }
+        if( (unsigned int)(zOut - zOrigOut) + cnt > limit ){
+          /* ERROR: copy would exceed output buffer */
+          return -1;
+        }
         memcpy(zOut, &zSrc[ofst], cnt);
         zOut += cnt;
         break;
@@ -589,6 +593,10 @@ static int delta_apply(
         }
         if( cnt>lenDelta ){
           /* ERROR: insert count exceeds size of delta */
+          return -1;
+        }
+        if( (unsigned int)(zOut - zOrigOut) + cnt > limit ){
+          /* ERROR: insert would exceed output buffer */
           return -1;
         }
         memcpy(zOut, zDelta, cnt);
