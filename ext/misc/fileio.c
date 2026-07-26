@@ -1227,7 +1227,7 @@ static void realpathFunc(
     ** unix "/" separators, because the _wfilepath() system call on
     ** Windows will have already done this simplification for us. */
     size_t i, j, n;
-    n = strlen(zOut);
+    n = strnlen(zOut, PATH_MAX);
     for(i=j=0; i<n; i++){
       if( zOut[i]=='/' ){
         if( zOut[i+1]=='/' ) continue;
