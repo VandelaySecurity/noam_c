@@ -8054,7 +8054,12 @@ static int proxyReleaseConch(unixFile *pFile){
 */
 static int proxyCreateConchPathname(char *dbPath, char **pConchPath){
   int i;                        /* Loop counter */
-  int len = (int)strlen(dbPath); /* Length of database filename - dbPath */
+  size_t dbPathLen = strlen(dbPath);
+  if( dbPathLen > (INT_MAX - 8) ){
+    *pConchPath = NULL;
+    return SQLITE_CANTOPEN;
+  }
+  int len = (int)dbPathLen;     /* Length of database filename - dbPath */
   char *conchPath;              /* buffer in which to construct conch name */
 
   /* Allocate space for the conch filename and initialize the name to
@@ -8093,7 +8098,6 @@ static int switchLockProxyPath(unixFile *pFile, const char *path) {
   proxyLockingContext *pCtx = (proxyLockingContext*)pFile->lockingContext;
   char *oldPath = pCtx->lockProxyPath;
   int rc = SQLITE_OK;
-
   if( pFile->eFileLock!=NO_LOCK ){
     return SQLITE_BUSY;
   }
