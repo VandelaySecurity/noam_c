@@ -535,7 +535,15 @@ static int csvtabConnect(
     }else
 #ifdef SQLITE_TEST
     if( (zValue = csv_parameter("testflags",9,z))!=0 ){
-      tstFlags = (unsigned int)atoi(zValue);
+      char *endptr;
+      long lFlags;
+      errno = 0;
+      lFlags = strtol(zValue, &endptr, 10);
+      if( errno==ERANGE || *endptr!='\0' || lFlags<0 || lFlags>UINT_MAX ){
+        csv_errmsg(&sRdr, "testflags= value must be a valid unsigned integer");
+        goto csvtab_connect_error;
+      }
+      tstFlags = (unsigned int)lFlags;
     }else
 #endif
     if( (zValue = csv_parameter("columns",7,z))!=0 ){
@@ -543,11 +551,15 @@ static int csvtabConnect(
         csv_errmsg(&sRdr, "more than one 'columns' parameter");
         goto csvtab_connect_error;
       }
-      nCol = atoi(zValue);
-      if( nCol<=0 ){
-        csv_errmsg(&sRdr, "column= value must be positive");
+      char *endptr;
+      long lCol;
+      errno = 0;
+      lCol = strtol(zValue, &endptr, 10);
+      if( errno==ERANGE || *endptr!='\0' || lCol<=0 || lCol>INT_MAX ){
+        csv_errmsg(&sRdr, "column= value must be a positive integer");
         goto csvtab_connect_error;
       }
+      nCol = (int)lCol;
     }else
     {
       csv_errmsg(&sRdr, "bad parameter: '%s'", z);
