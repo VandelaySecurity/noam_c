@@ -528,6 +528,9 @@ void sqlite3AlterBeginAddColumn(Parse *pParse, SrcList *pSrc){
   pParse->pNewTable = pNew;
   pNew->nTabRef = 1;
   pNew->nCol = pTab->nCol;
+  if( pTab->nCol <= 0 || pTab->nCol > SQLITE_MAX_COLUMN ){
+    goto exit_begin_add_column;
+  }
   assert( pNew->nCol>0 );
   nAlloc = (((pNew->nCol-1)/8)*8)+8;
   assert( nAlloc>=pNew->nCol && nAlloc%8==0 && nAlloc-pNew->nCol<8 );
@@ -535,6 +538,13 @@ void sqlite3AlterBeginAddColumn(Parse *pParse, SrcList *pSrc){
   pNew->zName = sqlite3MPrintf(db, "sqlite_altertab_%s", pTab->zName);
   if( !pNew->aCol || !pNew->zName ){
     assert( db->mallocFailed );
+    goto exit_begin_add_column;
+  }
+  if( nAlloc < pNew->nCol ){
+    assert( 0 );  /* Should never happen based on nAlloc calculation */
+    goto exit_begin_add_column;
+  }
+  if( !pTab->aCol ){
     goto exit_begin_add_column;
   }
   memcpy(pNew->aCol, pTab->aCol, sizeof(Column)*(size_t)pNew->nCol);
