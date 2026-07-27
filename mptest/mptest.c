@@ -1322,7 +1322,19 @@ int SQLITE_CDECL main(int argc, char **argv){
   if( zTrace ) g.iTrace = atoi(zTrace);
   if( findOption(argv+2, &n, "quiet", 0)!=0 ) g.iTrace = 0;
   zTmout = findOption(argv+2, &n, "timeout", 1);
-  if( zTmout ) iTmout = atoi(zTmout);
+  if( zTmout ){
+    char *endptr;
+    long timeout_val;
+    errno = 0;
+    timeout_val = strtol(zTmout, &endptr, 10);
+    if( endptr == zTmout || *endptr != '\0' ){
+      fatalError("invalid timeout value: %s\n", zTmout);
+    }
+    if( errno == ERANGE || timeout_val < 0 || timeout_val > INT_MAX ){
+      fatalError("timeout value out of range: %s\n", zTmout);
+    }
+    iTmout = (int)timeout_val;
+  }
   g.bSqlTrace = findOption(argv+2, &n, "sqltrace", 0)!=0;
   g.bSync = findOption(argv+2, &n, "sync", 0)!=0;
   if( g.zErrLog ){
