@@ -668,7 +668,9 @@ static Decimal *decimalFromDouble(double r){
   }else{
     isNeg = 0;
   }
-  memcpy(&a,&r,sizeof(a));
+  union { double d; sqlite3_int64 i; } u;
+  u.d = r;
+  a = u.i;
   if( a==0 || a==(sqlite3_int64)0x8000000000000000LL){
     e = 0;
     m = 0;
