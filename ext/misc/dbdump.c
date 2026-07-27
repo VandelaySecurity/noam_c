@@ -126,6 +126,10 @@ static void appendText(DText *p, char const *zAppend, char quote){
     p->n = (int)(zCsr - p->z);
     *zCsr = '\0';
   }else{
+    if( p->n + nAppend >= p->nAlloc ){
+      /* Should never happen due to earlier reallocation, but defend anyway */
+      return;
+    }
     memcpy(p->z+p->n, zAppend, nAppend);
     p->n += nAppend;
     p->z[p->n] = '\0';
