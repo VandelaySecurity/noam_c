@@ -94,7 +94,7 @@ static void freeText(DText *p){
 static void appendText(DText *p, char const *zAppend, char quote){
   int len;
   int i;
-  int nAppend = (int)(strlen(zAppend) & 0x3fffffff);
+  int nAppend = (int)strnlen(zAppend, 0x3fffffff);
 
   len = nAppend+p->n+1;
   if( quote ){
