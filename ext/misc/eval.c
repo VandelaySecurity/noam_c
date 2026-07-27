@@ -53,8 +53,18 @@ static int callback(void *pCtx, int argc, char **argv, char **colnames){
       p->z = zNew;
     }
     if( p->nUsed>0 ){
+      if( p->nUsed + p->szSep > p->nAlloc ){
+        sqlite3_free(p->z);
+        memset(p, 0, sizeof(*p));
+        return 1;
+      }
       memcpy(&p->z[p->nUsed], p->zSep, p->szSep);
       p->nUsed += p->szSep;
+    }
+    if( p->nUsed + sz > p->nAlloc ){
+      sqlite3_free(p->z);
+      memset(p, 0, sizeof(*p));
+      return 1;
     }
     memcpy(&p->z[p->nUsed], z, sz);
     p->nUsed += sz;
