@@ -229,6 +229,7 @@ static Decimal *decimal_new(
       for(i=0; i<sizeof(r); i++){
         v = (v<<8) | x[i];
       }
+      typedef char assert_size_match[sizeof(v) == sizeof(r) ? 1 : -1];
       memcpy(&r, &v, sizeof(r));
       p = decimalFromDouble(r);
       break;
