@@ -1312,17 +1312,41 @@ int SQLITE_CDECL main(int argc, char **argv){
   sqlite3_snprintf(sizeof(g.zName), g.zName, "%05d.mptest", GETPID());
   zJMode = findOption(argv+2, &n, "journalmode", 1);
   zNRep = findOption(argv+2, &n, "repeat", 1);
-  if( zNRep ) nRep = atoi(zNRep);
+  if( zNRep ){
+    char *endptr;
+    errno = 0;
+    long parsed = strtol(zNRep, &endptr, 10);
+    if (errno == ERANGE || endptr == zNRep || *endptr != '\0' || parsed < INT_MIN || parsed > INT_MAX) {
+      fatalError("invalid repeat count: '%s'\n", zNRep);
+    }
+    nRep = (int)parsed;
+  }
   if( nRep<1 ) nRep = 1;
   g.zVfs = findOption(argv+2, &n, "vfs", 1);
   zClient = findOption(argv+2, &n, "client", 1);
   g.zErrLog = findOption(argv+2, &n, "errlog", 1);
   g.zLog = findOption(argv+2, &n, "log", 1);
   zTrace = findOption(argv+2, &n, "trace", 1);
-  if( zTrace ) g.iTrace = atoi(zTrace);
+  if( zTrace ){
+    char *endptr;
+    errno = 0;
+    long parsed = strtol(zTrace, &endptr, 10);
+    if (errno == ERANGE || endptr == zTrace || *endptr != '\0' || parsed < INT_MIN || parsed > INT_MAX) {
+      fatalError("invalid trace level: '%s'\n", zTrace);
+    }
+    g.iTrace = (int)parsed;
+  }
   if( findOption(argv+2, &n, "quiet", 0)!=0 ) g.iTrace = 0;
   zTmout = findOption(argv+2, &n, "timeout", 1);
-  if( zTmout ) iTmout = atoi(zTmout);
+  if( zTmout ){
+    char *endptr;
+    errno = 0;
+    long parsed = strtol(zTmout, &endptr, 10);
+    if (errno == ERANGE || endptr == zTmout || *endptr != '\0' || parsed < INT_MIN || parsed > INT_MAX) {
+      fatalError("invalid timeout value: '%s'\n", zTmout);
+    }
+    iTmout = (int)parsed;
+  }
   g.bSqlTrace = findOption(argv+2, &n, "sqltrace", 0)!=0;
   g.bSync = findOption(argv+2, &n, "sync", 0)!=0;
   if( g.zErrLog ){
@@ -1338,7 +1362,13 @@ int SQLITE_CDECL main(int argc, char **argv){
   
   sqlite3_config(SQLITE_CONFIG_LOG, sqlErrorCallback, 0);
   if( zClient ){
-    iClient = atoi(zClient);
+    char *endptr;
+    errno = 0;
+    long parsed = strtol(zClient, &endptr, 10);
+    if (errno == ERANGE || endptr == zClient || *endptr != '\0' || parsed < INT_MIN || parsed > INT_MAX) {
+      fatalError("invalid client number: '%s'\n", zClient);
+    }
+    iClient = (int)parsed;
     if( iClient<1 ) fatalError("illegal client number: %d\n", iClient);
     sqlite3_snprintf(sizeof(g.zName), g.zName, "%05d.client%02d",
                      GETPID(), iClient);
