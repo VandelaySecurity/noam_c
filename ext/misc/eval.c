@@ -37,7 +37,7 @@ static int callback(void *pCtx, int argc, char **argv, char **colnames){
   if( argv==0 ) return 0;
   for(i=0; i<argc; i++){
     const char *z = argv[i] ? argv[i] : "";
-    size_t sz = strlen(z);
+    size_t sz = strnlen(z, 0x7fffffff);
     if( (sqlite3_int64)sz+p->nUsed+p->szSep+1 > p->nAlloc ){
       char *zNew;
       p->nAlloc = p->nAlloc*2 + sz + p->szSep + 1;
