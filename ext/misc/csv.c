@@ -535,7 +535,15 @@ static int csvtabConnect(
     }else
 #ifdef SQLITE_TEST
     if( (zValue = csv_parameter("testflags",9,z))!=0 ){
-      tstFlags = (unsigned int)atoi(zValue);
+      char *endptr;
+      unsigned long val;
+      errno = 0;
+      val = strtoul(zValue, &endptr, 10);
+      if( errno==ERANGE || *endptr!='\0' || val > UINT_MAX ){
+        csv_errmsg(&sRdr, "invalid testflags value: '%s'", zValue);
+        goto csvtab_connect_error;
+      }
+      tstFlags = (unsigned int)val;
     }else
 #endif
     if( (zValue = csv_parameter("columns",7,z))!=0 ){
