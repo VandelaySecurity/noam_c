@@ -2481,7 +2481,9 @@ static int pager_playback_one_page(
     /* If this was page 1, then restore the value of Pager.dbFileVers.
     ** Do this before any decoding. */
     if( pgno==1 ){
-      memcpy(&pPager->dbFileVers, &((u8*)pData)[24],sizeof(pPager->dbFileVers));
+      if( pPager->pageSize >= 24 + sizeof(pPager->dbFileVers) ){
+        memcpy(&pPager->dbFileVers, &((u8*)pData)[24],sizeof(pPager->dbFileVers));
+      }
     }
     sqlite3PcacheRelease(pPg);
   }
