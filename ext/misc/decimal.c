@@ -693,7 +693,7 @@ static Decimal *decimalFromDouble(double r){
 
   /* At this point m is the integer significand and e is the exponent */
   sqlite3_snprintf(sizeof(zNum), zNum, "%lld", m);
-  pA = decimalNewFromText(zNum, (int)strlen(zNum));
+  pA = decimalNewFromText(zNum, (int)strnlen(zNum, sizeof(zNum)));
   pX = decimalPow2(e);
   decimalMul(pA, pX);
   decimal_free(pX);
