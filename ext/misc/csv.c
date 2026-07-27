@@ -750,7 +750,11 @@ static int csvtabNext(sqlite3_vtab_cursor *cur){
         pCur->azVal[i] = zNew;
         pCur->aLen[i] = pCur->rdr.n+1;
       }
-      memcpy(pCur->azVal[i], z, pCur->rdr.n+1);
+      if( memcpy_s(pCur->azVal[i], pCur->aLen[i], z, pCur->rdr.n+1) != 0 ){
+        csv_errmsg(&pCur->rdr, "buffer overflow prevented in memcpy_s");
+        csv_xfer_error(pTab, &pCur->rdr);
+        break;
+      }
       i++;
     }
   }while( pCur->rdr.cTerm==',' );
