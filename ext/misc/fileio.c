@@ -130,20 +130,23 @@ SQLITE_EXTENSION_INIT1
 ** Space to hold the returned string is obtained from sqlite3_malloc().
 */
 static wchar_t *winUtf8To16(const char *zText){
-  int nChar;
+  int nWideChars;
   wchar_t *zWideText;
 
-  nChar = MultiByteToWideChar(CP_UTF8, 0, zText, -1, NULL, 0);
-  if( nChar==0 ){
+  nWideChars = MultiByteToWideChar(CP_UTF8, 0, zText, -1, NULL, 0);
+  /* nWideChars is the number of wide characters needed, including null terminator */
+  if( nWideChars==0 ){
     return 0;
   }
-  zWideText = sqlite3_malloc64(nChar*sizeof(WCHAR) );
+  /* Allocate buffer: nWideChars is character count, multiply by sizeof(WCHAR) for bytes */
+  zWideText = sqlite3_malloc64(nWideChars*sizeof(WCHAR) );
   if( zWideText==0 ){
     return 0;
   }
-  nChar = MultiByteToWideChar(CP_UTF8, 0, zText, -1, zWideText,
-                                nChar);
-  if( nChar==0 ){
+  /* cchWideChar parameter expects character count, not byte count */
+  nWideChars = MultiByteToWideChar(CP_UTF8, 0, zText, -1, zWideText,
+                                nWideChars);
+  if( nWideChars==0 ){
     sqlite3_free(zWideText);
     zWideText = 0;
   }
