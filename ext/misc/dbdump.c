@@ -486,7 +486,8 @@ static int dump_callback(void *pArg, int nArg, char **azArg, char **azCol){
             case SQLITE_FLOAT: {
               double r = sqlite3_column_double(pStmt,i);
               sqlite3_uint64 ur;
-              memcpy(&ur,&r,sizeof(r));
+              assert( sizeof(r)==sizeof(ur) );
+              memcpy(&ur,&r,sizeof(ur));
               if( ur==0x7ff0000000000000LL ){
                 p->xCallback("1e999", p->pArg);
               }else if( ur==0xfff0000000000000LL ){
