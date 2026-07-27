@@ -337,13 +337,13 @@ static int fuzzerLoadOneRule(
     rc = SQLITE_ERROR;    
   }else{
 
-    pRule = sqlite3_malloc64( sizeof(*pRule) + nFrom + nTo );
+    pRule = sqlite3_malloc64( sizeof(*pRule) + nFrom + nTo + 2 );
     if( pRule==0 ){
       rc = SQLITE_NOMEM;
     }else{
       memset(pRule, 0, sizeof(*pRule));
-      pRule->zFrom = pRule->zTo;
-      pRule->zFrom += nTo + 1;
+      pRule->zTo = (char*)(pRule + 1);
+      pRule->zFrom = pRule->zTo + nTo + 1;
       pRule->nFrom = (fuzzer_len)nFrom;
       memcpy(pRule->zFrom, zFrom, nFrom+1);
       memcpy(pRule->zTo, zTo, nTo+1);
