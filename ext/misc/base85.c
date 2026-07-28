@@ -429,7 +429,7 @@ int main(int na, char *av[]){
       break;
     case 'w':
       while( 0 != fgets(cBuf, sizeof(cBuf), stdin) ){
-        int nc = strlen(cBuf);
+        int nc = strnlen(cBuf, sizeof(cBuf));
         size_t nbo = fromBase85( cBuf, nc, bBuf ) - bBuf;
         if( 1 != fwrite(bBuf, nbo, 1, fb) ) rc = 1;
 #ifndef OMIT_BASE85_CHECKER
