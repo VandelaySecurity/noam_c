@@ -811,8 +811,8 @@ static int amatchDisconnect(sqlite3_vtab *pVtab){
 ** If not, return NULL.  Spaces around the = are ignored.
 */
 static const char *amatchValueOfKey(const char *zKey, const char *zStr){
-  int nKey = (int)strlen(zKey);
-  int nStr = (int)strlen(zStr);
+  int nKey = (int)strnlen(zKey, 1024);
+  int nStr = (int)strnlen(zStr, 1024);
   int i;
   if( nStr<nKey+1 ) return 0;
   if( memcmp(zStr, zKey, nKey)!=0 ) return 0;
