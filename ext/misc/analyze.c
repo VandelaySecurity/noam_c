@@ -203,7 +203,7 @@ static void analysisTitle(Analysis *p, const char *zFormat, ...){
     return;
   }
   zFirst = sqlite3_str_length(p->pOut)==0 ? "/" : "\n*";
-  nTitle = strlen(zTitle);
+  nTitle = strnlen(zTitle, 4096);
   if( nTitle>=75 ){
     sqlite3_str_appendf(p->pOut, "%s** %z\n\n", zFirst, zTitle);
   }else{
