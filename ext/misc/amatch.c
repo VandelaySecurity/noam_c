@@ -1031,12 +1031,16 @@ static void amatchAddWord(
   amatch_avl *pOther;
   int nBase, nTail;
   char zBuf[4];
+#define AMATCH_MAX_WORD_LEN 10000
   
   if( rCost>pCur->rLimit ){
     return;
   }
-  nBase = (int)strlen(zWordBase);
-  nTail = (int)strlen(zWordTail);
+  nBase = (int)strnlen(zWordBase, AMATCH_MAX_WORD_LEN);
+  nTail = (int)strnlen(zWordTail, AMATCH_MAX_WORD_LEN);
+  if( nBase >= AMATCH_MAX_WORD_LEN || nTail >= AMATCH_MAX_WORD_LEN ){
+    return;
+  }
   if( nBase+nTail+3>pCur->nBuf ){
     pCur->nBuf = nBase+nTail+100;
     pCur->zBuf = sqlite3_realloc64(pCur->zBuf, pCur->nBuf);
