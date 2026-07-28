@@ -441,8 +441,9 @@ static char *closureDequote(const char *zIn){
         if( zIn[iIn]==q ) iIn++;
         zOut[iOut++] = zIn[iIn];
       }
+      zOut[iOut] = '\0';
     }
-    assert( (int)strlen(zOut)<=nIn );
+    assert( (int)strnlen(zOut, nIn+1)<=nIn );
   }
   return zOut;
 }
