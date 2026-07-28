@@ -1038,7 +1038,7 @@ static void analyzeOneTable(
     pStat1 = (Table*)sqlite3DbMallocZero(db, sizeof(Table) + 13);
     if( pStat1==0 ) return;
     pStat1->zName = (char*)&pStat1[1];
-    memcpy(pStat1->zName, "sqlite_stat1", 13);
+    sqlite3_snprintf(13, pStat1->zName, "%s", "sqlite_stat1");
     pStat1->nCol = 3;
     pStat1->iPKey = -1;
     sqlite3VdbeAddOp4(pParse->pVdbe, OP_Noop, 0, 0, 0,(char*)pStat1,P4_DYNAMIC);
