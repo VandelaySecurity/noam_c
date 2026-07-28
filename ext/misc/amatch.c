@@ -1035,8 +1035,14 @@ static void amatchAddWord(
   if( rCost>pCur->rLimit ){
     return;
   }
-  nBase = (int)strlen(zWordBase);
-  nTail = (int)strlen(zWordTail);
+  nBase = (int)strnlen(zWordBase, 10000);
+  if( nBase >= 10000 ){
+    return;  /* String not null-terminated within reasonable bounds */
+  }
+  nTail = (int)strnlen(zWordTail, 10000);
+  if( nTail >= 10000 ){
+    return;  /* String not null-terminated within reasonable bounds */
+  }
   if( nBase+nTail+3>pCur->nBuf ){
     pCur->nBuf = nBase+nTail+100;
     pCur->zBuf = sqlite3_realloc64(pCur->zBuf, pCur->nBuf);
