@@ -481,8 +481,8 @@ static int closureDisconnect(sqlite3_vtab *pVtab){
 ** If not, return NULL.  Spaces around the = are ignored.
 */
 static const char *closureValueOfKey(const char *zKey, const char *zStr){
-  int nKey = (int)strlen(zKey);
-  int nStr = (int)strlen(zStr);
+  int nKey = (int)strnlen(zKey, 8192);
+  int nStr = (int)strnlen(zStr, 8192);
   int i;
   if( nStr<nKey+1 ) return 0;
   if( memcmp(zStr, zKey, nKey)!=0 ) return 0;
