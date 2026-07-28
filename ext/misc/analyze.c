@@ -257,7 +257,7 @@ static void analysisPercent(Analysis *p, double r){
   sz = (int)strlen(zNum);
   zDP = strchr(zNum, '.');
   if( zDP==0 ){
-    memcpy(zNum+sz,".0",3);
+    sqlite3_snprintf(sizeof(zNum)-sz, zNum+sz, ".0");
     nLeadingDigit = sz;
     sz += 2;
   }else{
