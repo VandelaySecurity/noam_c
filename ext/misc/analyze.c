@@ -234,7 +234,7 @@ static void analysisLine(
     analysisError(p, 0);
     return;
   }
-  nDesc = strlen(zDesc);
+  nDesc = strnlen(zDesc, 1024);
   if( nDesc>=50 ){
     sqlite3_str_appendf(p->pOut, "%s %z", zDesc, zTxt);
   }else{
