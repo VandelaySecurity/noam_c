@@ -6272,8 +6272,36 @@ static const char *azTempDirs[] = {
 ** Initialize first two members of azTempDirs[] array.
 */
 static void unixTempFileInit(void){
-  azTempDirs[0] = getenv("SQLITE_TMPDIR");
-  azTempDirs[1] = getenv("TMPDIR");
+  const char *tmpDir;
+  struct stat buf;
+  
+  tmpDir = getenv("SQLITE_TMPDIR");
+  if( tmpDir!=0 
+   && tmpDir[0]=='/' 
+   && strstr(tmpDir, "..")==0 
+   && strlen(tmpDir)<4096 
+   && osStat(tmpDir, &buf)==0 
+   && S_ISDIR(buf.st_mode) 
+   && osAccess(tmpDir, 03)==0 
+  ){
+    azTempDirs[0] = tmpDir;
+  }else{
+    azTempDirs[0] = 0;
+  }
+  
+  tmpDir = getenv("TMPDIR");
+  if( tmpDir!=0 
+   && tmpDir[0]=='/' 
+   && strstr(tmpDir, "..")==0 
+   && strlen(tmpDir)<4096 
+   && osStat(tmpDir, &buf)==0 
+   && S_ISDIR(buf.st_mode) 
+   && osAccess(tmpDir, 03)==0 
+  ){
+    azTempDirs[1] = tmpDir;
+  }else{
+    azTempDirs[1] = 0;
+  }
 }
 
 /*
