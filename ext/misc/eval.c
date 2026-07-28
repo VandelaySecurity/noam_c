@@ -87,7 +87,7 @@ static void sqlEvalFunc(
     x.zSep = (const char*)sqlite3_value_text(argv[1]);
     if( x.zSep==0 ) return;
   }
-  x.szSep = (int)strlen(x.zSep);
+  x.szSep = (int)strnlen(x.zSep, 1000000);
   db = sqlite3_context_db_handle(context);
   rc = sqlite3_exec(db, zSql, callback, &x, &zErr);
   if( rc!=SQLITE_OK ){
