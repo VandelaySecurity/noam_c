@@ -1037,7 +1037,7 @@ static void amatchAddWord(
   }
   nBase = (int)strlen(zWordBase);
   nTail = (int)strlen(zWordTail);
-  if( nBase+nTail+3>pCur->nBuf ){
+  if( nBase+nTail+3>=pCur->nBuf ){
     pCur->nBuf = nBase+nTail+100;
     pCur->zBuf = sqlite3_realloc64(pCur->zBuf, pCur->nBuf);
     if( pCur->zBuf==0 ){
