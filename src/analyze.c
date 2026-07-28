@@ -1887,7 +1887,13 @@ static int loadStatTbl(
       return SQLITE_NOMEM_BKPT;
     }
     if( pSample->n ){
-      memcpy(pSample->p, sqlite3_column_blob(pStmt, 4), pSample->n);
+      const void *pBlob;
+      pBlob = sqlite3_column_blob(pStmt, 4);
+      if( pBlob ){
+        int nBlob = sqlite3_column_bytes(pStmt, 4);
+        int nCopy = (nBlob < pSample->n) ? nBlob : pSample->n;
+        memcpy(pSample->p, pBlob, nCopy);
+      }
     }
     pIdx->nSample++;
   }
