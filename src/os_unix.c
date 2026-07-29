@@ -7492,7 +7492,7 @@ static int proxyCreateLockPath(const char *lockPath){
 
   assert(lockPath!=NULL);
   /* try to create all the intermediate directories */
-  len = (int)strlen(lockPath);
+  len = (int)strnlen(lockPath, MAXPATHLEN);
   buf[0] = lockPath[0];
   for( i=1; i<len; i++ ){
     if( lockPath[i] == '/' && (i - start > 0) ){
