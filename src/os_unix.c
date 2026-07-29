@@ -3686,7 +3686,7 @@ static int unixWrite(
   /* Deal with as much of this write request as possible by transferring
   ** data from the memory mapping using memcpy().  */
   if( offset<pFile->mmapSize ){
-    if( offset+amt <= pFile->mmapSize ){
+    if( amt <= pFile->mmapSize - offset ){
       memcpy(&((u8 *)(pFile->pMapRegion))[offset], pBuf, amt);
       return SQLITE_OK;
     }else{
