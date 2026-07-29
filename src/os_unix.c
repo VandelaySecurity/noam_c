@@ -7866,6 +7866,13 @@ static int proxyTakeConch(unixFile *pFile){
             if( pathLen>=MAXPATHLEN ){
               pathLen=MAXPATHLEN-1;
             }
+            if( readLen < PROXY_PATHINDEX + pathLen ){
+              pathLen = readLen - PROXY_PATHINDEX;
+            }
+            if( pathLen <= 0 ){
+              createConch = 1;
+              continue;
+            }
             memcpy(lockPath, &readBuf[PROXY_PATHINDEX], pathLen);
             lockPath[pathLen] = 0;
             tempLockPath = lockPath;
