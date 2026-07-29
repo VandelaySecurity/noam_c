@@ -7923,7 +7923,7 @@ static int proxyTakeConch(unixFile *pFile){
         }else{
           strlcpy(&writeBuffer[PROXY_PATHINDEX], tempLockPath, MAXPATHLEN);
         }
-        writeSize = PROXY_PATHINDEX + strlen(&writeBuffer[PROXY_PATHINDEX]);
+        writeSize = PROXY_PATHINDEX + strnlen(&writeBuffer[PROXY_PATHINDEX], PROXY_MAXCONCHLEN - PROXY_PATHINDEX);
         robust_ftruncate(conchFile->h, writeSize);
         rc = unixWrite((sqlite3_file *)conchFile, writeBuffer, writeSize, 0);
         full_fsync(conchFile->h,0,0);
