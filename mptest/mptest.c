@@ -1105,9 +1105,17 @@ static void runScript(
     ** Start up the given client.
     */
     if( strcmp(zCmd, "start")==0 && iClient==0 ){
-      int iNewClient = atoi(azArg[0]);
-      if( iNewClient>0 ){
-        startClient(iNewClient);
+      char *endptr;
+      errno = 0;
+      long client_val = strtol(azArg[0], &endptr, 10);
+      if( errno != 0 || *endptr != '\0' || client_val <= 0 || client_val > INT_MAX ){
+        errorMessage("line %d of %s: invalid client number: %s",
+                     prevLine, zFilename, azArg[0]);
+      }else{
+        int iNewClient = (int)client_val;
+        if( iNewClient>0 ){
+          startClient(iNewClient);
+        }
       }
     }else
 
@@ -1119,10 +1127,34 @@ static void runScript(
     ** TIMEOUT milliseconds (default 10,000)
     */
     if( strcmp(zCmd, "wait")==0 && iClient==0 ){
-      int iTimeout = nArg>=2 ? atoi(azArg[1]) : 10000;
-      sqlite3_snprintf(sizeof(zError),zError,"line %d of %s\n",
-                       prevLine, zFilename);
-      waitForClient(atoi(azArg[0]), iTimeout, zError);
+      char *endptr;
+      long timeout_val;
+      int iTimeout;
+      if( nArg>=2 ){
+        errno = 0;
+        timeout_val = strtol(azArg[1], &endptr, 10);
+        if( errno != 0 || *endptr != '\0' || timeout_val < 0 || timeout_val > INT_MAX ){
+          errorMessage("line %d of %s: invalid timeout value: %s",
+                       prevLine, zFilename, azArg[1]);
+          iTimeout = -1;
+        }else{
+          iTimeout = (int)timeout_val;
+        }
+      }else{
+        iTimeout = 10000;
+      }
+      if( iTimeout >= 0 ){
+        errno = 0;
+        long client_val = strtol(azArg[0], &endptr, 10);
+        if( errno != 0 || *endptr != '\0' || client_val < 0 || client_val > INT_MAX ){
+          errorMessage("line %d of %s: invalid client number: %s",
+                       prevLine, zFilename, azArg[0]);
+        }else{
+          sqlite3_snprintf(sizeof(zError),zError,"line %d of %s\n",
+                           prevLine, zFilename);
+          waitForClient((int)client_val, iTimeout, zError);
+        }
+      }
     }else
 
     /*
@@ -1134,22 +1166,29 @@ static void runScript(
     ** already.
     */
     if( strcmp(zCmd, "task")==0 && iClient==0 ){
-      int iTarget = atoi(azArg[0]);
-      int iEnd;
-      char *zTask;
-      char *zTName;
-      iEnd = findEnd(zScript+ii+len, &lineno);
-      if( iTarget<0 ){
-        errorMessage("line %d of %s: bad client number: %d",
-                     prevLine, zFilename, iTarget);
+      char *endptr;
+      errno = 0;
+      long target_val = strtol(azArg[0], &endptr, 10);
+      if( errno != 0 || *endptr != '\0' || target_val < 0 || target_val > INT_MAX ){
+        errorMessage("line %d of %s: invalid client number: %s",
+                     prevLine, zFilename, azArg[0]);
       }else{
-        zTask = sqlite3_mprintf("%.*s", iEnd, zScript+ii+len);
-        if( nArg>1 ){
-          zTName = sqlite3_mprintf("%s", azArg[1]);
+        int iTarget = (int)target_val;
+        int iEnd;
+        char *zTask;
+        char *zTName;
+        iEnd = findEnd(zScript+ii+len, &lineno);
+        if( iTarget<0 ){
+          errorMessage("line %d of %s: bad client number: %d",
+                       prevLine, zFilename, iTarget);
         }else{
-          zTName = sqlite3_mprintf("%s:%d", filenameTail(zFilename), prevLine);
-        }
-        startClient(iTarget);
+          zTask = sqlite3_mprintf("%.*s", iEnd, zScript+ii+len);
+          if( nArg>1 ){
+            zTName = sqlite3_mprintf("%s", azArg[1]);
+          }else{
+            zTName = sqlite3_mprintf("%s:%d", filenameTail(zFilename), prevLine);
+          }
+          startClient(iTarget);
         runSql("INSERT INTO task(client,script,name)"
                " VALUES(%d,'%q',%Q)", iTarget, zTask, zTName);
         sqlite3_free(zTask);
