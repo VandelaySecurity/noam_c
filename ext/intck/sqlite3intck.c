@@ -786,7 +786,12 @@ int sqlite3_intck_open(
   sqlite3_intck *pNew = 0;
   int rc = SQLITE_OK;
   const char *zDb = zDbArg ? zDbArg : "main";
-  int nDb = (int)strlen(zDb);
+  int nDb = (int)strnlen(zDb, 1024);
+
+  if( nDb == 1024 ){
+    *ppOut = 0;
+    return SQLITE_MISUSE;
+  }
 
   pNew = (sqlite3_intck*)sqlite3_malloc(sizeof(*pNew) + nDb + 1);
   if( pNew==0 ){
