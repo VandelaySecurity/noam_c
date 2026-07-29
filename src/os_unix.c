@@ -6196,7 +6196,7 @@ static int fillInUnixFile(
     char *zLockFile;
     int nFilename;
     assert( zFilename!=0 );
-    nFilename = (int)strlen(zFilename) + 6;
+    nFilename = (int)strnlen(zFilename, MAX_PATHNAME) + 6;
     zLockFile = (char *)sqlite3_malloc64(nFilename);
     if( zLockFile==0 ){
       rc = SQLITE_NOMEM_BKPT;
