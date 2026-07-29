@@ -1285,8 +1285,7 @@ static int renameEditSql(
         ** add another space after the new, single-quoted version of the
         ** token. This is so that (SELECT "string"'alias') maps to
         ** (SELECT 'string' 'alias'), and not (SELECT 'string''alias').  */
-        memcpy(zBuf1, pBest->t.z, pBest->t.n);
-        zBuf1[pBest->t.n] = 0;
+        sqlite3_snprintf(sizeof(zBuf1), zBuf1, "%.*s", (int)pBest->t.n, pBest->t.z);
         sqlite3Dequote(zBuf1);
         assert( nSql < 0x15555554 /* otherwise malloc would have failed */ );
         sqlite3_snprintf((int)(nSql*2), zBuf2, "%Q%s", zBuf1,
