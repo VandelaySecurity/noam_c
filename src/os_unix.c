@@ -8080,6 +8080,7 @@ static int proxyCreateConchPathname(char *dbPath, char **pConchPath){
 
   /* append the "-conch" suffix to the file */
   memcpy(&conchPath[i+1], "-conch", 7);
+  conchPath[len+7] = '\0';
   assert( (int)strlen(conchPath) == len+7 );
 
   return SQLITE_OK;
