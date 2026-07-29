@@ -9064,6 +9064,11 @@ static int balance_deeper(MemPage *pRoot, MemPage **ppChild){
   TRACE(("BALANCE: copy root %u into %u\n", pRoot->pgno, pChild->pgno));
 
   /* Copy the overflow cells from pRoot to pChild */
+  if( pRoot->nOverflow > ArraySize(pRoot->aiOvfl) ){
+    *ppChild = 0;
+    releasePage(pChild);
+    return SQLITE_CORRUPT_BKPT;
+  }
   memcpy(pChild->aiOvfl, pRoot->aiOvfl,
          pRoot->nOverflow*sizeof(pRoot->aiOvfl[0]));
   memcpy(pChild->apOvfl, pRoot->apOvfl,
