@@ -4888,19 +4888,27 @@ int sqlite3PagerOpen(
     return SQLITE_NOMEM_BKPT;
   }
   pPager = (Pager*)pPtr;                  pPtr += ROUND8(sizeof(*pPager));
+  u8 *pPtrEnd = pPtr + ROUND8(pcacheSize) + ROUND8(pVfs->szOsFile) + (u64)journalFileSize * 2 + SQLITE_PTRSIZE + 4 + (u64)nPathname + 1 + (u64)nUriByte + (u64)nPathname + 8 + 1 +
+#ifndef SQLITE_OMIT_WAL
+    (u64)nPathname + 4 + 1 +
+#endif
+    3;
   pPager->pPCache = (PCache*)pPtr;        pPtr += ROUND8(pcacheSize);
   pPager->fd = (sqlite3_file*)pPtr;       pPtr += ROUND8(pVfs->szOsFile);
   pPager->sjfd = (sqlite3_file*)pPtr;     pPtr += journalFileSize;
   pPager->jfd =  (sqlite3_file*)pPtr;     pPtr += journalFileSize;
   assert( EIGHT_BYTE_ALIGNMENT(pPager->jfd) );
+  if( pPtr + SQLITE_PTRSIZE > pPtrEnd ){ sqlite3DbFree(0, zPathname); return SQLITE_NOMEM_BKPT; }
   memcpy(pPtr, &pPager, SQLITE_PTRSIZE);  pPtr += SQLITE_PTRSIZE;
 
   /* Fill in the Pager.zFilename and pPager.zQueryParam fields */
                                           pPtr += 4;  /* Skip zero prefix */
   pPager->zFilename = (char*)pPtr;
   if( nPathname>0 ){
+    if( pPtr + nPathname > pPtrEnd ){ sqlite3DbFree(0, zPathname); return SQLITE_NOMEM_BKPT; }
     memcpy(pPtr, zPathname, nPathname);   pPtr += nPathname + 1;
     if( zUri ){
+      if( pPtr + nUriByte > pPtrEnd ){ sqlite3DbFree(0, zPathname); return SQLITE_NOMEM_BKPT; }
       memcpy(pPtr, zUri, nUriByte);       pPtr += nUriByte;
     }else{
                                           pPtr++;
@@ -4911,7 +4919,9 @@ int sqlite3PagerOpen(
   /* Fill in Pager.zJournal */
   if( nPathname>0 ){
     pPager->zJournal = (char*)pPtr;
+    if( pPtr + nPathname > pPtrEnd ){ sqlite3DbFree(0, zPathname); return SQLITE_NOMEM_BKPT; }
     memcpy(pPtr, zPathname, nPathname);   pPtr += nPathname;
+    if( pPtr + 8 > pPtrEnd ){ sqlite3DbFree(0, zPathname); return SQLITE_NOMEM_BKPT; }
     memcpy(pPtr, "-journal",8);           pPtr += 8 + 1;
 #ifdef SQLITE_ENABLE_8_3_NAMES
     sqlite3FileSuffix3(zFilename,pPager->zJournal);
@@ -4925,7 +4935,9 @@ int sqlite3PagerOpen(
   /* Fill in Pager.zWal */
   if( nPathname>0 ){
     pPager->zWal = (char*)pPtr;
+    if( pPtr + nPathname > pPtrEnd ){ sqlite3DbFree(0, zPathname); return SQLITE_NOMEM_BKPT; }
     memcpy(pPtr, zPathname, nPathname);   pPtr += nPathname;
+    if( pPtr + 4 > pPtrEnd ){ sqlite3DbFree(0, zPathname); return SQLITE_NOMEM_BKPT; }
     memcpy(pPtr, "-wal", 4);              pPtr += 4 + 1;
 #ifdef SQLITE_ENABLE_8_3_NAMES
     sqlite3FileSuffix3(zFilename, pPager->zWal);
