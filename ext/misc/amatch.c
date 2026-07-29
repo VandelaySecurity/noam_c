@@ -741,7 +741,7 @@ static char *amatchDequote(const char *zIn){
   sqlite3_int64 nIn;              /* Size of input string, in bytes */
   char *zOut;                     /* Output (dequoted) string */
 
-  nIn = strlen(zIn);
+  nIn = strnlen(zIn, 0x7fffffff);
   zOut = sqlite3_malloc64(nIn+1);
   if( zOut ){
     char q = zIn[0];              /* Quote character (if any ) */
