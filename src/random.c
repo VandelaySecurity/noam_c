@@ -99,6 +99,7 @@ void sqlite3_randomness(int N, void *pBuf){
     static const u32 chacha20_init[] = {
       0x61707865, 0x3320646e, 0x79622d32, 0x6b206574
     };
+    assert( sizeof(wsdPrng.s) >= 16 );
     memcpy(&wsdPrng.s[0], chacha20_init, 16);
     if( NEVER(pVfs==0) ){
       memset(&wsdPrng.s[4], 0, 44);
