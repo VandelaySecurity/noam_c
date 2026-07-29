@@ -2463,6 +2463,14 @@ static int quotedCompare(
 ){
   char *zCopy = 0;       /* De-quoted, zero-terminated copy of zQuote[] */
 
+  if( nQuote < 0 ){
+    *pRes = 1;
+    return SQLITE_OK;
+  }
+  if( nQuote > 0 && zQuote == 0 ){
+    *pRes = 1;
+    return SQLITE_OK;
+  }
   if( t==TK_ILLEGAL ){
     *pRes = 1;
     return SQLITE_OK;
