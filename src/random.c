@@ -39,7 +39,7 @@ static SQLITE_WSD struct sqlite3PrngType {
 static void chacha_block(u32 *out, const u32 *in){
   int i;
   u32 x[16];
-  memcpy(x, in, 64);
+  memcpy(x, in, sizeof(x));
   for(i=0; i<10; i++){
     QR(x[0], x[4], x[ 8], x[12]);
     QR(x[1], x[5], x[ 9], x[13]);
