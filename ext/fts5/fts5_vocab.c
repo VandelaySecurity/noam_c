@@ -201,24 +201,36 @@ static int fts5VocabInitVtab(
     i64 nTab = strlen(zTab)+1;
     int eType = 0;
     
+    if( nDb<0 || nDb>SQLITE_MAX_LENGTH || nTab<0 || nTab>SQLITE_MAX_LENGTH ){
+      *pzErr = sqlite3_mprintf("table or database name too long");
+      rc = SQLITE_ERROR;
+    }
+    
     rc = fts5VocabTableType(zType, pzErr, &eType);
     if( rc==SQLITE_OK ){
       assert( eType>=0 && eType<ArraySize(azSchema) );
       rc = sqlite3_declare_vtab(db, azSchema[eType]);
     }
 
-    nByte = sizeof(Fts5VocabTable) + nDb + nTab;
-    pRet = sqlite3Fts5MallocZero(&rc, nByte);
-    if( pRet ){
-      pRet->pGlobal = (Fts5Global*)pAux;
-      pRet->eType = eType;
-      pRet->db = db;
-      pRet->zFts5Tbl = (char*)&pRet[1];
-      pRet->zFts5Db = &pRet->zFts5Tbl[nTab];
-      memcpy(pRet->zFts5Tbl, zTab, nTab);
-      memcpy(pRet->zFts5Db, zDb, nDb);
-      sqlite3Fts5Dequote(pRet->zFts5Tbl);
-      sqlite3Fts5Dequote(pRet->zFts5Db);
+    if( rc==SQLITE_OK && (nDb + nTab) > (SQLITE_MAX_LENGTH - sizeof(Fts5VocabTable)) ){
+      *pzErr = sqlite3_mprintf("allocation size overflow");
+      rc = SQLITE_ERROR;
+    }
+
+    if( rc==SQLITE_OK ){
+      nByte = sizeof(Fts5VocabTable) + nDb + nTab;
+      pRet = sqlite3Fts5MallocZero(&rc, nByte);
+      if( pRet ){
+        pRet->pGlobal = (Fts5Global*)pAux;
+        pRet->eType = eType;
+        pRet->db = db;
+        pRet->zFts5Tbl = (char*)&pRet[1];
+        pRet->zFts5Db = &pRet->zFts5Tbl[nTab];
+        memcpy(pRet->zFts5Tbl, zTab, nTab);
+        memcpy(pRet->zFts5Db, zDb, nDb);
+        sqlite3Fts5Dequote(pRet->zFts5Tbl);
+        sqlite3Fts5Dequote(pRet->zFts5Db);
+      }
     }
   }
 
