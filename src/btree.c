@@ -9602,6 +9602,9 @@ int sqlite3BtreeInsert(
     }
     oldCell = findCell(pPage, idx);
     if( !pPage->leaf ){
+      if( szNew < 4 ){
+        return SQLITE_CORRUPT_PAGE(pPage);
+      }
       memcpy(newCell, oldCell, 4);
     }
     BTREE_CLEAR_CELL(rc, pPage, oldCell, info);
