@@ -2850,7 +2850,7 @@ static int pragmaVtabConnect(
   }
   sqlite3_str_append(&acc, ")", 1);
   sqlite3StrAccumFinish(&acc);
-  assert( strlen(zBuf) < sizeof(zBuf)-1 );
+  assert( sqlite3Strlen30(zBuf) < sizeof(zBuf)-1 );
   rc = sqlite3_declare_vtab(db, zBuf);
   if( rc==SQLITE_OK ){
     pTab = (PragmaVtab*)sqlite3_malloc(sizeof(PragmaVtab));
