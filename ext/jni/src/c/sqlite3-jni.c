@@ -1169,7 +1169,16 @@ static jobject s3jni__blob_to_ByteBuffer(JNIEnv * const env,
   rv = s3jni__new_ByteBuffer(env, n);
   if( rv ){
     void * tgt = (*env)->GetDirectBufferAddress(env, rv);
-    memcpy(tgt, p, (size_t)n);
+    if( tgt ){
+      jlong capacity = (*env)->GetDirectBufferCapacity(env, rv);
+      if( capacity >= n ){
+        memcpy(tgt, p, (size_t)n);
+      }else{
+        return NULL;
+      }
+    }else{
+      return NULL;
+    }
   }
   return rv;
 }
