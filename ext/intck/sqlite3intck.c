@@ -794,8 +794,8 @@ int sqlite3_intck_open(
   }else{
     memset(pNew, 0, sizeof(*pNew));
     pNew->db = db;
-    pNew->zDb = (const char*)&pNew[1];
-    memcpy(&pNew[1], zDb, nDb+1);
+    pNew->zDb = (const char*)(pNew + 1);
+    memcpy((char*)(pNew + 1), zDb, nDb+1);
     rc = sqlite3_create_function(db, "parse_create_index", 
         2, SQLITE_UTF8, 0, intckParseCreateIndexFunc, 0, 0
     );
