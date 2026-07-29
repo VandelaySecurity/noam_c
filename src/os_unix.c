@@ -6269,11 +6269,39 @@ static const char *azTempDirs[] = {
 };
 
 /*
+** Validate a temporary directory path from environment variable.
+** Returns the path if valid, NULL otherwise.
+*/
+static const char *validateTempDirPath(const char *path){
+  size_t len;
+  const char *p;
+  
+  if( path==0 ) return 0;
+  
+  len = strlen(path);
+#ifdef PATH_MAX
+  if( len>=PATH_MAX ) return 0;
+#else
+  if( len>=512 ) return 0;
+#endif
+  
+  if( path[0]!='/' ) return 0;
+  
+  if( strstr(path, "..")!=0 ) return 0;
+  
+  for( p=path; *p; p++ ){
+    if( *p=='\0' && p<(path+len) ) return 0;
+  }
+  
+  return path;
+}
+
+/*
 ** Initialize first two members of azTempDirs[] array.
 */
 static void unixTempFileInit(void){
-  azTempDirs[0] = getenv("SQLITE_TMPDIR");
-  azTempDirs[1] = getenv("TMPDIR");
+  azTempDirs[0] = validateTempDirPath(getenv("SQLITE_TMPDIR"));
+  azTempDirs[1] = validateTempDirPath(getenv("TMPDIR"));
 }
 
 /*
