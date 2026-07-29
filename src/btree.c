@@ -8360,7 +8360,7 @@ static int balance_nonroot(
         /* If the following if() condition is not true, the db is corrupted.
         ** The call to dropCell() below will detect this.  */
         iOff = SQLITE_PTR_TO_INT(apDiv[i]) - SQLITE_PTR_TO_INT(pParent->aData);
-        if( (iOff+szNew[i])<=(int)pBt->usableSize ){
+        if( (iOff>=0) && (iOff+szNew[i])<=(int)pBt->usableSize ){
           memcpy(&aOvflSpace[iOff], apDiv[i], szNew[i]);
           apDiv[i] = &aOvflSpace[apDiv[i]-pParent->aData];
         }
