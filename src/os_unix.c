@@ -6952,7 +6952,7 @@ static void appendOnePathElement(
       return;
     }
   }
-  if( pPath->nUsed + nName + 2 >= pPath->nOut ){
+  if( pPath->nUsed + nName + 2 > pPath->nOut ){
     pPath->rc = SQLITE_ERROR;
     return;
   }
