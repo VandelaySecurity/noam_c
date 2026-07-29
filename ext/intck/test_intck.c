@@ -165,7 +165,7 @@ static int test_sqlite3_intck(
   }
 
   do {
-    sprintf(zName, "intck%d", iName++);
+    snprintf(zName, sizeof(zName), "intck%d", iName++);
   }while( Tcl_GetCommandInfo(interp, zName, &info)!=0 );
   Tcl_CreateObjCommand(interp, zName, testIntckCmd, (void*)p, testIntckFree);
   Tcl_SetObjResult(interp, Tcl_NewStringObj(zName, -1));
