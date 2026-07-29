@@ -8490,6 +8490,9 @@ static int balance_nonroot(
         assert( pOld->hdrOffset==0 || CORRUPT_DB );
         /* The right pointer of the child page pOld becomes the left
         ** pointer of the divider cell */
+        if( iSpace1 + 4 > (int)pBt->pageSize ){
+          return SQLITE_CORRUPT;
+        }
         memcpy(b.apCell[b.nCell], &pOld->aData[8], 4);
       }else{
         assert( leafCorrection==4 );
