@@ -349,9 +349,15 @@ static void sampleCopy(StatAccum *p, StatSample *pTo, StatSample *pFrom){
   pTo->isPSample = pFrom->isPSample;
   pTo->iCol = pFrom->iCol;
   pTo->iHash = pFrom->iHash;
-  memcpy(pTo->anEq, pFrom->anEq, sizeof(tRowcnt)*p->nCol);
-  memcpy(pTo->anLt, pFrom->anLt, sizeof(tRowcnt)*p->nCol);
-  memcpy(pTo->anDLt, pFrom->anDLt, sizeof(tRowcnt)*p->nCol);
+  if( p->nCol > 0 && pTo->anEq && pFrom->anEq ){
+    memcpy(pTo->anEq, pFrom->anEq, sizeof(tRowcnt)*p->nCol);
+  }
+  if( p->nCol > 0 && pTo->anLt && pFrom->anLt ){
+    memcpy(pTo->anLt, pFrom->anLt, sizeof(tRowcnt)*p->nCol);
+  }
+  if( p->nCol > 0 && pTo->anDLt && pFrom->anDLt ){
+    memcpy(pTo->anDLt, pFrom->anDLt, sizeof(tRowcnt)*p->nCol);
+  }
   if( pFrom->nRowid ){
     sampleSetRowid(p->db, pTo, pFrom->nRowid, pFrom->u.aRowid);
   }else{
