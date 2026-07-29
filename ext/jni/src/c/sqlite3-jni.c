@@ -6092,7 +6092,10 @@ static void SQLTester_dup_func(
   if( n>0 && (pOut = s3jni_malloc( (n+16)&~7 ))!=0 ){
     pOut[0] = 0x2bbf4b7c;
     z = (char*)&pOut[1];
-    memcpy(z, sqlite3_value_text(argv[0]), n);
+    const unsigned char *zSrc = sqlite3_value_text(argv[0]);
+    if( zSrc ){
+      memcpy(z, zSrc, n);
+    }
     z[n] = 0;
     sqlite3_result_text(context, z, n, SQLTester_dup_destructor);
   }
