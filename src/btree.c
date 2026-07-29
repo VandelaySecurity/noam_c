@@ -8826,6 +8826,10 @@ static int balance_nonroot(
     sz = b.szCell[j] + leafCorrection;
     pTemp = &aOvflSpace[iOvflSpace];
     if( !pNew->leaf ){
+      if( pCell + 4 > pOld->aDataEnd ){
+        rc = SQLITE_CORRUPT_BKPT;
+        goto balance_cleanup;
+      }
       memcpy(&pNew->aData[8], pCell, 4);
     }else if( leafData ){
       /* If the tree is a leaf-data tree, and the siblings are leaves,
