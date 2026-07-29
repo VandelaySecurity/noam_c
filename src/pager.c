@@ -4485,7 +4485,9 @@ static int pager_write_pagelist(Pager *pPager, PgHdr *pList){
       ** page caused the database file to grow, update dbFileSize.
       */
       if( pgno==1 ){
-        memcpy(&pPager->dbFileVers, &pData[24], sizeof(pPager->dbFileVers));
+        if( pPager->pageSize >= 24 + sizeof(pPager->dbFileVers) ){
+          memcpy(&pPager->dbFileVers, &pData[24], sizeof(pPager->dbFileVers));
+        }
       }
       if( pgno>pPager->dbFileSize ){
         pPager->dbFileSize = pgno;
