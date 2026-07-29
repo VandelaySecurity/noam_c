@@ -619,7 +619,7 @@ static int amatchLoadOneRule(
     if( p->rDel==0 || p->rDel>rCost ) p->rDel = rCost;
   }else
   {
-    pRule = sqlite3_malloc64( sizeof(*pRule) + nFrom + nTo );
+    pRule = sqlite3_malloc64( sizeof(*pRule) + nFrom + nTo + 2 );
     if( pRule==0 ){
       rc = SQLITE_NOMEM;
     }else{
