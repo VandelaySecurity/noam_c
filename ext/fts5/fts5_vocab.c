@@ -187,7 +187,7 @@ static int fts5VocabInitVtab(
   int rc = SQLITE_OK;             /* Return code */
   int bDb;
 
-  bDb = (argc==6 && strlen(argv[1])==4 && memcmp("temp", argv[1], 4)==0);
+  bDb = (argc==6 && strnlen(argv[1], 5)==4 && memcmp("temp", argv[1], 4)==0);
 
   if( argc!=5 && bDb==0 ){
     *pzErr = sqlite3_mprintf("wrong number of vtable arguments");
@@ -197,8 +197,8 @@ static int fts5VocabInitVtab(
     const char *zDb = bDb ? argv[3] : argv[1];
     const char *zTab = bDb ? argv[4] : argv[3];
     const char *zType = bDb ? argv[5] : argv[4];
-    i64 nDb = strlen(zDb)+1; 
-    i64 nTab = strlen(zTab)+1;
+    i64 nDb = strnlen(zDb, 1000000)+1; 
+    i64 nTab = strnlen(zTab, 1000000)+1;
     int eType = 0;
     
     rc = fts5VocabTableType(zType, pzErr, &eType);
