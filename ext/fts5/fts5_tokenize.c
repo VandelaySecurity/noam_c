@@ -635,8 +635,8 @@ static int fts5PorterApply(char *aBuf, int *pnBuf, PorterRule *aRule){
   PorterRule *p;
 
   for(p=aRule; p->zSuffix; p++){
-    assert( strlen(p->zSuffix)==p->nSuffix );
-    assert( strlen(p->zOutput)==p->nOutput );
+    assert( strnlen(p->zSuffix, p->nSuffix + 1)==p->nSuffix );
+    assert( strnlen(p->zOutput, p->nOutput + 1)==p->nOutput );
     if( nBuf<p->nSuffix ) continue;
     if( 0==memcmp(&aBuf[nBuf - p->nSuffix], p->zSuffix, p->nSuffix) ) break;
   }
