@@ -1657,12 +1657,13 @@ void f5tStrFunc(sqlite3_context *pCtx, int nArg, sqlite3_value **apArg){
   zText = (const char*)sqlite3_value_text(apArg[0]);
   if( zText ){
     sqlite3_int64 nText = strlen(zText);
-    char *zCopy = (char*)ckalloc(nText+8);
+    char *zCopy = (char*)ckalloc(nText+9);
     if( zCopy==0 ){
       sqlite3_result_error_nomem(pCtx);
     }else{
       zCopy += 8;
       memcpy(zCopy, zText, nText);
+      zCopy[nText] = '\0';
       sqlite3_result_text64(pCtx, zCopy, nText, f5tFree, SQLITE_UTF8);
     }
   }
@@ -1692,7 +1693,6 @@ static int SQLITE_TCLAPI f5tRegisterStr(
   }
 
   sqlite3_create_function(db, "str", 1, SQLITE_UTF8, 0, f5tStrFunc, 0, 0);
-
   return TCL_OK;
 }
 
