@@ -142,9 +142,15 @@ static int fts5tokDequoteArray(
       rc = SQLITE_NOMEM;
     }else{
       char *pSpace = (char *)&azDequote[argc];
+      char *pEnd = (char *)azDequote + (sizeof(char *)*argc + nByte);
       for(i=0; i<argc; i++){
         int n = (int)strlen(argv[i]);
         azDequote[i] = pSpace;
+        if( pSpace + (n+1) > pEnd ){
+          sqlite3_free(azDequote);
+          *pazDequote = 0;
+          return SQLITE_ERROR;
+        }
         memcpy(pSpace, argv[i], n+1);
         fts5tokDequote(pSpace);
         pSpace += (n+1);
