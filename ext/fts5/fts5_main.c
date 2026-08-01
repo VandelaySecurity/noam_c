@@ -3271,7 +3271,12 @@ static int fts5NewTokenizerModule(
   sqlite3_int64 nName;          /* Size of zName and its \0 terminator */
   sqlite3_int64 nByte;          /* Bytes of space to allocate */
 
-  nName = strlen(zName) + 1;
+  nName = strnlen(zName, 1024);
+  if( nName==1024 ){
+    *ppNew = 0;
+    return SQLITE_ERROR;
+  }
+  nName = nName + 1;
   nByte = sizeof(Fts5TokenizerModule) + nName;
   *ppNew = pNew = (Fts5TokenizerModule*)sqlite3Fts5MallocZero(&rc, nByte);
   if( pNew ){
