@@ -1473,6 +1473,11 @@ static int xOriginToken(
   OriginTextCb *p = (OriginTextCb*)pCtx;
   int ret = 0;
 
+  /* Validate that iStart and iEnd are within bounds of pText */
+  if( iStart < 0 || iEnd < iStart || iEnd > p->nText ){
+    return SQLITE_ERROR;
+  }
+
   if( nToken==(iEnd-iStart) && 0==memcmp(pToken, &p->pText[iStart], nToken) ){
     /* Token exactly matches document text. Pass it through as is. */
     ret = p->xToken(p->pCtx, tflags, pToken, nToken, iStart, iEnd);
