@@ -1656,7 +1656,7 @@ void f5tStrFunc(sqlite3_context *pCtx, int nArg, sqlite3_value **apArg){
 
   zText = (const char*)sqlite3_value_text(apArg[0]);
   if( zText ){
-    sqlite3_int64 nText = strlen(zText);
+    sqlite3_int64 nText = sqlite3_value_bytes(apArg[0]);
     char *zCopy = (char*)ckalloc(nText+8);
     if( zCopy==0 ){
       sqlite3_result_error_nomem(pCtx);
