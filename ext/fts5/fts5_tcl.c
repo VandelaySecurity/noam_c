@@ -1229,7 +1229,7 @@ static int SQLITE_TCLAPI f5tCreateTokenizer(
       fts5_tokenizer_v2 *pParent = 0;
       rc = pApi->xFindTokenizer_v2(pApi, zParent, &pMod->pParentCtx, &pParent);
       if( rc==SQLITE_OK ){
-        memcpy(&pMod->parent_v2, pParent, sizeof(fts5_tokenizer_v2));
+        pMod->parent_v2 = *pParent;
         pMod->parent_v2.xDelete(0);
       }
     }else{
