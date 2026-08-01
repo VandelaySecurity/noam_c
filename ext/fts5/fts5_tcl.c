@@ -181,7 +181,7 @@ static int xQueryPhraseCb(
 
   sApi.pApi = pApi;
   sApi.pFts = pFts;
-  sprintf(zCmd, "f5t_2_%lld", iCmd++);
+  snprintf(zCmd, sizeof(zCmd), "f5t_2_%lld", iCmd++);
   Tcl_CreateObjCommand(p->interp, zCmd, xF5tApi, &sApi, 0);
 
   pEval = Tcl_DuplicateObj(p->pScript);
