@@ -3675,13 +3675,36 @@ static void fts5LocaleFunc(
       return;
     }
 
+    if( nLocale < 0 || nText < 0 ){
+      sqlite3_free(pBlob);
+      sqlite3_result_error(pCtx, "invalid size", -1);
+      return;
+    }
+
     pCsr = pBlob;
+    if( pCsr + FTS5_LOCALE_HDR_SIZE > pBlob + nBlob ){
+      sqlite3_free(pBlob);
+      sqlite3_result_error(pCtx, "buffer overflow prevented", -1);
+      return;
+    }
     memcpy(pCsr, (const u8*)p->aLocaleHdr, FTS5_LOCALE_HDR_SIZE);
     pCsr += FTS5_LOCALE_HDR_SIZE;
+    if( nLocale > 0 && (pCsr + nLocale > pBlob + nBlob || zLocale == NULL) ){
+      sqlite3_free(pBlob);
+      sqlite3_result_error(pCtx, "invalid locale size", -1);
+      return;
+    }
     memcpy(pCsr, zLocale, nLocale);
     pCsr += nLocale;
     (*pCsr++) = 0x00;
-    if( zText ) memcpy(pCsr, zText, nText);
+    if( zText ){
+      if( pCsr + nText > pBlob + nBlob ){
+        sqlite3_free(pBlob);
+        sqlite3_result_error(pCtx, "buffer overflow prevented", -1);
+        return;
+      }
+      memcpy(pCsr, zText, nText);
+    }
     assert( &pCsr[nText]==&pBlob[nBlob] );
 
     sqlite3_result_blob(pCtx, pBlob, nBlob, sqlite3_free);
