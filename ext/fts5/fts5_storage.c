@@ -372,21 +372,20 @@ int sqlite3Fts5StorageOpen(
       }else{
         int i;
         int iOff;
-        sqlite3_snprintf(nDefn, zDefn, "id INTEGER PRIMARY KEY");
-        iOff = (int)strlen(zDefn);
+        iOff = sqlite3_snprintf(nDefn, zDefn, "id INTEGER PRIMARY KEY");
         for(i=0; i<pConfig->nCol; i++){
           if( pConfig->eContent==FTS5_CONTENT_NORMAL 
            || pConfig->abUnindexed[i] 
           ){
-            sqlite3_snprintf(nDefn-iOff, &zDefn[iOff], ", c%d", i);
-            iOff += (int)strlen(&zDefn[iOff]);
+            int n = sqlite3_snprintf(nDefn-iOff, &zDefn[iOff], ", c%d", i);
+            if( n>0 ) iOff += n;
           }
         }
         if( pConfig->bLocale ){
           for(i=0; i<pConfig->nCol; i++){
             if( pConfig->abUnindexed[i]==0 ){
-              sqlite3_snprintf(nDefn-iOff, &zDefn[iOff], ", l%d", i);
-              iOff += (int)strlen(&zDefn[iOff]);
+              int n = sqlite3_snprintf(nDefn-iOff, &zDefn[iOff], ", l%d", i);
+              if( n>0 ) iOff += n;
             }
           }
         }
