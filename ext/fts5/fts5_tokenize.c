@@ -258,7 +258,7 @@ static int fts5UnicodeAddExceptions(
   int bTokenChars                 /* 1 for 'tokenchars', 0 for 'separators' */
 ){
   int rc = SQLITE_OK;
-  int n = (int)strlen(z);
+  int n = (int)strnlen(z, 4096);
   int *aNew;
 
   if( n>0 ){
