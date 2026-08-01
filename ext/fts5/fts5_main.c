@@ -3681,7 +3681,10 @@ static void fts5LocaleFunc(
     memcpy(pCsr, zLocale, nLocale);
     pCsr += nLocale;
     (*pCsr++) = 0x00;
-    if( zText ) memcpy(pCsr, zText, nText);
+    if( zText && nText>0 ){
+      assert( pCsr + nText <= pBlob + nBlob );
+      memcpy(pCsr, zText, nText);
+    }
     assert( &pCsr[nText]==&pBlob[nBlob] );
 
     sqlite3_result_blob(pCtx, pBlob, nBlob, sqlite3_free);
