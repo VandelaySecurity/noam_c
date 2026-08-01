@@ -1477,7 +1477,13 @@ static int xOriginToken(
     /* Token exactly matches document text. Pass it through as is. */
     ret = p->xToken(p->pCtx, tflags, pToken, nToken, iStart, iEnd);
   }else{
+    if( nToken<0 || iStart<0 || iEnd<0 || iEnd<iStart ){
+      return SQLITE_ERROR;
+    }
     int nReq = nToken + 1 + (iEnd-iStart);
+    if( nReq < nToken || nReq < (iEnd-iStart) ){
+      return SQLITE_ERROR;
+    }
     if( nReq>p->nBuf ){
       sqlite3_free(p->aBuf);
       p->aBuf = sqlite3_malloc64(nReq*2);
