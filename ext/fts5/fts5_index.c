@@ -5426,8 +5426,12 @@ static void fts5DoSecureDelete(
         if( nPrefix2>(u64)pSeg->term.n ){
           FTS5_CORRUPT_IDX(p);
         }else if( nPrefix2>nPrefix ){
-          memcpy(&aPg[iOff], &pSeg->term.p[nPrefix], nPrefix2-nPrefix);
-          iOff += (nPrefix2-nPrefix);
+          if( (iOff + (nPrefix2-nPrefix)) > (u64)iPgIdx ){
+            FTS5_CORRUPT_IDX(p);
+          }else{
+            memcpy(&aPg[iOff], &pSeg->term.p[nPrefix], nPrefix2-nPrefix);
+            iOff += (nPrefix2-nPrefix);
+          }
         }
         memmove(&aPg[iOff], &aPg[iNextOff], nSuffix2);
         iOff += nSuffix2;
