@@ -679,7 +679,7 @@ static int fts5BestIndexMethod(sqlite3_vtab *pVTab, sqlite3_index_info *pInfo){
         assert( p->op==FTS5_PATTERN_LIKE || p->op==FTS5_PATTERN_GLOB );
         idxStr[iIdxStr++] = p->op==FTS5_PATTERN_LIKE ? 'L' : 'G';
         sqlite3_snprintf(6, &idxStr[iIdxStr], "%d", iCol);
-        idxStr += strlen(&idxStr[iIdxStr]);
+        idxStr += strnlen(&idxStr[iIdxStr], 6);
         pInfo->aConstraintUsage[i].argvIndex = ++iCons;
         assert( idxStr[iIdxStr]=='\0' );
         nSeenMatch++;
