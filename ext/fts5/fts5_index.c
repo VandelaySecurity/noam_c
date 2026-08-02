@@ -6751,7 +6751,10 @@ static void fts5SetupPrefixIter(
     if( pData ){
       pData->p = (u8*)&pData[1];
       pData->nn = pData->szLeaf = s.doclist.n;
-      if( s.doclist.n ) memcpy(pData->p, s.doclist.p, s.doclist.n);
+      if( s.doclist.n ){
+        assert( s.doclist.n >= 0 );
+        memcpy(pData->p, s.doclist.p, (size_t)s.doclist.n);
+      }
       fts5MultiIterNew2(p, pData, bDesc, ppIter);
     }
 
