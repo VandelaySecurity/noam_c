@@ -9004,7 +9004,7 @@ static void fts5DecodeFunction(
   nSpace = ((i64)n) + FTS5_DATA_ZERO_PADDING;
   a = (u8*)sqlite3Fts5MallocZero(&rc, nSpace);
   if( a==0 ) goto decode_out;
-  if( n>0 ) memcpy(a, aBlob, n);
+  if( n>0 && aBlob ) memcpy(a, aBlob, n);
 
   fts5DecodeRowid(iRowid, &bTomb, &iSegid, &bDlidx, &iHeight, &iPgno);
 
