@@ -5253,6 +5253,10 @@ static void fts5DoSecureDelete(
   int iDelKeyOff = 0;       /* Offset of deleted key, if any */
 
   nIdx = nPg-iPgIdx;
+  if( iPgIdx>nPg ){
+    p->rc = SQLITE_CORRUPT_VTAB;
+    return;
+  }
   aIdx = sqlite3Fts5MallocZero(&p->rc, ((i64)nIdx)+16);
   if( p->rc ) return;
   memcpy(aIdx, &aPg[iPgIdx], nIdx);
