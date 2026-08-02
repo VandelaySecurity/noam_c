@@ -7568,7 +7568,7 @@ static int fts5SetupPrefixIterTokendata(
   ctx.pT = (Fts5TokenDataIter*)sqlite3Fts5MallocZero(&p->rc,
                                                    SZ_FTS5TOKENDATAITER(1));
 
-  if( p->rc==SQLITE_OK ){
+  if( p->rc==SQLITE_OK && token.p!=0 ){
 
     /* Fill in the token prefix to search for */
     token.p[0] = FTS5_MAIN_PREFIX;
