@@ -5214,6 +5214,12 @@ static void fts5SecureDeleteOverflow(
       fts5PutU16(&aPg[2], nPg);
       if( fts5GetU16(&aPg[0]) ) fts5PutU16(&aPg[0], 4);
       if( nIdx>0 ){
+        if( nPg + nIdx > pLeaf->nn ){
+          p->rc = SQLITE_CORRUPT_VTAB;
+          sqlite3_free(aIdx);
+          fts5DataRelease(pLeaf);
+          return;
+        }
         memcpy(&aPg[nPg], aIdx, nIdx);
         nPg += nIdx;
       }
