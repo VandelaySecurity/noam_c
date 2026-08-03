@@ -297,7 +297,7 @@ static int fts5ConfigParseSpecial(
 
   if( sqlite3_strnicmp("tokenize", zCmd, nCmd)==0 ){
     const char *p = (const char*)zArg;
-    sqlite3_int64 nArg = strlen(zArg) + 1;
+    sqlite3_int64 nArg = strnlen(zArg, 100000) + 1;
     char **azArg = sqlite3Fts5MallocZero(&rc, (sizeof(char*) + 2) * nArg);
 
     if( azArg ){
