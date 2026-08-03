@@ -881,7 +881,11 @@ int sqlite3Fts5ConfigParseRank(
 
     if( p ){
       zRank = sqlite3Fts5MallocZero(&rc, 1 + p - pRank);
-      if( zRank ) memcpy(zRank, pRank, p-pRank);
+      if( zRank ){
+        if( memcpy_s(zRank, 1 + p - pRank, pRank, p - pRank) != 0 ){
+          rc = SQLITE_ERROR;
+        }
+      }
     }else{
       rc = SQLITE_ERROR;
     }
@@ -901,7 +905,11 @@ int sqlite3Fts5ConfigParseRank(
           rc = SQLITE_ERROR;
         }else{
           zRankArgs = sqlite3Fts5MallocZero(&rc, 1 + p - pArgs);
-          if( zRankArgs ) memcpy(zRankArgs, pArgs, p-pArgs);
+          if( zRankArgs ){
+            if( memcpy_s(zRankArgs, 1 + p - pArgs, pArgs, p - pArgs) != 0 ){
+              rc = SQLITE_ERROR;
+            }
+          }
         }
       }
     }
