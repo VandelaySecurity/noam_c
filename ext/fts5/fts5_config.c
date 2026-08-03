@@ -452,7 +452,7 @@ static const char *fts5ConfigGobbleWord(
 ){
   const char *zRet = 0;
 
-  sqlite3_int64 nIn = strlen(zIn);
+  sqlite3_int64 nIn = strnlen(zIn, 4096);
   char *zOut = sqlite3_malloc64(nIn+1);
 
   assert( *pRc==SQLITE_OK );
