@@ -880,8 +880,12 @@ int sqlite3Fts5ConfigParseRank(
     p = fts5ConfigSkipBareword(p);
 
     if( p ){
-      zRank = sqlite3Fts5MallocZero(&rc, 1 + p - pRank);
-      if( zRank ) memcpy(zRank, pRank, p-pRank);
+      if( (p - pRank) > SQLITE_MAX_LENGTH ){
+        rc = SQLITE_ERROR;
+      }else{
+        zRank = sqlite3Fts5MallocZero(&rc, 1 + p - pRank);
+        if( zRank ) memcpy(zRank, pRank, p-pRank);
+      }
     }else{
       rc = SQLITE_ERROR;
     }
@@ -900,8 +904,12 @@ int sqlite3Fts5ConfigParseRank(
         if( p==0 ){
           rc = SQLITE_ERROR;
         }else{
-          zRankArgs = sqlite3Fts5MallocZero(&rc, 1 + p - pArgs);
-          if( zRankArgs ) memcpy(zRankArgs, pArgs, p-pArgs);
+          if( (p - pArgs) > SQLITE_MAX_LENGTH ){
+            rc = SQLITE_ERROR;
+          }else{
+            zRankArgs = sqlite3Fts5MallocZero(&rc, 1 + p - pArgs);
+            if( zRankArgs ) memcpy(zRankArgs, pArgs, p-pArgs);
+          }
         }
       }
     }
