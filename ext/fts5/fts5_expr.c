@@ -364,7 +364,7 @@ static int fts5ExprCountChar(const char *z, int nByte){
 int sqlite3Fts5ExprPattern(
   Fts5Config *pConfig, int bGlob, int iCol, const char *zText, Fts5Expr **pp
 ){
-  i64 nText = strlen(zText);
+  i64 nText = strnlen(zText, 0x7fffffff);
   char *zExpr = (char*)sqlite3_malloc64(nText*4 + 1);
   int rc = SQLITE_OK;
 
