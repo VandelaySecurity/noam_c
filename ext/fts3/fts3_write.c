@@ -4016,11 +4016,13 @@ static int fts3AppendToNode(
     pNode->n += sqlite3Fts3PutVarint(&pNode->a[pNode->n], nPrefix);
   }
   pNode->n += sqlite3Fts3PutVarint(&pNode->a[pNode->n], nSuffix);
+  if( pNode->n + nSuffix > pNode->nAlloc ) return SQLITE_NOMEM;
   memcpy(&pNode->a[pNode->n], &zTerm[nPrefix], nSuffix);
   pNode->n += nSuffix;
 
   if( aDoclist ){
     pNode->n += sqlite3Fts3PutVarint(&pNode->a[pNode->n], nDoclist);
+    if( pNode->n + nDoclist > pNode->nAlloc ) return SQLITE_NOMEM;
     memcpy(&pNode->a[pNode->n], aDoclist, nDoclist);
     pNode->n += nDoclist;
   }
