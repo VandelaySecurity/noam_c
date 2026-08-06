@@ -257,7 +257,22 @@ static void showVocabulary(sqlite3 *db, const char *zTab){
             n, n*100.0/nToken);
   }
 
-  nTop = atoi(findOption("top", 1, "25"));
+  {
+    const char *topStr = findOption("top", 1, "25");
+    char *endptr;
+    long topLong;
+    
+    errno = 0;
+    topLong = strtol(topStr, &endptr, 10);
+    
+    if (errno == ERANGE || topLong < 0 || topLong > INT_MAX || 
+        endptr == topStr || *endptr != '\0') {
+      /* Conversion error or out of range - use default */
+      nTop = 25;
+    } else {
+      nTop = (int)topLong;
+    }
+  }
   printf("The %d most common tokens:\n", nTop);
   pStmt = prepare(db,
             "SELECT term, documents FROM %s"
