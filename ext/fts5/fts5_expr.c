@@ -1789,7 +1789,9 @@ static int fts5ParseTokenize(
       pTerm->pTerm = sqlite3Fts5Strndup(&rc, pToken, nToken);
       pTerm->nFullTerm = pTerm->nQueryTerm = nToken;
       if( pCtx->pConfig->bTokendata && rc==SQLITE_OK ){ 
-        pTerm->nQueryTerm = (int)strlen(pTerm->pTerm);
+        if( pTerm->pTerm ){
+          pTerm->nQueryTerm = (int)strnlen(pTerm->pTerm, nToken);
+        }
       }
     }
   }
@@ -1819,7 +1821,6 @@ void sqlite3Fts5ParseNearsetFree(Fts5ExprNearset *pNear){
     sqlite3_free(pNear);
   }
 }
-
 void sqlite3Fts5ParseFinished(Fts5Parse *pParse, Fts5ExprNode *p){
   assert( pParse->pExpr==0 );
   pParse->pExpr = p;
