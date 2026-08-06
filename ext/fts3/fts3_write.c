@@ -3933,8 +3933,13 @@ static int fts3IncrmergePush(
         memcpy(&pBlk->a[pBlk->n], &zTerm[nPrefix], nSuffix);
         pBlk->n += nSuffix;
 
-        memcpy(pNode->key.a, zTerm, nTerm);
-        pNode->key.n = nTerm;
+        if( pNode->key.nAlloc < nTerm ){
+          rc = SQLITE_NOMEM;
+        }
+        if( rc==SQLITE_OK ){
+          memcpy(pNode->key.a, zTerm, nTerm);
+          pNode->key.n = nTerm;
+        }
       }
     }else{
       /* Otherwise, flush the current node of layer iLayer to disk.
