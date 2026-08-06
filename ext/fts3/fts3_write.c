@@ -3053,6 +3053,9 @@ int sqlite3Fts3SegReaderStep(
             nDoclist += sqlite3Fts3PutVarint(&pCsr->aBuffer[nDoclist], iDelta);
             iPrev = iDocid;
             if( isRequirePos ){
+              if( nDoclist + nList > pCsr->nBuffer ){
+                return SQLITE_CORRUPT_VTAB;
+              }
               memcpy(&pCsr->aBuffer[nDoclist], pList, nList);
               nDoclist += nList;
               pCsr->aBuffer[nDoclist++] = '\0';
