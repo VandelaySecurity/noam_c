@@ -4387,7 +4387,7 @@ static int fts3IncrmergeLoad(
           blobGrowBuffer(&pNode->key, reader.term.n, &rc);
           if( rc==SQLITE_OK ){
             assert_fts3_nc( reader.term.n>0 || reader.aNode==0 );
-            if( reader.term.n>0 ){
+            if( reader.term.n>0 && pNode->key.a ){
               memcpy(pNode->key.a, reader.term.a, reader.term.n);
             }
             pNode->key.n = reader.term.n;
