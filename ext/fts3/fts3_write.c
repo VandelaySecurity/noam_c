@@ -4016,11 +4016,15 @@ static int fts3AppendToNode(
     pNode->n += sqlite3Fts3PutVarint(&pNode->a[pNode->n], nPrefix);
   }
   pNode->n += sqlite3Fts3PutVarint(&pNode->a[pNode->n], nSuffix);
+  blobGrowBuffer(pNode, pNode->n + nSuffix, &rc);
+  if( rc!=SQLITE_OK ) return rc;
   memcpy(&pNode->a[pNode->n], &zTerm[nPrefix], nSuffix);
   pNode->n += nSuffix;
 
   if( aDoclist ){
     pNode->n += sqlite3Fts3PutVarint(&pNode->a[pNode->n], nDoclist);
+    blobGrowBuffer(pNode, pNode->n + nDoclist, &rc);
+    if( rc!=SQLITE_OK ) return rc;
     memcpy(&pNode->a[pNode->n], aDoclist, nDoclist);
     pNode->n += nDoclist;
   }
