@@ -1759,7 +1759,7 @@ static int fts5ParseTokenize(
       pSyn->pTerm = ((char*)pSyn) + sizeof(Fts5ExprTerm) + sizeof(Fts5Buffer);
       pSyn->nFullTerm = pSyn->nQueryTerm = nToken;
       if( pCtx->pConfig->bTokendata ){
-        pSyn->nQueryTerm = (int)strlen(pSyn->pTerm);
+        pSyn->nQueryTerm = (int)strnlen(pSyn->pTerm, nToken);
       }
       memcpy(pSyn->pTerm, pToken, nToken);
       pSyn->pSynonym = pPhrase->aTerm[pPhrase->nTerm-1].pSynonym;
@@ -1789,7 +1789,7 @@ static int fts5ParseTokenize(
       pTerm->pTerm = sqlite3Fts5Strndup(&rc, pToken, nToken);
       pTerm->nFullTerm = pTerm->nQueryTerm = nToken;
       if( pCtx->pConfig->bTokendata && rc==SQLITE_OK ){ 
-        pTerm->nQueryTerm = (int)strlen(pTerm->pTerm);
+        pTerm->nQueryTerm = (int)strnlen(pTerm->pTerm, nToken);
       }
     }
   }
