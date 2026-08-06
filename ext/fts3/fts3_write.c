@@ -4370,7 +4370,7 @@ static int fts3IncrmergeLoad(
       blobGrowBuffer(&pNode->block, 
           MAX(nRoot, p->nNodeSize)+FTS3_NODE_PADDING, &rc
       );
-      if( rc==SQLITE_OK ){
+      if( rc==SQLITE_OK && pNode->block.a ){
         memcpy(pNode->block.a, aRoot, nRoot);
         pNode->block.n = nRoot;
         memset(&pNode->block.a[nRoot], 0, FTS3_NODE_PADDING);
