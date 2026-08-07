@@ -1359,7 +1359,7 @@ static int fts3SegReaderNext(
         int nCopy = pList->nData+1;
 
         int nTerm = fts3HashKeysize(pElem);
-        if( (nTerm+1)>pReader->nTermAlloc ){
+        if( (nTerm+1)>=pReader->nTermAlloc ){
           sqlite3_free(pReader->zTerm);
           pReader->zTerm = (char*)sqlite3_malloc64(((i64)nTerm+1)*2);
           if( !pReader->zTerm ) return SQLITE_NOMEM;
