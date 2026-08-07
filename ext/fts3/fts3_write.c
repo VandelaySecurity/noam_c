@@ -2094,6 +2094,9 @@ static int fts3NodeAddTerm(
       }
 
       nData += sqlite3Fts3PutVarint(&pTree->aData[nData], nSuffix);
+      if( nData + nSuffix > nReq ){
+        return FTS_CORRUPT_VTAB;
+      }
       memcpy(&pTree->aData[nData], &zTerm[nPrefix], nSuffix);
       pTree->nData = nData + nSuffix;
       pTree->nEntry++;
