@@ -2365,10 +2365,16 @@ static int fts3SegWriterAdd(
   nData += sqlite3Fts3PutVarint(&pWriter->aData[nData], nPrefix);
   nData += sqlite3Fts3PutVarint(&pWriter->aData[nData], nSuffix);
   assert( nSuffix>0 );
+  if( nData + nSuffix > pWriter->nSize ){
+    return SQLITE_NOMEM;
+  }
   memcpy(&pWriter->aData[nData], &zTerm[nPrefix], nSuffix);
   nData += nSuffix;
   nData += sqlite3Fts3PutVarint(&pWriter->aData[nData], nDoclist);
   assert( nDoclist>0 );
+  if( nData + nDoclist > pWriter->nSize ){
+    return SQLITE_NOMEM;
+  }
   memcpy(&pWriter->aData[nData], aDoclist, nDoclist);
   pWriter->nData = nData + nDoclist;
 
