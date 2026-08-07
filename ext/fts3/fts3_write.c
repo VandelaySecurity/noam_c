@@ -2689,7 +2689,7 @@ static int fts3MsrBufferData(
   char *pList,
   i64 nList
 ){
-  if( (nList+FTS3_NODE_PADDING)>pMsr->nBuffer ){
+  if( (nList+FTS3_NODE_PADDING)>=pMsr->nBuffer ){
     char *pNew;
     int nNew = nList*2 + FTS3_NODE_PADDING;
     pNew = (char *)sqlite3_realloc64(pMsr->aBuffer, nNew);
