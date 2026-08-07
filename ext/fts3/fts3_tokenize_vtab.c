@@ -127,8 +127,14 @@ static int fts3tokDequoteArray(
       rc = SQLITE_NOMEM;
     }else{
       char *pSpace = (char *)&azDequote[argc];
+      char *pEnd = pSpace + nByte;
       for(i=0; i<argc; i++){
         int n = (int)strlen(argv[i]);
+        if( pSpace + n + 1 > pEnd ){
+          sqlite3_free(azDequote);
+          *pazDequote = 0;
+          return SQLITE_ERROR;
+        }
         azDequote[i] = pSpace;
         memcpy(pSpace, argv[i], n+1);
         sqlite3Fts3Dequote(pSpace);
