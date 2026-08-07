@@ -5475,19 +5475,45 @@ static int fts3SpecialInsert(Fts3Table *p, sqlite3_value *pVal){
 #if defined(SQLITE_DEBUG) || defined(SQLITE_TEST)
   else{
     int v;
+    char *endptr;
+    long lv;
     if( nVal>9 && 0==sqlite3_strnicmp(zVal, "nodesize=", 9) ){
-      v = atoi(&zVal[9]);
+      errno = 0;
+      lv = strtol(&zVal[9], &endptr, 10);
+      if( errno == ERANGE || endptr == &zVal[9] || *endptr != '\0' || lv < INT_MIN || lv > INT_MAX ){
+        v = 0;
+      }else{
+        v = (int)lv;
+      }
       if( v>=24 && v<=p->nPgsz-35 ) p->nNodeSize = v;
       rc = SQLITE_OK;
     }else if( nVal>11 && 0==sqlite3_strnicmp(zVal, "maxpending=", 11) ){
-      v = atoi(&zVal[11]);
+      errno = 0;
+      lv = strtol(&zVal[11], &endptr, 10);
+      if( errno == ERANGE || endptr == &zVal[11] || *endptr != '\0' || lv < INT_MIN || lv > INT_MAX ){
+        v = 0;
+      }else{
+        v = (int)lv;
+      }
       if( v>=64 && v<=FTS3_MAX_PENDING_DATA ) p->nMaxPendingData = v;
       rc = SQLITE_OK;
     }else if( nVal>21 && 0==sqlite3_strnicmp(zVal,"test-no-incr-doclist=",21) ){
-      p->bNoIncrDoclist = atoi(&zVal[21]);
+      errno = 0;
+      lv = strtol(&zVal[21], &endptr, 10);
+      if( errno == ERANGE || endptr == &zVal[21] || *endptr != '\0' || lv < INT_MIN || lv > INT_MAX ){
+        p->bNoIncrDoclist = 0;
+      }else{
+        p->bNoIncrDoclist = (int)lv;
+      }
       rc = SQLITE_OK;
     }else if( nVal>11 && 0==sqlite3_strnicmp(zVal,"mergecount=",11) ){
-      v = atoi(&zVal[11]);
+      errno = 0;
+      lv = strtol(&zVal[11], &endptr, 10);
+      if( errno == ERANGE || endptr == &zVal[11] || *endptr != '\0' || lv < INT_MIN || lv > INT_MAX ){
+        v = 0;
+      }else{
+        v = (int)lv;
+      }
       if( v>=4 && v<=FTS3_MERGE_COUNT && (v&1)==0 ) p->nMergeCount = v;
       rc = SQLITE_OK;
     }
