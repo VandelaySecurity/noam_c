@@ -287,7 +287,7 @@ static int unicodeOpen(
     pCsr->nInput = 0;
     pCsr->aInput = (const unsigned char*)"";
   }else if( nInput<0 ){
-    pCsr->nInput = (int)strlen(aInput);
+    pCsr->nInput = (int)strnlen(aInput, 0x7fffffff);
   }else{
     pCsr->nInput = nInput;
   }
