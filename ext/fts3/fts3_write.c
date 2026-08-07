@@ -2099,7 +2099,7 @@ static int fts3NodeAddTerm(
       pTree->nEntry++;
 
       if( isCopyTerm ){
-        if( pTree->nMalloc<nTerm ){
+        if( pTree->nMalloc<=nTerm ){
           char *zNew = sqlite3_realloc64(pTree->zMalloc, (i64)nTerm*2);
           if( !zNew ){
             return SQLITE_NOMEM;
