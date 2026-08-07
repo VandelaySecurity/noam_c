@@ -177,7 +177,7 @@ int sqlite3Fts3InitTokenizer(
 
   zCopy = sqlite3_mprintf("%s", zArg);
   if( !zCopy ) return SQLITE_NOMEM;
-  zEnd = &zCopy[strlen(zCopy)];
+  zEnd = &zCopy[strnlen(zCopy, 0x7FFFFFFF)];
 
   z = (char *)sqlite3Fts3NextToken(zCopy, &n);
   if( z==0 ){
