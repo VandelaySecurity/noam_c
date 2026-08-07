@@ -1656,6 +1656,9 @@ int sqlite3Fts3SegReaderNew(
     nExtra = nRoot + FTS3_NODE_PADDING;
   }
 
+  if( nRoot > 0 && zRoot == 0 ) return FTS_CORRUPT_VTAB;
+  if( nRoot > 0x7fffffff ) return FTS_CORRUPT_VTAB;
+
   pReader = (Fts3SegReader *)sqlite3_malloc64(sizeof(Fts3SegReader) + nExtra);
   if( !pReader ){
     return SQLITE_NOMEM;
@@ -1672,7 +1675,10 @@ int sqlite3Fts3SegReaderNew(
     pReader->aNode = (char *)&pReader[1];
     pReader->rootOnly = 1;
     pReader->nNode = nRoot;
-    if( nRoot ) memcpy(pReader->aNode, zRoot, nRoot);
+    if( nRoot ){
+      assert( nRoot <= nExtra );
+      memcpy(pReader->aNode, zRoot, nRoot);
+    }
     memset(&pReader->aNode[nRoot], 0, FTS3_NODE_PADDING);
   }else{
     pReader->iCurrentBlock = iStartLeaf-1;
