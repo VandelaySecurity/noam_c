@@ -2378,7 +2378,7 @@ static int fts3SegWriterAdd(
   ** store a copy of the pointer.
   */
   if( isCopyTerm ){
-    if( nTerm>pWriter->nMalloc ){
+    if( nTerm>=pWriter->nMalloc ){
       char *zNew = sqlite3_realloc64(pWriter->zMalloc, (i64)nTerm*2);
       if( !zNew ){
         return SQLITE_NOMEM;
