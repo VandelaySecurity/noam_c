@@ -1423,7 +1423,7 @@ static int fts3SegReaderNext(
   /* Both nPrefix and nSuffix were read by fts3GetVarint32() and so are
   ** between 0 and 0x7FFFFFFF. But the sum of the two may cause integer
   ** overflow - hence the (i64) casts.  */
-  if( (i64)nPrefix+nSuffix>(i64)pReader->nTermAlloc ){
+  if( (i64)nPrefix+nSuffix>=(i64)pReader->nTermAlloc ){
     i64 nNew = ((i64)nPrefix+nSuffix)*2;
     char *zNew = sqlite3_realloc64(pReader->zTerm, nNew);
     if( !zNew ){
