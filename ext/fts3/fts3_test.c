@@ -394,7 +394,7 @@ static int testTokenizerOpen(
     memset(pCsr, 0, sizeof(test_tokenizer_cursor));
     pCsr->aInput = pInput;
     if( nBytes<0 ){
-      pCsr->nInput = (int)strlen(pInput);
+      pCsr->nInput = (int)strnlen(pInput, 0x7fffffff);
     }else{
       pCsr->nInput = nBytes;
     }
