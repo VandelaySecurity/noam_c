@@ -114,8 +114,8 @@ static int fts3termConnectMethod(
   p->pFts3Tab->nIndex = iIndex+1;
   p->iIndex = iIndex;
 
-  memcpy((char *)p->pFts3Tab->zDb, zDb, nDb);
-  memcpy((char *)p->pFts3Tab->zName, zFts3, nFts3);
+  memcpy((char *)p->pFts3Tab->zDb, zDb, nDb + 1);
+  memcpy((char *)p->pFts3Tab->zName, zFts3, nFts3 + 1);
   sqlite3Fts3Dequote((char *)p->pFts3Tab->zName);
 
   *ppVtab = (sqlite3_vtab *)p;
