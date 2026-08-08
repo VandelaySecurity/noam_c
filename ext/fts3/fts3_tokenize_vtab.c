@@ -119,7 +119,7 @@ static int fts3tokDequoteArray(
     char **azDequote;
 
     for(i=0; i<argc; i++){
-      nByte += (int)(strlen(argv[i]) + 1);
+      nByte += (int)(strnlen(argv[i], SQLITE_MAX_LENGTH) + 1);
     }
 
     *pazDequote = azDequote = sqlite3_malloc64(sizeof(char *)*argc + nByte);
@@ -128,7 +128,7 @@ static int fts3tokDequoteArray(
     }else{
       char *pSpace = (char *)&azDequote[argc];
       for(i=0; i<argc; i++){
-        int n = (int)strlen(argv[i]);
+        int n = (int)strnlen(argv[i], SQLITE_MAX_LENGTH);
         azDequote[i] = pSpace;
         memcpy(pSpace, argv[i], n+1);
         sqlite3Fts3Dequote(pSpace);
