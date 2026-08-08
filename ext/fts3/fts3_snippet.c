@@ -111,6 +111,7 @@ struct MatchinfoBuffer {
 #define SZ_MATCHINFOBUFFER(N) \
             (offsetof(MatchinfoBuffer,aMI)+(((N)+1)/2)*sizeof(u64))
 
+#define FTS3_MAX_MATCHINFO_LENGTH 256
 
 /*
 ** The snippet() and offsets() functions both return text values. An instance
@@ -136,7 +137,11 @@ static MatchinfoBuffer *fts3MIBufferNew(size_t nElem, const char *zMatchinfo){
   MatchinfoBuffer *pRet;
   sqlite3_int64 nByte = sizeof(u32) * (2*(sqlite3_int64)nElem + 1)
                            + SZ_MATCHINFOBUFFER(1);
-  sqlite3_int64 nStr = strlen(zMatchinfo);
+  sqlite3_int64 nStr = strnlen(zMatchinfo, FTS3_MAX_MATCHINFO_LENGTH);
+
+  if( nStr >= FTS3_MAX_MATCHINFO_LENGTH ){
+    return 0;  /* String not null-terminated within bounds */
+  }
 
   pRet = sqlite3Fts3MallocZero(nByte + nStr+1);
   if( pRet ){
