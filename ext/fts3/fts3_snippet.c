@@ -138,6 +138,10 @@ static MatchinfoBuffer *fts3MIBufferNew(size_t nElem, const char *zMatchinfo){
                            + SZ_MATCHINFOBUFFER(1);
   sqlite3_int64 nStr = strlen(zMatchinfo);
 
+  if( nStr > (sqlite3_int64)(0x7fffffff - nByte - 1) ){
+    return 0;
+  }
+
   pRet = sqlite3Fts3MallocZero(nByte + nStr+1);
   if( pRet ){
     pRet->aMI[0] = (u8*)(&pRet->aMI[1]) - (u8*)pRet;
@@ -145,6 +149,7 @@ static MatchinfoBuffer *fts3MIBufferNew(size_t nElem, const char *zMatchinfo){
                                       + sizeof(u32)*((int)nElem+1);
     pRet->nElem = (int)nElem;
     pRet->zMatchinfo = ((char*)pRet) + nByte;
+    assert( nStr+1 <= (sqlite3_int64)((nByte + nStr+1) - nByte) );
     memcpy(pRet->zMatchinfo, zMatchinfo, nStr+1);
     pRet->aRef[0] = 1;
   }
