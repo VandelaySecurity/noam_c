@@ -81,7 +81,7 @@ static int fts3tokQueryTokenizer(
   char **pzErr
 ){
   sqlite3_tokenizer_module *p;
-  int nName = (int)strlen(zName);
+  int nName = (int)strnlen(zName, 256);
 
   p = (sqlite3_tokenizer_module *)sqlite3Fts3HashFind(pHash, zName, nName+1);
   if( !p ){
