@@ -126,7 +126,7 @@ static int simpleOpen(
   if( pInput==0 ){
     c->nBytes = 0;
   }else if( nBytes<0 ){
-    c->nBytes = (int)strlen(pInput);
+    c->nBytes = (int)strnlen(pInput, 0x7fffffff);
   }else{
     c->nBytes = nBytes;
   }
