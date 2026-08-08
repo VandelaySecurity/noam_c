@@ -607,7 +607,7 @@ static int fts3StringAppend(
   int nAppend                     /* Size of zAppend in bytes (or -1) */
 ){
   if( nAppend<0 ){
-    nAppend = (int)strlen(zAppend);
+    nAppend = (int)strnlen(zAppend, 1000000);
   }
 
   /* If there is insufficient space allocated at StrBuffer.z, use realloc()
