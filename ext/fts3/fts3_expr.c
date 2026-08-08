@@ -1008,7 +1008,7 @@ static int fts3ExprParseUnbalanced(
     return SQLITE_OK;
   }
   if( n<0 ){
-    n = (int)strlen(z);
+    n = (int)strnlen(z, INT_MAX);
   }
   rc = fts3ExprParse(&sParse, z, n, ppExpr, &nParsed);
   assert( rc==SQLITE_OK || *ppExpr==0 );
