@@ -102,7 +102,7 @@ static int porterOpen(
   if( zInput==0 ){
     c->nInput = 0;
   }else if( nInput<0 ){
-    c->nInput = (int)strlen(zInput);
+    c->nInput = (int)strnlen(zInput, 0x7fffffff);
   }else{
     c->nInput = nInput;
   }
@@ -132,7 +132,6 @@ static const char cType[] = {
    0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0,
    1, 1, 1, 2, 1
 };
-
 /*
 ** isConsonant() and isVowel() determine if their first character in
 ** the string they point to is a consonant or a vowel, according
