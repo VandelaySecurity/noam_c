@@ -75,7 +75,15 @@ static int fts3termConnectMethod(
 
   UNUSED_PARAMETER(pCtx);
   if( argc==5 ){
-    iIndex = atoi(argv[4]);
+    char *endptr;
+    long lIndex;
+    errno = 0;
+    lIndex = strtol(argv[4], &endptr, 10);
+    if( errno==ERANGE || endptr==argv[4] || *endptr!='\0' || lIndex<INT_MIN || lIndex>INT_MAX ){
+      sqlite3Fts3ErrMsg(pzErr, "invalid index argument to fts4term constructor");
+      return SQLITE_ERROR;
+    }
+    iIndex = (int)lIndex;
     argc--;
   }
   
