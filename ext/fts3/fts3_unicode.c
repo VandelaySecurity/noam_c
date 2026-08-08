@@ -231,7 +231,7 @@ static int unicodeCreate(
 
   for(i=0; rc==SQLITE_OK && i<nArg; i++){
     const char *z = azArg[i];
-    int n = (int)strlen(z);
+    int n = (int)strnlen(z, 1024);
 
     if( n==19 && memcmp("remove_diacritics=1", z, 19)==0 ){
       pNew->eRemoveDiacritic = 1;
