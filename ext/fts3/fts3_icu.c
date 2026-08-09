@@ -58,7 +58,7 @@ static int icuCreate(
   int n = 0;
 
   if( argc>0 ){
-    n = strlen(argv[0])+1;
+    n = strnlen(argv[0], 128)+1;
   }
   p = (IcuTokenizer *)sqlite3_malloc64(sizeof(IcuTokenizer)+n);
   if( !p ){
