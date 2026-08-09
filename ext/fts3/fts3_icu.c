@@ -68,7 +68,8 @@ static int icuCreate(
 
   if( n ){
     p->zLocale = (char *)&p[1];
-    memcpy(p->zLocale, argv[0], n);
+    memcpy(p->zLocale, argv[0], n-1);
+    p->zLocale[n-1] = '\0';
   }
 
   *ppTokenizer = (sqlite3_tokenizer *)p;
