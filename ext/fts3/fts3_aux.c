@@ -80,11 +80,11 @@ static int fts3auxConnectMethod(
   if( argc!=4 && argc!=5 ) goto bad_args;
 
   zDb = argv[1]; 
-  nDb = (int)strlen(zDb);
+  nDb = (int)strnlen(zDb, 10000);
   if( argc==5 ){
     if( nDb==4 && 0==sqlite3_strnicmp("temp", zDb, 4) ){
       zDb = argv[3]; 
-      nDb = (int)strlen(zDb);
+      nDb = (int)strnlen(zDb, 10000);
       zFts3 = argv[4];
     }else{
       goto bad_args;
@@ -92,7 +92,7 @@ static int fts3auxConnectMethod(
   }else{
     zFts3 = argv[3];
   }
-  nFts3 = (int)strlen(zFts3);
+  nFts3 = (int)strnlen(zFts3, 10000);
 
   rc = sqlite3_declare_vtab(db, FTS3_AUX_SCHEMA);
   if( rc!=SQLITE_OK ) return rc;
