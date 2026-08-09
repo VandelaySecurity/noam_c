@@ -97,7 +97,7 @@ void sqlite3Fts3HashClear(Fts3Hash *pH){
 static int fts3StrHash(const void *pKey, int nKey){
   const char *z = (const char *)pKey;
   unsigned h = 0;
-  if( nKey<=0 ) nKey = (int) strlen(z);
+  if( nKey<=0 ) nKey = (int) strnlen(z, INT_MAX);
   while( nKey > 0  ){
     h = (h<<3) ^ h ^ *z++;
     nKey--;
