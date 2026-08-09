@@ -4800,7 +4800,7 @@ static int fts3EvalIncrPhraseNext(
         int nByte = a[p->nToken-1].nList;
         char *aDoclist = sqlite3_malloc64((i64)nByte+FTS3_BUFFER_PADDING);
         if( !aDoclist ) return SQLITE_NOMEM;
-        memcpy(aDoclist, a[p->nToken-1].pList, nByte+1);
+        memcpy(aDoclist, a[p->nToken-1].pList, nByte);
         memset(&aDoclist[nByte], 0, FTS3_BUFFER_PADDING);
 
         for(i=0; i<(p->nToken-1); i++){
