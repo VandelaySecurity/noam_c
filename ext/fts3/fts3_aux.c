@@ -108,8 +108,8 @@ static int fts3auxConnectMethod(
   p->pFts3Tab->db = db;
   p->pFts3Tab->nIndex = 1;
 
-  memcpy((char *)p->pFts3Tab->zDb, zDb, nDb);
-  memcpy((char *)p->pFts3Tab->zName, zFts3, nFts3);
+  sqlite3_snprintf(nDb+1, (char *)p->pFts3Tab->zDb, "%s", zDb);
+  sqlite3_snprintf(nFts3+1, (char *)p->pFts3Tab->zName, "%s", zFts3);
   sqlite3Fts3Dequote((char *)p->pFts3Tab->zName);
 
   *ppVtab = (sqlite3_vtab *)p;
@@ -138,7 +138,6 @@ static int fts3auxDisconnectMethod(sqlite3_vtab *pVtab){
   sqlite3_free(p);
   return SQLITE_OK;
 }
-
 #define FTS4AUX_EQ_CONSTRAINT 1
 #define FTS4AUX_GE_CONSTRAINT 2
 #define FTS4AUX_LE_CONSTRAINT 4
