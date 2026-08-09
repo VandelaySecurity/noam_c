@@ -108,8 +108,11 @@ static int fts3auxConnectMethod(
   p->pFts3Tab->db = db;
   p->pFts3Tab->nIndex = 1;
 
-  memcpy((char *)p->pFts3Tab->zDb, zDb, nDb);
-  memcpy((char *)p->pFts3Tab->zName, zFts3, nFts3);
+  assert( ((char*)p->pFts3Tab->zDb) + nDb + 1 + nFts3 + 1 <= ((char*)p) + nByte );
+  if( nDb > 0 ) memcpy((char *)p->pFts3Tab->zDb, zDb, nDb);
+  ((char *)p->pFts3Tab->zDb)[nDb] = '\0';
+  if( nFts3 > 0 ) memcpy((char *)p->pFts3Tab->zName, zFts3, nFts3);
+  ((char *)p->pFts3Tab->zName)[nFts3] = '\0';
   sqlite3Fts3Dequote((char *)p->pFts3Tab->zName);
 
   *ppVtab = (sqlite3_vtab *)p;
