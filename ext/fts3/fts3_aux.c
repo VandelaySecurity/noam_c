@@ -422,14 +422,14 @@ static int fts3auxFilterMethod(
     if( zStr ){
       pCsr->filter.zTerm = sqlite3_mprintf("%s", zStr);
       if( pCsr->filter.zTerm==0 ) return SQLITE_NOMEM;
-      pCsr->filter.nTerm = (int)strlen(pCsr->filter.zTerm);
+      pCsr->filter.nTerm = (int)strnlen(pCsr->filter.zTerm, sqlite3_value_bytes(apVal[0]) + 1);
     }
   }
 
   if( iLe>=0 ){
     pCsr->zStop = sqlite3_mprintf("%s", sqlite3_value_text(apVal[iLe]));
     if( pCsr->zStop==0 ) return SQLITE_NOMEM;
-    pCsr->nStop = (int)strlen(pCsr->zStop);
+    pCsr->nStop = (int)strnlen(pCsr->zStop, sqlite3_value_bytes(apVal[iLe]) + 1);
   }
   
   if( iLangid>=0 ){
