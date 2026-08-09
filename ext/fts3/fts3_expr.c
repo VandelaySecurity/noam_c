@@ -212,51 +212,56 @@ static int getNextToken(
 
     rc = pModule->xNext(pCursor, &zToken, &nToken, &iStart, &iEnd, &iPosition);
     if( rc==SQLITE_OK ){
-      /* Check that this tokenization did not gobble up any " characters. Or,
-      ** if enable_parenthesis is true, that it did not gobble up any 
-      ** open or close parenthesis characters either. If it did, call
-      ** getNextToken() again, but pass only that part of the input buffer
-      ** up to the first such character.  */
-      int iBarred = findBarredChar(z, iEnd);
-      if( iBarred>=0 ){
-        pModule->xClose(pCursor);
-        return getNextToken(pParse, iCol, z, iBarred, ppExpr, pnConsumed);
+      if( nToken<0 || nToken>SQLITE_MAX_LENGTH ){
+        rc = SQLITE_ERROR;
       }
-
-      nByte = sizeof(Fts3Expr) + SZ_FTS3PHRASE(1) + nToken;
-      pRet = (Fts3Expr *)sqlite3Fts3MallocZero(nByte);
-      if( !pRet ){
-        rc = SQLITE_NOMEM;
-      }else{
-        pRet->eType = FTSQUERY_PHRASE;
-        pRet->pPhrase = (Fts3Phrase *)&pRet[1];
-        pRet->pPhrase->nToken = 1;
-        pRet->pPhrase->iColumn = iCol;
-        pRet->pPhrase->aToken[0].n = nToken;
-        pRet->pPhrase->aToken[0].z = (char*)&pRet->pPhrase->aToken[1];
-        memcpy(pRet->pPhrase->aToken[0].z, zToken, nToken);
-
-        if( iEnd<n && z[iEnd]=='*' ){
-          pRet->pPhrase->aToken[0].isPrefix = 1;
-          iEnd++;
+      if( rc==SQLITE_OK ){
+        /* Check that this tokenization did not gobble up any " characters. Or,
+        ** if enable_parenthesis is true, that it did not gobble up any 
+        ** open or close parenthesis characters either. If it did, call
+        ** getNextToken() again, but pass only that part of the input buffer
+        ** up to the first such character.  */
+        int iBarred = findBarredChar(z, iEnd);
+        if( iBarred>=0 ){
+          pModule->xClose(pCursor);
+          return getNextToken(pParse, iCol, z, iBarred, ppExpr, pnConsumed);
         }
 
-        while( 1 ){
-          if( !sqlite3_fts3_enable_parentheses 
-           && iStart>0 && z[iStart-1]=='-' 
-          ){
-            pParse->isNot = 1;
-            iStart--;
-          }else if( pParse->bFts4 && iStart>0 && z[iStart-1]=='^' ){
-            pRet->pPhrase->aToken[0].bFirst = 1;
-            iStart--;
-          }else{
-            break;
+        nByte = sizeof(Fts3Expr) + SZ_FTS3PHRASE(1) + nToken;
+        pRet = (Fts3Expr *)sqlite3Fts3MallocZero(nByte);
+        if( !pRet ){
+          rc = SQLITE_NOMEM;
+        }else{
+          pRet->eType = FTSQUERY_PHRASE;
+          pRet->pPhrase = (Fts3Phrase *)&pRet[1];
+          pRet->pPhrase->nToken = 1;
+          pRet->pPhrase->iColumn = iCol;
+          pRet->pPhrase->aToken[0].n = nToken;
+          pRet->pPhrase->aToken[0].z = (char*)&pRet->pPhrase->aToken[1];
+          memcpy(pRet->pPhrase->aToken[0].z, zToken, nToken);
+
+          if( iEnd<n && z[iEnd]=='*' ){
+            pRet->pPhrase->aToken[0].isPrefix = 1;
+            iEnd++;
           }
-        }
 
+          while( 1 ){
+            if( !sqlite3_fts3_enable_parentheses 
+             && iStart>0 && z[iStart-1]=='-' 
+            ){
+              pParse->isNot = 1;
+              iStart--;
+            }else if( pParse->bFts4 && iStart>0 && z[iStart-1]=='^' ){
+              pRet->pPhrase->aToken[0].bFirst = 1;
+              iStart--;
+            }else{
+              break;
+            }
+          }
+
+        }
+        *pnConsumed = iEnd;
       }
-      *pnConsumed = iEnd;
     }else if( n && rc==SQLITE_DONE ){
       int iBarred = findBarredChar(z, n);
       if( iBarred>=0 ){
@@ -264,7 +269,6 @@ static int getNextToken(
       }
       rc = SQLITE_OK;
     }
-
     pModule->xClose(pCursor);
   }
   
