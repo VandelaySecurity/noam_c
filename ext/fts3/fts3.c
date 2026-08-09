@@ -1455,6 +1455,12 @@ static int fts3InitVtab(
     char *z; 
     int n = 0;
     z = (char *)sqlite3Fts3NextToken(aCol[iCol], &n);
+    char *zEnd = &((char *)p)[nByte];
+    if( zCsr + n > zEnd ){
+      sqlite3Fts3ErrMsg(pzErr, "column definition exceeds allocated buffer");
+      rc = SQLITE_ERROR;
+      goto fts3_init_out;
+    }
     if( n>0 ){
       memcpy(zCsr, z, n);
     }
