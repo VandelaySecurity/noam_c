@@ -2117,7 +2117,7 @@ int sqlite3_expert_sql(
         pNew = (IdxStatement*)idxMalloc(&rc, sizeof(IdxStatement) + n+1);
         if( rc==SQLITE_OK ){
           pNew->zSql = (char*)&pNew[1];
-          memcpy(pNew->zSql, z, n+1);
+          sqlite3_snprintf((int)(n+1), pNew->zSql, "%s", z);
           pNew->pNext = p->pStatement;
           if( p->pStatement ) pNew->iId = p->pStatement->iId+1;
           p->pStatement = pNew;
