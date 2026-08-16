@@ -50,7 +50,8 @@ static int execCallback(void *NotUsed, int nArg, char **azArg, char **azCol){
     if( nReply>0 && nReply<sizeof(zReply)-1 ) zReply[nReply++] = ' ';
     n = strlen(z);
     if( nReply+n>=sizeof(zReply)-1 ) n = sizeof(zReply) - nReply - 1;
-    memcpy(&zReply[nReply], z, n);
+    assert(nReply + n < sizeof(zReply));
+    memmove(&zReply[nReply], z, n);
     nReply += n;
     zReply[nReply] = 0;
   }
