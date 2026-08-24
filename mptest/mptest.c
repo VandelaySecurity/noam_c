@@ -1034,7 +1034,7 @@ static void runScript(
       zNewFile = azArg[0];
       if( !isDirSep(zNewFile[0]) ){
         int k;
-        for(k=(int)strlen(zFilename)-1; k>=0 && !isDirSep(zFilename[k]); k--){}
+        for(k=(int)strnlen(zFilename, PATH_MAX)-1; k>=0 && !isDirSep(zFilename[k]); k--){}
         if( k>0 ){
           zNewFile = zToDel = sqlite3_mprintf("%.*s/%s", k,zFilename,zNewFile);
           if( zNewFile==0 ){
