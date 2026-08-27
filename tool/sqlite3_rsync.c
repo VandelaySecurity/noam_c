@@ -307,7 +307,7 @@ static int popen2(
     if( bDirect ){
       execl(zCmd, zCmd, (char*)0);
     }else{
-      execl("/bin/sh", "/bin/sh", "-c", zCmd, (char*)0);
+      execl(zCmd, zCmd, (char*)0);
     }
     return 1;
   }else{
