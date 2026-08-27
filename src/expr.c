@@ -1898,7 +1898,7 @@ SrcList *sqlite3SrcListDup(sqlite3 *db, const SrcList *p, int flags){
         assert( db->mallocFailed );
         pNewItem->fg.isSubquery = 0;
       }else{
-        memcpy(pNewSubq, pOldItem->u4.pSubq, sizeof(*pNewSubq));
+        *pNewSubq = *pOldItem->u4.pSubq;
         pNewSubq->pSelect = sqlite3SelectDup(db, pNewSubq->pSelect, flags);
         if( pNewSubq->pSelect==0 ){
           sqlite3DbFree(db, pNewSubq);
