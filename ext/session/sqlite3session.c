@@ -7065,6 +7065,7 @@ int sqlite3changegroup_change_text(
 
   pBuf->aBuf[0] = SQLITE_TEXT;
   pBuf->nBuf = (1 + sessionVarintPut(&pBuf->aBuf[1], nText));
+  if( pBuf->nBuf + nText > pBuf->nAlloc ) return SQLITE_NOMEM;
   memcpy(&pBuf->aBuf[pBuf->nBuf], pVal, nText);
   pBuf->nBuf += nText;
 
@@ -7091,6 +7092,7 @@ int sqlite3changegroup_change_blob(
 
   pBuf->aBuf[0] = SQLITE_BLOB;
   pBuf->nBuf = (1 + sessionVarintPut(&pBuf->aBuf[1], nVal));
+  if( pBuf->nBuf + nVal > pBuf->nAlloc ) return SQLITE_NOMEM;
   memcpy(&pBuf->aBuf[pBuf->nBuf], pVal, nVal);
   pBuf->nBuf += nVal;
 
