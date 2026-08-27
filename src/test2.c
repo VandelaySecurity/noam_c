@@ -685,9 +685,21 @@ static int SQLITE_TCLAPI testBitvecBuiltinTest(
   if( Tcl_GetInt(interp, argv[1], &sz) ) return TCL_ERROR;
   z = argv[2];
   while( nProg<99 && *z ){
+    char *endptr;
+    long val;
     while( *z && !sqlite3Isdigit(*z) ){ z++; }
     if( *z==0 ) break;
-    aProg[nProg++] = atoi(z);
+    errno = 0;
+    val = strtol(z, &endptr, 10);
+    if (errno == ERANGE || val > INT_MAX || val < INT_MIN) {
+      Tcl_AppendResult(interp, "integer overflow in PROGRAM argument", (void*)0);
+      return TCL_ERROR;
+    }
+    if (endptr == z) {
+      /* No conversion performed - should not happen given the loop logic, but check anyway */
+      break;
+    }
+    aProg[nProg++] = (int)val;
     while( sqlite3Isdigit(*z) ){ z++; }
   }
   aProg[nProg] = 0;
