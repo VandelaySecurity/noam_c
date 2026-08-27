@@ -473,7 +473,7 @@ SQLITE_API int sqlite3_carray_bind_v2(
     if( mFlags==CARRAY_TEXT ){
       for(i=0; i<nData; i++){
         const char *z = ((char**)aData)[i];
-        if( z ) sz += strlen(z) + 1;
+        if( z ) sz += strnlen(z, 0x7fffffff) + 1;
       }
     }else if( mFlags==CARRAY_BLOB ){
       for(i=0; i<nData; i++){
@@ -498,7 +498,7 @@ SQLITE_API int sqlite3_carray_bind_v2(
           continue;
         }
         az[i] = z;
-        n = strlen(zData);
+        n = strnlen(zData, 0x7fffffff);
         memcpy(z, zData, n+1);
         z += n+1;
       }
