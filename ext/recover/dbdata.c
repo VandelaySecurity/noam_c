@@ -683,6 +683,9 @@ static int dbdataNext(sqlite3_vtab_cursor *pCursor){
             assert( nPayload!=0 );
 
             /* Load the nLocal bytes of payload */
+            if( iOff + nLocal > pCsr->nPage ){
+              return SQLITE_CORRUPT;
+            }
             memcpy(pCsr->rec.aBuf, &pCsr->aPage[iOff], nLocal);
             iOff += nLocal;
 
