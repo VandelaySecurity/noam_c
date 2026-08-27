@@ -6036,7 +6036,7 @@ static int sessionChangesetFindTable(
 ){
   int rc = SQLITE_OK;
   SessionTable *pTab = 0;
-  int nTab = (int)strlen(zTab);
+  int nTab = (int)strnlen(zTab, 1024);
   u8 *abPK = 0;
   int nCol = 0;
 
