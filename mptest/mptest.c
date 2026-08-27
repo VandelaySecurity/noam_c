@@ -292,7 +292,7 @@ static void logMessage(const char *zFormat, ...){
 ** Return the length of a string omitting trailing whitespace
 */
 static int clipLength(const char *z){
-  int n = (int)strlen(z);
+  int n = (int)strnlen(z, INT_MAX);
   while( n>0 && ISSPACE(z[n-1]) ){ n--; }
   return n;
 }
