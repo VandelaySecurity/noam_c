@@ -483,8 +483,7 @@ static int SQLITE_TCLAPI page_write(
     return TCL_ERROR;
   }
   pData = sqlite3PagerGetData(pPage);
-  strncpy(pData, argv[2], test_pagesize-1);
-  pData[test_pagesize-1] = 0;
+  snprintf(pData, test_pagesize, "%s", argv[2]);
   return TCL_OK;
 }
 
