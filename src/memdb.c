@@ -585,7 +585,7 @@ static int memdbOpen(
       p->mFlags = SQLITE_DESERIALIZE_RESIZEABLE|SQLITE_DESERIALIZE_FREEONCLOSE;
       p->szMax = sqlite3GlobalConfig.mxMemdbSize;
       p->zFName = (char*)&p[1];
-      memcpy(p->zFName, zName, szName+1);
+      sqlite3_snprintf(szName+2, p->zFName, "%s", zName);
       p->pMutex = sqlite3_mutex_alloc(SQLITE_MUTEX_FAST);
       if( p->pMutex==0 ){
         memdb_g.nMemStore--;
