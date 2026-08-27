@@ -261,38 +261,45 @@ void sqlite3ConnectionUnlocked(sqlite3 *db){
        || (aDyn && nArg==(int)(sqlite3MallocSize(aDyn)/sizeof(void*)))
       ){
         /* The aArg[] array needs to grow. */
-        void **pNew = (void **)sqlite3Malloc(nArg*sizeof(void *)*2);
-        if( pNew ){
-          memcpy(pNew, aArg, nArg*sizeof(void *));
-          sqlite3_free(aDyn);
-          aDyn = aArg = pNew;
-        }else{
-          /* This occurs when the array of context pointers that need to
-          ** be passed to the unlock-notify callback is larger than the
-          ** aStatic[] array allocated on the stack and the attempt to 
-          ** allocate a larger array from the heap has failed.
-          **
-          ** This is a difficult situation to handle. Returning an error
-          ** code to the caller is insufficient, as even if an error code
-          ** is returned the transaction on connection db will still be
-          ** closed and the unlock-notify callbacks on blocked connections
-          ** will go unissued. This might cause the application to wait
-          ** indefinitely for an unlock-notify callback that will never 
-          ** arrive.
-          **
-          ** Instead, invoke the unlock-notify callback with the context
-          ** array already accumulated. We can then clear the array and
-          ** begin accumulating any further context pointers without 
-          ** requiring any dynamic allocation. This is sub-optimal because
-          ** it means that instead of one callback with a large array of
-          ** context pointers the application will receive two or more
-          ** callbacks with smaller arrays of context pointers, which will
-          ** reduce the applications ability to prioritize multiple 
-          ** connections. But it is the best that can be done under the
-          ** circumstances.
-          */
+        if( nArg > (INT_MAX / (sizeof(void *) * 2)) ){
+          /* Integer overflow would occur, treat as allocation failure */
           xUnlockNotify(aArg, nArg);
           nArg = 0;
+        }else{
+          void **pNew = (void **)sqlite3Malloc(nArg*sizeof(void *)*2);
+          if( pNew ){
+            assert( sqlite3MallocSize(pNew) >= (size_t)(nArg*sizeof(void *)) );
+            memcpy(pNew, aArg, nArg*sizeof(void *));
+            sqlite3_free(aDyn);
+            aDyn = aArg = pNew;
+          }else{
+            /* This occurs when the array of context pointers that need to
+            ** be passed to the unlock-notify callback is larger than the
+            ** aStatic[] array allocated on the stack and the attempt to 
+            ** allocate a larger array from the heap has failed.
+            **
+            ** This is a difficult situation to handle. Returning an error
+            ** code to the caller is insufficient, as even if an error code
+            ** is returned the transaction on connection db will still be
+            ** closed and the unlock-notify callbacks on blocked connections
+            ** will go unissued. This might cause the application to wait
+            ** indefinitely for an unlock-notify callback that will never 
+            ** arrive.
+            **
+            ** Instead, invoke the unlock-notify callback with the context
+            ** array already accumulated. We can then clear the array and
+            ** begin accumulating any further context pointers without 
+            ** requiring any dynamic allocation. This is sub-optimal because
+            ** it means that instead of one callback with a large array of
+            ** context pointers the application will receive two or more
+            ** callbacks with smaller arrays of context pointers, which will
+            ** reduce the applications ability to prioritize multiple 
+            ** connections. But it is the best that can be done under the
+            ** circumstances.
+            */
+            xUnlockNotify(aArg, nArg);
+            nArg = 0;
+          }
         }
       }
       sqlite3EndBenignMalloc();
