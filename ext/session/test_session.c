@@ -902,7 +902,7 @@ static int SQLITE_TCLAPI testSqlite3changesetApply(
   if( iVersion==2 || iVersion==3 ){
     while( objc>1 ){
       const char *z1 = Tcl_GetString(objv[1]);
-      int n = (int)strlen(z1);
+      int n = (int)strnlen(z1, 256);
       if( n>3 && n<=12 && 0==sqlite3_strnicmp("-nosavepoint", z1, n) ){
         flags |= SQLITE_CHANGESETAPPLY_NOSAVEPOINT;
       }
