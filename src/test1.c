@@ -253,6 +253,10 @@ static int SQLITE_TCLAPI test_io_trace(
     }else if( strcmp(argv[1],"stderr")==0 ){
       iotrace_file = stderr;
     }else{
+      if( argv[1][0] == '/' || strstr(argv[1], "..") != NULL ){
+        Tcl_AppendResult(interp, "invalid trace file path: must be relative and cannot contain '..'", 0);
+        return TCL_ERROR;
+      }
       iotrace_file = fopen(argv[1], "w");
     }
     sqlite3IoTrace = io_trace_callback;
