@@ -639,9 +639,9 @@ static void decodeCell(
            zConst[ii] = 0;
          }
          if( jj<szCol[i] ){
-           memcpy(zConst+ii, "...'", 5);
+           snprintf(zConst+ii, sizeof(zConst)-ii, "...'");
          }else{
-           memcpy(zConst+ii, "'", 2);
+           snprintf(zConst+ii, sizeof(zConst)-ii, "'");
          }
          printf("%s\n", zConst);
        }
