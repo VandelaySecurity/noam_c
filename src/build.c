@@ -2178,7 +2178,7 @@ static char *createTableStmt(sqlite3 *db, Table *p){
     assert( k<=n );
   }
   len = sqlite3Strlen30(zEnd);
-  assert( k+len<n );
+  assert( k+len+1<=n );
   memcpy(&zStmt[k], zEnd, len+1);
   return zStmt;
 }
