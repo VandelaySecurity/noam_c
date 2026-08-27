@@ -466,7 +466,8 @@ FuncDef *sqlite3FindFunction(
     pBest->zName = (const char*)&pBest[1];
     pBest->nArg = (u16)nArg;
     pBest->funcFlags = enc;
-    memcpy((char*)&pBest[1], zName, nName+1);
+    assert( nName==sqlite3Strlen30(zName) );
+    sqlite3_snprintf(nName+1, (char*)&pBest[1], "%s", zName);
     for(z=(u8*)pBest->zName; *z; z++) *z = sqlite3UpperToLower[*z];
     pOther = (FuncDef*)sqlite3HashInsert(&db->aFunc, pBest->zName, pBest);
     if( pOther==pBest ){
