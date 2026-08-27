@@ -97,8 +97,10 @@ static void ofstRootAndColumn(
   if( p->zErr ) goto rootAndColumn_exit;
   while( sqlite3_step(pStmt)==SQLITE_ROW ){
     const char *zCol = sqlite3_column_text(pStmt, 1);
-    if( strlen(zCol)==strlen(zColumn)
-     && sqlite3_strnicmp(zCol, zColumn, strlen(zCol))==0
+    size_t nCol = strnlen(zCol, 1024);
+    size_t nColumn = strnlen(zColumn, 1024);
+    if( nCol==nColumn
+     && sqlite3_strnicmp(zCol, zColumn, nCol)==0
     ){
       p->iCol = sqlite3_column_int(pStmt, 0);
       break;
