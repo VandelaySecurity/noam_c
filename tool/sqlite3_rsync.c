@@ -304,6 +304,13 @@ static int popen2(
     }
     close(pin[0]);
     close(pin[1]);
+    /* Validate zCmd to prevent command injection */
+    for(const char *p = zCmd; *p; p++){
+      if( !isalnum(*p) && *p!='_' && *p!='-' && *p!='/' && *p!='.' && *p!=' ' ){
+        fprintf(stderr, "Invalid character in command: %c\n", *p);
+        exit(1);
+      }
+    }
     if( bDirect ){
       execl(zCmd, zCmd, (char*)0);
     }else{
