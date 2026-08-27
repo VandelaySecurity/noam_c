@@ -992,7 +992,12 @@ static int kvvfsFullPathname(
 #endif
   nPath = strlen(zPath);
   SQLITE_KV_LOG(("xFullPathname(\"%s\")\n", zPath));
-  if( nOut<nPath+1 ) nPath = nOut - 1;
+  if( nOut <= 0 ){
+    if( nOut == 0 ) return SQLITE_ERROR;
+    nPath = 0;
+  }else if( nPath >= (size_t)nOut ){
+    nPath = nOut - 1;
+  }
   memcpy(zOut, zPath, nPath);
   zOut[nPath] = 0;
   return SQLITE_OK;
@@ -1024,6 +1029,7 @@ static int kvvfsSleep(sqlite3_vfs *pVfs, int nMicro){
 
 /*
 ** Return the current time as a Julian Day number in *pTimeOut.
+*/
 */
 static int kvvfsCurrentTime(sqlite3_vfs *pVfs, double *pTimeOut){
   sqlite3_int64 i = 0;
