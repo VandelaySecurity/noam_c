@@ -2206,6 +2206,7 @@ static int resizeIndexObject(Parse *pParse, Index *pIdx, int N){
   memcpy(zExtra, pIdx->aiRowLogEst, sizeof(LogEst)*(pIdx->nKeyCol+1));
   pIdx->aiRowLogEst = (LogEst*)zExtra;
   zExtra += sizeof(LogEst)*N;
+  assert( pIdx->nColumn <= N );
   memcpy(zExtra, pIdx->aiColumn, sizeof(i16)*pIdx->nColumn);
   pIdx->aiColumn = (i16*)zExtra;
   zExtra += sizeof(i16)*N;
