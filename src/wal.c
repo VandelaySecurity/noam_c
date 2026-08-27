@@ -2150,7 +2150,7 @@ static void walRestartHdr(Wal *pWal, u32 salt1){
   pWal->nCkpt++;
   pWal->hdr.mxFrame = 0;
   sqlite3Put4byte((u8*)&aSalt[0], 1 + sqlite3Get4byte((u8*)&aSalt[0]));
-  memcpy(&pWal->hdr.aSalt[1], &salt1, 4);
+  pWal->hdr.aSalt[1] = salt1;
   walIndexWriteHdr(pWal);
   AtomicStore(&pInfo->nBackfill, 0);
   pInfo->nBackfillAttempted = 0;
