@@ -6491,9 +6491,11 @@ static int findCreateFileMode(
     nDb = sqlite3Strlen30(zPath) - 1;
     while( nDb>0 && zPath[nDb]!='.' ){
       if( zPath[nDb]=='-' ){
-        memcpy(zDb, zPath, nDb);
-        zDb[nDb] = '\0';
-        rc = getFileMode(zDb, pMode, pUid, pGid);
+        if( nDb <= MAX_PATHNAME ){
+          memcpy(zDb, zPath, nDb);
+          zDb[nDb] = '\0';
+          rc = getFileMode(zDb, pMode, pUid, pGid);
+        }
         break;
       }
       nDb--;
