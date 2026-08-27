@@ -315,7 +315,7 @@ static i64 describeContent(
     nDesc++;
     zDesc++;
     if( x==0 ){
-      sprintf(zDesc, "*");     /* NULL is a "*" */
+      snprintf(zDesc, nDescMax - nDesc, "*");     /* NULL is a "*" */
     }else if( x>=1 && x<=6 ){
       v = (signed char)pData[0];
       pData++;
@@ -326,20 +326,20 @@ static i64 describeContent(
         case 3:  v = (v<<8) + pData[0];  pData++;
         case 2:  v = (v<<8) + pData[0];  pData++;
       }
-      sprintf(zDesc, "%lld", v);
+      snprintf(zDesc, nDescMax - nDesc, "%lld", v);
     }else if( x==7 ){
-      sprintf(zDesc, "real");
+      snprintf(zDesc, nDescMax - nDesc, "real");
       pData += 8;
     }else if( x==8 ){
-      sprintf(zDesc, "0");
+      snprintf(zDesc, nDescMax - nDesc, "0");
     }else if( x==9 ){
-      sprintf(zDesc, "1");
+      snprintf(zDesc, nDescMax - nDesc, "1");
     }else if( x>=12 ){
       i64 size = (x-12)/2;
       if( (x&1)==0 ){
-        sprintf(zDesc, "blob(%lld)", size);
+        snprintf(zDesc, nDescMax - nDesc, "blob(%lld)", size);
       }else{
-        sprintf(zDesc, "txt(%lld)", size);
+        snprintf(zDesc, nDescMax - nDesc, "txt(%lld)", size);
       }
       pData += size;
     }
