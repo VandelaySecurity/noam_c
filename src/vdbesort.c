@@ -569,6 +569,10 @@ static int vdbePmaReadBlob(
       if( rc!=SQLITE_OK ) return rc;
       assert( aNext!=p->aAlloc );
       assert( aNext!=0 );
+      assert( (nByte - nRem) + nCopy <= p->nAlloc );
+      if( (nByte - nRem) + nCopy > p->nAlloc ){
+        return SQLITE_CORRUPT_BKPT;
+      }
       memcpy(&p->aAlloc[nByte - nRem], aNext, nCopy);
       nRem -= nCopy;
     }
