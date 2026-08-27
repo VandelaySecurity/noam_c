@@ -99,13 +99,27 @@ int main(int argc, char **argv){
       i++;
       zPreSql = argv[i];
     }else if( nArg>1 && nArg<=5 && 0==memcmp(zArg, "-step", nArg) && i<nArg-1 ){
+      char *endptr;
+      long val;
       i++;
-      nStep = atoi(argv[i]);
+      errno = 0;
+      val = strtol(argv[i], &endptr, 10);
+      if (errno == ERANGE || endptr == argv[i] || *endptr != '\0' || val < 0 || val > INT_MAX) {
+        usage(argv[0]);
+      }
+      nStep = (int)val;
     }else if( nArg>1 && nArg<=9 
            && 0==memcmp(zArg, "-statstep", nArg) && i<nArg-1 
     ){
+      char *endptr;
+      long val;
       i++;
-      nStatStep = atoi(argv[i]);
+      errno = 0;
+      val = strtol(argv[i], &endptr, 10);
+      if (errno == ERANGE || endptr == argv[i] || *endptr != '\0' || val < 0 || val > INT_MAX) {
+        usage(argv[0]);
+      }
+      nStatStep = (int)val;
     }else{
       usage(argv[0]);
     }
