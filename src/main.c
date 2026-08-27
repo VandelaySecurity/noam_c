@@ -3900,7 +3900,12 @@ int sqlite3_set_clientdata(
     sqlite3_mutex_leave(db->mutex);
     return SQLITE_OK;
   }else{
-    size_t n = strlen(zName);
+    size_t n = strnlen(zName, SQLITE_MAX_CLIENTDATA_NAME);
+    if( n >= SQLITE_MAX_CLIENTDATA_NAME ){
+      if( xDestructor ) xDestructor(pData);
+      sqlite3_mutex_leave(db->mutex);
+      return SQLITE_MISUSE;
+    }
     p = sqlite3_malloc64( SZ_DBCLIENTDATA(n+1) );
     if( p==0 ){
       if( xDestructor ) xDestructor(pData);
