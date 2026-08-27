@@ -215,7 +215,10 @@ bitvec_set_rehash:
     if( aiValues==0 ){
       return SQLITE_NOMEM_BKPT;
     }else{
-      memcpy(aiValues, p->u.aHash, sizeof(p->u.aHash));
+      if( memcpy_s(aiValues, sizeof(p->u.aHash), p->u.aHash, sizeof(p->u.aHash)) != 0 ){
+        sqlite3StackFree(0, aiValues);
+        return SQLITE_NOMEM_BKPT;
+      }
       memset(p->u.apSub, 0, sizeof(p->u.apSub));
       p->iDivisor = p->iSize/BITVEC_NPTR;
       if( (p->iSize%BITVEC_NPTR)!=0 ) p->iDivisor++;
