@@ -4797,7 +4797,30 @@ static int file_cmd_join(Jim_Interp *interp, int argc, Jim_Obj *const *argv)
 
 static int file_access(Jim_Interp *interp, Jim_Obj *filename, int mode)
 {
-    Jim_SetResultBool(interp, access(Jim_String(filename), mode) != -1);
+    char canonical[PATH_MAX];
+    char cwd_canonical[PATH_MAX];
+    char *resolved;
+    size_t cwd_len;
+
+    resolved = realpath(Jim_String(filename), canonical);
+    if (resolved == NULL) {
+        Jim_SetResultBool(interp, 0);
+        return JIM_OK;
+    }
+
+    if (realpath(".", cwd_canonical) == NULL) {
+        Jim_SetResultString(interp, "Failed to resolve current directory", -1);
+        return JIM_ERR;
+    }
+
+    cwd_len = strlen(cwd_canonical);
+    if (strncmp(canonical, cwd_canonical, cwd_len) != 0 ||
+        (canonical[cwd_len] != '\0' && canonical[cwd_len] != '/')) {
+        Jim_SetResultBool(interp, 0);
+        return JIM_OK;
+    }
+
+    Jim_SetResultBool(interp, access(canonical, mode) != -1);
 
     return JIM_OK;
 }
@@ -4827,7 +4850,6 @@ static int file_cmd_exists(Jim_Interp *interp, int argc, Jim_Obj *const *argv)
 {
     return file_access(interp, argv[0], F_OK);
 }
-
 static int file_cmd_delete(Jim_Interp *interp, int argc, Jim_Obj *const *argv)
 {
     int force = Jim_CompareStringImmediate(interp, argv[0], "-force");
