@@ -1297,7 +1297,9 @@ static void rbuObjIterCacheIndexedCols(sqlite3rbu *p, RbuObjIter *pIter){
   int bIndex = 0;
 
   if( p->rc==SQLITE_OK ){
-    memcpy(pIter->abIndexed, pIter->abTblPk, sizeof(u8)*pIter->nTblCol);
+    if( pIter->abIndexed && pIter->abTblPk && pIter->nTblCol>0 ){
+      memcpy(pIter->abIndexed, pIter->abTblPk, sizeof(u8)*pIter->nTblCol);
+    }
     p->rc = prepareFreeAndCollectError(p->dbMain, &pList, &p->zErrmsg,
         sqlite3_mprintf("PRAGMA main.index_list = %Q", pIter->zTbl)
     );
