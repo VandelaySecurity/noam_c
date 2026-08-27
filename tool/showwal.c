@@ -399,20 +399,25 @@ static i64 describeCell(
   i64 rowid;
   i64 nLocal;
   static char zDesc[1000];
+  int written;
   i = 0;
   if( cType<=5 ){
     leftChild = ((a[0]*256 + a[1])*256 + a[2])*256 + a[3];
     a += 4;
     n += 4;
-    sprintf(zDesc, "lx: %d ", leftChild);
-    nDesc = strlen(zDesc);
+    written = snprintf(zDesc, sizeof(zDesc), "lx: %d ", leftChild);
+    nDesc = (written < sizeof(zDesc)) ? written : sizeof(zDesc) - 1;
   }
   if( cType!=5 ){
     i = decodeVarint(a, &nPayload);
     a += i;
     n += i;
-    sprintf(&zDesc[nDesc], "n: %lld ", nPayload);
-    nDesc += strlen(&zDesc[nDesc]);
+    written = snprintf(&zDesc[nDesc], sizeof(zDesc) - nDesc, "n: %lld ", nPayload);
+    if( written > 0 && nDesc + written < sizeof(zDesc) ){
+      nDesc += written;
+    }else{
+      nDesc = sizeof(zDesc) - 1;
+    }
     nLocal = localPayload(nPayload, cType);
   }else{
     nPayload = nLocal = 0;
@@ -421,15 +426,23 @@ static i64 describeCell(
     i = decodeVarint(a, &rowid);
     a += i;
     n += i;
-    sprintf(&zDesc[nDesc], "r: %lld ", rowid);
-    nDesc += strlen(&zDesc[nDesc]);
+    written = snprintf(&zDesc[nDesc], sizeof(zDesc) - nDesc, "r: %lld ", rowid);
+    if( written > 0 && nDesc + written < sizeof(zDesc) ){
+      nDesc += written;
+    }else{
+      nDesc = sizeof(zDesc) - 1;
+    }
   }
   if( nLocal<nPayload ){
     int ovfl;
     unsigned char *b = &a[nLocal];
     ovfl = ((b[0]*256 + b[1])*256 + b[2])*256 + b[3];
-    sprintf(&zDesc[nDesc], "ov: %d ", ovfl);
-    nDesc += strlen(&zDesc[nDesc]);
+    written = snprintf(&zDesc[nDesc], sizeof(zDesc) - nDesc, "ov: %d ", ovfl);
+    if( written > 0 && nDesc + written < sizeof(zDesc) ){
+      nDesc += written;
+    }else{
+      nDesc = sizeof(zDesc) - 1;
+    }
     n += 4;
   }
   if( showCellContent && cType!=5 ){
