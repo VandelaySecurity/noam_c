@@ -767,12 +767,14 @@ static void jsonAppendString(JsonString *p, const char *zIn, u32 N){
     }
     if( k>=N ){
       if( k>0 ){
+        if( (p->nUsed + k > p->nAlloc) && jsonStringGrow(p, k) != 0 ) return;
         memcpy(&p->zBuf[p->nUsed], z, k);
         p->nUsed += k;
       }
       break;
     }
     if( k>0 ){
+      if( (p->nUsed + k > p->nAlloc) && jsonStringGrow(p, k) != 0 ) return;
       memcpy(&p->zBuf[p->nUsed], z, k);
       p->nUsed += k;
       z += k;
