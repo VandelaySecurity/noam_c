@@ -58,7 +58,8 @@ static void print_decode_line(
   unsigned char *aData,      /* Content being decoded */
   int ofst, int nByte,       /* Start and size of decode */
   unsigned flg,              /* Display flags */
-  const char *zMsg           /* Message to append */
+  const char *zMsg,          /* Message to append */
+  size_t aDataSize           /* Size of aData buffer */
 ){
   int i, j;
   int val = aData[ofst];
@@ -82,13 +83,23 @@ static void print_decode_line(
   }
   if( flg & FG_NBO ){
     assert( nByte==4 );
-    memcpy(&val, aData+ofst, 4);
+    if( ofst + 4 > aDataSize ){
+      fprintf(stderr, "Error: buffer overflow prevented at offset %d\n", ofst);
+      val = 0;
+    }else{
+      memcpy(&val, aData+ofst, 4);
+    }
   }
   sprintf(&zBuf[i], "            ");
   i += 12;
   if( flg & FG_PGSZ ){
     unsigned short sz;
-    memcpy(&sz, aData+ofst, 2);
+    if( ofst + 2 > aDataSize ){
+      fprintf(stderr, "Error: buffer overflow prevented at offset %d\n", ofst);
+      sz = 0;
+    }else{
+      memcpy(&sz, aData+ofst, 2);
+    }
     sprintf(&zBuf[i], "   %9d", sz==1 ? 65536 : sz);
   }else if( flg & FG_HEX ){
     sprintf(&zBuf[i], "  0x%08x", val);
@@ -102,23 +113,22 @@ static void print_decode_line(
 ** Print an instance of the WalIndexHdr object.  ix is either 0 or 1
 ** to select which header to print.
 */
-static void print_index_hdr(unsigned char *aData, int ix){
+static void print_index_hdr(unsigned char *aData, int ix, size_t aDataSize){
   int i;
   assert( ix==0 || ix==1 );
   i = ix ? 48 : 0;
-  print_decode_line(aData, 0+i, 4, FG_NBO,  "Wal-index version");
-  print_decode_line(aData, 4+i, 4, 0,       "unused padding");
-  print_decode_line(aData, 8+i, 4, FG_NBO,  "transaction counter");
-  print_decode_line(aData,12+i, 1, 0,       "1 when initialized");
-  print_decode_line(aData,13+i, 1, 0,       "true if WAL cksums are bigendian");
-  print_decode_line(aData,14+i, 2, FG_PGSZ, "database page size");
-  print_decode_line(aData,16+i, 4, FG_NBO,  "mxFrame");
-  print_decode_line(aData,20+i, 4, FG_NBO,  "Size of database in pages");
-  print_decode_line(aData,24+i, 8, 0, "Cksum of last frame in -wal");
-  print_decode_line(aData,32+i, 8, 0,  "Salt values from the -wal");
-  print_decode_line(aData,40+i, 8, 0,  "Cksum over all prior fields");
+  print_decode_line(aData, 0+i, 4, FG_NBO,  "Wal-index version", aDataSize);
+  print_decode_line(aData, 4+i, 4, 0,       "unused padding", aDataSize);
+  print_decode_line(aData, 8+i, 4, FG_NBO,  "transaction counter", aDataSize);
+  print_decode_line(aData,12+i, 1, 0,       "1 when initialized", aDataSize);
+  print_decode_line(aData,13+i, 1, 0,       "true if WAL cksums are bigendian", aDataSize);
+  print_decode_line(aData,14+i, 2, FG_PGSZ, "database page size", aDataSize);
+  print_decode_line(aData,16+i, 4, FG_NBO,  "mxFrame", aDataSize);
+  print_decode_line(aData,20+i, 4, FG_NBO,  "Size of database in pages", aDataSize);
+  print_decode_line(aData,24+i, 8, 0, "Cksum of last frame in -wal", aDataSize);
+  print_decode_line(aData,32+i, 8, 0,  "Salt values from the -wal", aDataSize);
+  print_decode_line(aData,40+i, 8, 0,  "Cksum over all prior fields", aDataSize);
 }
-
 /*
 ** Print the WalCkptInfo object
 */
