@@ -1659,7 +1659,7 @@ static void changeset_one_table(const char *zTab, FILE *out){
   putc('T', out);
   putsVarint(out, (sqlite3_uint64)nCol);
   for(i=0; i<nCol; i++) putc(aiFlg[i], out);
-  fwrite(zTab, 1, strlen(zTab), out);
+  fwrite(zTab, 1, strnlen(zTab, 1024), out);
   putc(0, out);
 
   pStmt = db_prepare("%s", sqlite3_str_value(pSql));
