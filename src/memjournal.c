@@ -116,9 +116,12 @@ static int memjrnlRead(
   do {
     int iSpace = p->nChunkSize - iChunkOffset;
     int nCopy = MIN(nRead, (p->nChunkSize - iChunkOffset));
+    if( (zOut - (u8*)zBuf) + nCopy > iAmt ){
+      return SQLITE_IOERR;
+    }
     memcpy(zOut, (u8*)pChunk->zChunk + iChunkOffset, nCopy);
     zOut += nCopy;
-    nRead -= iSpace;
+    nRead -= nCopy;
     iChunkOffset = 0;
   } while( nRead>=0 && (pChunk=pChunk->pNext)!=0 && nRead>0 );
   p->readpoint.iOffset = pChunk ? iOfst+iAmt : 0;
@@ -146,7 +149,6 @@ static int memjrnlCreateFile(MemJournal *p){
   int rc;
   sqlite3_file *pReal = (sqlite3_file*)p;
   MemJournal copy = *p;
-
   memset(p, 0, sizeof(MemJournal));
   rc = sqlite3OsOpen(copy.pVfs, copy.zJournal, pReal, copy.flags, 0);
   if( rc==SQLITE_OK ){
