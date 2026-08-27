@@ -3658,6 +3658,36 @@ PRIVATE char *pathsearch(char *argv0, char *name, int modemask)
   char *path,*cp;
   char c;
 
+  /* Validate name parameter to prevent path traversal */
+  if( name==0 || name[0]==0 ){
+    return 0;  /* Reject null or empty names */
+  }
+  
+  /* Reject absolute paths */
+#ifdef __WIN32__
+  if( name[0]=='\\' || name[0]=='/' || (name[0]!=0 && name[1]==':') ){
+    return 0;
+  }
+#else
+  if( name[0]=='/' ){
+    return 0;
+  }
+#endif
+  
+  /* Reject paths containing ".." components */
+  {
+    const char *p = name;
+    while( *p ){
+      if( p[0]=='.' && p[1]=='.' && (p[2]=='/' || p[2]=='\\' || p[2]==0) ){
+        return 0;
+      }
+      if( p==name && p[0]=='.' && p[1]=='.' ){
+        return 0;  /* Starts with ".." */
+      }
+      p++;
+    }
+  }
+
 #ifdef __WIN32__
   cp = strrchr(argv0,'\\');
 #else
