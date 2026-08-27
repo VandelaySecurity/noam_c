@@ -272,6 +272,9 @@ static void *sqlite3MemMalloc(int nByte){
     if( mem.nBacktrace ){
       void *aAddr[40];
       pHdr->nBacktrace = backtrace(aAddr, mem.nBacktrace+1)-1;
+      if( pHdr->nBacktrace > mem.nBacktrace ){
+        pHdr->nBacktrace = mem.nBacktrace;
+      }
       memcpy(pBt, &aAddr[1], pHdr->nBacktrace*sizeof(void*));
       assert(pBt[0]);
       if( mem.xBacktrace ){
