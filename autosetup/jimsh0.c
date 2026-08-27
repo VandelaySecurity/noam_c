@@ -4952,23 +4952,118 @@ static int file_cmd_rename(Jim_Interp *interp, int argc, Jim_Obj *const *argv)
     source = Jim_String(argv[0]);
     dest = Jim_String(argv[1]);
 
-    if (!force && access(dest, F_OK) == 0) {
+    char *resolved_source = NULL;
+    char *resolved_dest = NULL;
+
+    resolved_source = realpath(source, NULL);
+    if (resolved_source == NULL) {
+        Jim_SetResultFormatted(interp, "error renaming \"%#s\": invalid or inaccessible path: %s", argv[0], strerror(errno));
+        return JIM_ERR;
+    }
+
+    resolved_dest = realpath(dest, NULL);
+    if (resolved_dest == NULL) {
+        if (errno != ENOENT) {
+            Jim_SetResultFormatted(interp, "error renaming \"%#s\": invalid or inaccessible path: %s", argv[1], strerror(errno));
+            free(resolved_source);
+            return JIM_ERR;
+        }
+        /* dest may not exist yet; resolve parent directory */
+        char *dest_copy = strdup(dest);
+        if (dest_copy == NULL) {
+            Jim_SetResultFormatted(interp, "error renaming: out of memory");
+            free(resolved_source);
+            return JIM_ERR;
+        }
+        char *last_slash = strrchr(dest_copy, '/');
+        if (last_slash != NULL) {
+            *last_slash = '\0';
+            char *resolved_parent = realpath(dest_copy, NULL);
+            if (resolved_parent == NULL) {
+                Jim_SetResultFormatted(interp, "error renaming \"%#s\": parent directory invalid: %s", argv[1], strerror(errno));
+                free(dest_copy);
+                free(resolved_source);
+                return JIM_ERR;
+            }
+            size_t parent_len = strlen(resolved_parent);
+            size_t filename_len = strlen(last_slash + 1);
+            resolved_dest = malloc(parent_len + 1 + filename_len + 1);
+            if (resolved_dest == NULL) {
+                Jim_SetResultFormatted(interp, "error renaming: out of memory");
+                free(resolved_parent);
+                free(dest_copy);
+                free(resolved_source);
+                return JIM_ERR;
+            }
+            strcpy(resolved_dest, resolved_parent);
+            strcat(resolved_dest, "/");
+            strcat(resolved_dest, last_slash + 1);
+            free(resolved_parent);
+            free(dest_copy);
+        } else {
+            /* No slash, dest is in current directory */
+            char *resolved_cwd = realpath(".", NULL);
+            if (resolved_cwd == NULL) {
+                Jim_SetResultFormatted(interp, "error renaming: cannot resolve current directory: %s", strerror(errno));
+                free(dest_copy);
+                free(resolved_source);
+                return JIM_ERR;
+            }
+            size_t cwd_len = strlen(resolved_cwd);
+            size_t filename_len = strlen(dest);
+            resolved_dest = malloc(cwd_len + 1 + filename_len + 1);
+            if (resolved_dest == NULL) {
+                Jim_SetResultFormatted(interp, "error renaming: out of memory");
+                free(resolved_cwd);
+                free(dest_copy);
+                free(resolved_source);
+                return JIM_ERR;
+            }
+            strcpy(resolved_dest, resolved_cwd);
+            strcat(resolved_dest, "/");
+            strcat(resolved_dest, dest);
+            free(resolved_cwd);
+            free(dest_copy);
+        }
+    }
+
+    if (strstr(resolved_source, "/..") != NULL) {
+        Jim_SetResultFormatted(interp, "error renaming \"%#s\": path contains '..' component", argv[0]);
+        free(resolved_source);
+        free(resolved_dest);
+        return JIM_ERR;
+    }
+
+    if (strstr(resolved_dest, "/..") != NULL) {
+        Jim_SetResultFormatted(interp, "error renaming \"%#s\": path contains '..' component", argv[1]);
+        free(resolved_source);
+        free(resolved_dest);
+        return JIM_ERR;
+    }
+
+    if (!force && access(resolved_dest, F_OK) == 0) {
         Jim_SetResultFormatted(interp, "error renaming \"%#s\" to \"%#s\": target exists", argv[0],
             argv[1]);
+        free(resolved_source);
+        free(resolved_dest);
         return JIM_ERR;
     }
 #if ISWINDOWS
-    if (access(dest, F_OK) == 0) {
+    if (access(resolved_dest, F_OK) == 0) {
 
-        remove(dest);
+        remove(resolved_dest);
     }
 #endif
-    if (rename(source, dest) != 0) {
+    if (rename(resolved_source, resolved_dest) != 0) {
         Jim_SetResultFormatted(interp, "error renaming \"%#s\" to \"%#s\": %s", argv[0], argv[1],
             strerror(errno));
+        free(resolved_source);
+        free(resolved_dest);
         return JIM_ERR;
     }
 
+    free(resolved_source);
+    free(resolved_dest);
     return JIM_OK;
 }
 
