@@ -2305,9 +2305,10 @@ Bitmask sqlite3WhereCodeOneLoopStart(
       if( pOrTab==0 ) return notReady;
       pOrTab->nAlloc = (u8)(nNotReady + 1);
       pOrTab->nSrc = pOrTab->nAlloc;
-      memcpy(pOrTab->a, pTabItem, sizeof(*pTabItem));
+      pOrTab->a[0] = *pTabItem;
       origSrc = pWInfo->pTabList->a;
       for(k=1; k<=nNotReady; k++){
+        assert( k < pOrTab->nAlloc );
         memcpy(&pOrTab->a[k], &origSrc[pLevel[k].iFrom], sizeof(pOrTab->a[k]));
       }
     }else{
