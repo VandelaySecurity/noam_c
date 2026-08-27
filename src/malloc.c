@@ -767,7 +767,11 @@ char *sqlite3DbStrDup(sqlite3 *db, const char *z){
   n = strlen(z) + 1;
   zNew = sqlite3DbMallocRaw(db, n);
   if( zNew ){
+#ifdef _MSC_VER
+    memcpy_s(zNew, n, z, n);
+#else
     memcpy(zNew, z, n);
+#endif
   }
   return zNew;
 }
