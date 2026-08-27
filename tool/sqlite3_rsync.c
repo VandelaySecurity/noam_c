@@ -934,7 +934,7 @@ const char *file_tail(const char *z){
 ** Append error message text to the error file, if an error file is
 ** specified.  In any case, increment the error count.
 */
-static void logError(SQLiteRsync *p, const char *zFormat, ...){
+static void logError(SQLiteRsync *p, const char *zFormat, ...) __attribute__((format(printf, 2, 3))){
   if( p->zErrFile ){
     FILE *pErr = fopen(p->zErrFile, "a");
     if( pErr ){
@@ -952,7 +952,7 @@ static void logError(SQLiteRsync *p, const char *zFormat, ...){
 ** Append text to the debugging mesage file, if an that file is
 ** specified.
 */
-static void debugMessage(SQLiteRsync *p, const char *zFormat, ...){
+static void debugMessage(SQLiteRsync *p, const char *zFormat, ...) __attribute__((format(printf, 2, 3))){
   if( p->zDebugFile ){
     if( p->pDebug==0 ){
       p->pDebug = fopen(p->zDebugFile, "wb");
