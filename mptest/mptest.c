@@ -1134,7 +1134,24 @@ static void runScript(
     ** already.
     */
     if( strcmp(zCmd, "task")==0 && iClient==0 ){
-      int iTarget = atoi(azArg[0]);
+      char *endptr;
+      long lTarget;
+      int iTarget;
+      
+      errno = 0;
+      lTarget = strtol(azArg[0], &endptr, 10);
+      
+      if (errno == ERANGE || lTarget < INT_MIN || lTarget > INT_MAX) {
+        errorMessage("line %d of %s: client number out of range: %s",
+                     prevLine, zFilename, azArg[0]);
+        iTarget = -1;  /* Force error path */
+      } else if (endptr == azArg[0] || *endptr != '\0') {
+        errorMessage("line %d of %s: invalid client number: %s",
+                     prevLine, zFilename, azArg[0]);
+        iTarget = -1;  /* Force error path */
+      } else {
+        iTarget = (int)lTarget;
+      }
       int iEnd;
       char *zTask;
       char *zTName;
