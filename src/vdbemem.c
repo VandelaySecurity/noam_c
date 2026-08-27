@@ -1421,7 +1421,9 @@ int sqlite3VdbeMemSetText(
       return SQLITE_NOMEM_BKPT;
     }
     assert( pMem->z!=0 );
-    memcpy(pMem->z, z, nByte);
+    if( memcpy_s(pMem->z, (size_t)MAX(nAlloc, 32), z, nByte) != 0 ){
+      return SQLITE_NOMEM_BKPT;
+    }
     pMem->z[nByte] = 0;
   }else{
     sqlite3VdbeMemRelease(pMem);
