@@ -1312,17 +1312,53 @@ int SQLITE_CDECL main(int argc, char **argv){
   sqlite3_snprintf(sizeof(g.zName), g.zName, "%05d.mptest", GETPID());
   zJMode = findOption(argv+2, &n, "journalmode", 1);
   zNRep = findOption(argv+2, &n, "repeat", 1);
-  if( zNRep ) nRep = atoi(zNRep);
+  if( zNRep ){
+    char *endptr;
+    long val;
+    errno = 0;
+    val = strtol(zNRep, &endptr, 10);
+    if( errno == ERANGE || val < INT_MIN || val > INT_MAX ){
+      fatalError("repeat value out of range: %s\n", zNRep);
+    }
+    if( endptr == zNRep || *endptr != '\0' ){
+      fatalError("invalid repeat value: %s\n", zNRep);
+    }
+    nRep = (int)val;
+  }
   if( nRep<1 ) nRep = 1;
   g.zVfs = findOption(argv+2, &n, "vfs", 1);
   zClient = findOption(argv+2, &n, "client", 1);
   g.zErrLog = findOption(argv+2, &n, "errlog", 1);
   g.zLog = findOption(argv+2, &n, "log", 1);
   zTrace = findOption(argv+2, &n, "trace", 1);
-  if( zTrace ) g.iTrace = atoi(zTrace);
+  if( zTrace ){
+    char *endptr;
+    long val;
+    errno = 0;
+    val = strtol(zTrace, &endptr, 10);
+    if( errno == ERANGE || val < INT_MIN || val > INT_MAX ){
+      fatalError("trace value out of range: %s\n", zTrace);
+    }
+    if( endptr == zTrace || *endptr != '\0' ){
+      fatalError("invalid trace value: %s\n", zTrace);
+    }
+    g.iTrace = (int)val;
+  }
   if( findOption(argv+2, &n, "quiet", 0)!=0 ) g.iTrace = 0;
   zTmout = findOption(argv+2, &n, "timeout", 1);
-  if( zTmout ) iTmout = atoi(zTmout);
+  if( zTmout ){
+    char *endptr;
+    long val;
+    errno = 0;
+    val = strtol(zTmout, &endptr, 10);
+    if( errno == ERANGE || val < INT_MIN || val > INT_MAX ){
+      fatalError("timeout value out of range: %s\n", zTmout);
+    }
+    if( endptr == zTmout || *endptr != '\0' ){
+      fatalError("invalid timeout value: %s\n", zTmout);
+    }
+    iTmout = (int)val;
+  }
   g.bSqlTrace = findOption(argv+2, &n, "sqltrace", 0)!=0;
   g.bSync = findOption(argv+2, &n, "sync", 0)!=0;
   if( g.zErrLog ){
@@ -1338,7 +1374,17 @@ int SQLITE_CDECL main(int argc, char **argv){
   
   sqlite3_config(SQLITE_CONFIG_LOG, sqlErrorCallback, 0);
   if( zClient ){
-    iClient = atoi(zClient);
+    char *endptr;
+    long val;
+    errno = 0;
+    val = strtol(zClient, &endptr, 10);
+    if( errno == ERANGE || val < INT_MIN || val > INT_MAX ){
+      fatalError("client value out of range: %s\n", zClient);
+    }
+    if( endptr == zClient || *endptr != '\0' ){
+      fatalError("invalid client value: %s\n", zClient);
+    }
+    iClient = (int)val;
     if( iClient<1 ) fatalError("illegal client number: %d\n", iClient);
     sqlite3_snprintf(sizeof(g.zName), g.zName, "%05d.client%02d",
                      GETPID(), iClient);
