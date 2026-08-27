@@ -791,7 +791,7 @@ int main(int argc, char **argv){
   SHA3Init(&ctx, 256);
   while( fgets(zLine, sizeof(zLine), in) ){
     if( strncmp(zLine,"# Remove this line", 18)!=0 ){
-      SHA3Update(&ctx, (unsigned char*)zLine, (unsigned)strlen(zLine));
+      SHA3Update(&ctx, (unsigned char*)zLine, (unsigned)strnlen(zLine, sizeof(zLine)));
     }
     if( strncmp(zLine, "D 20", 4)==0 ){
       memcpy(zDate, &zLine[2], 10);
