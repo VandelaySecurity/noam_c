@@ -1077,7 +1077,7 @@ static void reportError(SQLiteRsync *p, const char *zFormat, ...){
   va_start(ap, zFormat);
   zMsg = sqlite3_vmprintf(zFormat, ap);
   va_end(ap);
-  nMsg = zMsg ? (unsigned int)strlen(zMsg) : 0;
+  nMsg = zMsg ? (unsigned int)strnlen(zMsg, 8192) : 0;
   if( p->isRemote ){
     if( p->isReplica ){
       putc(REPLICA_ERROR, p->pOut);
@@ -1106,7 +1106,7 @@ static void infoMsg(SQLiteRsync *p, const char *zFormat, ...){
   va_start(ap, zFormat);
   zMsg = sqlite3_vmprintf(zFormat, ap);
   va_end(ap);
-  nMsg = zMsg ? (unsigned int)strlen(zMsg) : 0;
+  nMsg = zMsg ? (unsigned int)strnlen(zMsg, 8192) : 0;
   if( p->isRemote ){
     if( p->isReplica ){
       putc(REPLICA_MSG, p->pOut);
