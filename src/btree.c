@@ -3517,6 +3517,9 @@ static int newDatabase(BtShared *pBt){
   data = pP1->aData;
   rc = sqlite3PagerWrite(pP1->pDbPage);
   if( rc ) return rc;
+  if( pBt->pageSize < 100 ){
+    return SQLITE_CORRUPT;
+  }
   memcpy(data, zMagicHeader, sizeof(zMagicHeader));
   assert( sizeof(zMagicHeader)==16 );
   data[16] = (u8)((pBt->pageSize>>8)&0xff);
