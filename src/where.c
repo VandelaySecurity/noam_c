@@ -2376,9 +2376,8 @@ void sqlite3WhereTermPrint(WhereTerm *pTerm, int iTerm){
   if( pTerm==0 ){
     sqlite3DebugPrintf("TERM-%-3d NULL\n", iTerm);
   }else{
-    char zType[8];
+    char zType[8] = "....";
     char zLeft[50];
-    memcpy(zType, "....", 5);
     if( pTerm->wtFlags & TERM_VIRTUAL ) zType[0] = 'V';
     if( pTerm->eOperator & WO_EQUIV  ) zType[1] = 'E';
     if( ExprHasProperty(pTerm->pExpr, EP_OuterON) ) zType[2] = 'L';
