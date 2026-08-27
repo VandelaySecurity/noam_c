@@ -1101,7 +1101,7 @@ static int rbuDeltaCreate(
         ** matches.  Do an "insert" for everything that does not match */
         putInt(lenOut-base, &zDelta);
         *(zDelta++) = ':';
-        memcpy(zDelta, &zOut[base], lenOut-base);
+        memcpy_s(zDelta, (zDelta - zOrigDelta) <= SIZE_MAX ? SIZE_MAX - (zDelta - zOrigDelta) : 0, &zOut[base], lenOut-base);
         zDelta += lenOut-base;
         base = lenOut;
         break;
@@ -1118,7 +1118,7 @@ static int rbuDeltaCreate(
   if( base<lenOut ){
     putInt(lenOut-base, &zDelta);
     *(zDelta++) = ':';
-    memcpy(zDelta, &zOut[base], lenOut-base);
+    memcpy_s(zDelta, (zDelta - zOrigDelta) <= SIZE_MAX ? SIZE_MAX - (zDelta - zOrigDelta) : 0, &zOut[base], lenOut-base);
     zDelta += lenOut-base;
   }
   /* Output the final checksum record. */
