@@ -420,7 +420,7 @@ static void stringFree(String *p){
 
 /* Append n bytes of text to a string.  If n<0 append the entire string. */
 static void stringAppend(String *p, const char *z, int n){
-  if( n<0 ) n = (int)strlen(z);
+  if( n<0 ) n = (int)strnlen(z, 0x40000000);
   if( p->n+n>=p->nAlloc ){
     int nAlloc = p->nAlloc*2 + n + 100;
     char *zNew = sqlite3_realloc(p->z, nAlloc);
