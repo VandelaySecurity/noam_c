@@ -1120,9 +1120,18 @@ static void runScript(
     */
     if( strcmp(zCmd, "wait")==0 && iClient==0 ){
       int iTimeout = nArg>=2 ? atoi(azArg[1]) : 10000;
+      char *endptr;
+      long clientId;
       sqlite3_snprintf(sizeof(zError),zError,"line %d of %s\n",
                        prevLine, zFilename);
-      waitForClient(atoi(azArg[0]), iTimeout, zError);
+      errno = 0;
+      clientId = strtol(azArg[0], &endptr, 10);
+      if (errno == ERANGE || endptr == azArg[0] || *endptr != '\0' || clientId < 0 || clientId > INT_MAX) {
+        errorMessage("line %d of %s: invalid client ID: %s",
+                     prevLine, zFilename, azArg[0]);
+      } else {
+        waitForClient((int)clientId, iTimeout, zError);
+      }
     }else
 
     /*
