@@ -128,7 +128,7 @@ static void print_ckpt_info(unsigned char *aData){
   print_decode_line(aData, 0+i, 4, FG_NBO,  "nBackfill");
   for(j=0; j<5; j++){
     char zLabel[100];
-    sprintf(zLabel, "aReadMark[%d]", j);
+    snprintf(zLabel, sizeof(zLabel), "aReadMark[%d]", j);
     print_decode_line(aData, 4*j+4+i, 4, FG_NBO, zLabel);
   }
   print_decode_line(aData,24+i, 8, 0,       "aLock");
