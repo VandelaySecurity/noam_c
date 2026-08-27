@@ -1269,6 +1269,7 @@ static int runSqlReturnUInt(
 static int runSqlReturnText(
   SQLiteRsync *p,
   char *pRes,
+  int nRes,
   char *zSql,
   ...
 ){
@@ -1292,8 +1293,13 @@ static int runSqlReturnText(
       }else{
         n = sqlite3_column_bytes(pStmt, 0);
         if( n>99 ) n = 99;
-        memcpy(pRes, a, n);
-        pRes[n] = 0;
+        if( n >= nRes ){
+          reportError(p, "Buffer too small for SQL result");
+          res = 1;
+        }else{
+          memcpy(pRes, a, n);
+          pRes[n] = 0;
+        }
       }
     }else{
       reportError(p, "SQL statement [%s] failed: %s", zSql,
