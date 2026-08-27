@@ -286,7 +286,8 @@ SQLITE_NOINLINE int sqlite3VdbeMemGrow(Mem *pMem, int n, int bPreserve){
 
   if( bPreserve && pMem->z ){
     assert( pMem->z!=pMem->zMalloc );
-    memcpy(pMem->zMalloc, pMem->z, pMem->n);
+    size_t nCopy = pMem->n < pMem->szMalloc ? pMem->n : pMem->szMalloc;
+    memcpy(pMem->zMalloc, pMem->z, nCopy);
   }
   if( (pMem->flags&MEM_Dyn)!=0 ){
     assert( pMem->xDel!=0 && pMem->xDel!=SQLITE_DYNAMIC );
