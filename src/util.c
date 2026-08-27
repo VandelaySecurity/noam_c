@@ -1414,7 +1414,9 @@ void sqlite3FpDecode(FpDecode *p, double r, int iRound, int mxRound){
   }else{
     p->sign = '+';
   }
-  memcpy(&v,&r,8);
+  union { double d; u64 u; } converter;
+  converter.d = r;
+  v = converter.u;
   e = (v>>52)&0x7ff;
   if( e==0x7ff ){
     p->isSpecial = 1 + (v!=0x7ff0000000000000LL);
