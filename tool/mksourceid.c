@@ -804,7 +804,7 @@ int main(int argc, char **argv){
       char *zFilename = &zLine[2];
       char *zMHash = nextToken(zFilename);
       nextToken(zMHash);
-      if( strlen(zMHash)==40 ){
+      if( strnlen(zMHash, sizeof(zLine))==40 ){
         rc = sha1sum_file(zFilename, zHash);
       }else{
         rc = sha3sum_file(zFilename, 256, zHash);
