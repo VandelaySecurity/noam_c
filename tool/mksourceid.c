@@ -794,6 +794,9 @@ int main(int argc, char **argv){
       SHA3Update(&ctx, (unsigned char*)zLine, (unsigned)strlen(zLine));
     }
     if( strncmp(zLine, "D 20", 4)==0 ){
+      if( strlen(zLine) < 21 ){
+        continue;
+      }
       memcpy(zDate, &zLine[2], 10);
       zDate[10] = ' ';
       memcpy(&zDate[11], &zLine[13], 8);
