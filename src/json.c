@@ -3096,6 +3096,12 @@ static u32 jsonLookupStep(
         if( !pParse->oom ){
           assert( pParse->aBlob!=0 ); /* Because pParse->oom!=0 */
           assert( ix.aBlob!=0 );      /* Because pPasre->oom!=0 */
+          if( j + nIns > pParse->nBlobAlloc ){
+            pParse->oom = 1;
+            jsonParseReset(&v);
+            jsonParseReset(&ix);
+            return JSON_LOOKUP_ERROR;
+          }
           memcpy(&pParse->aBlob[j], ix.aBlob, ix.nBlob);
           k = j + ix.nBlob;
           memcpy(&pParse->aBlob[k], zKey, nKey);
