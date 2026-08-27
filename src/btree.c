@@ -6719,6 +6719,10 @@ static int allocateBtreePage(
           rc = sqlite3PagerWrite(pTrunk->pDbPage);
           if( rc ) goto end_allocate_page;
           if( closest<k-1 ){
+            if( (8+closest*4+4) > usableSize || (4+k*4+4) > usableSize ){
+              rc = SQLITE_CORRUPT_PGNO(iTrunk);
+              goto end_allocate_page;
+            }
             memcpy(&aData[8+closest*4], &aData[4+k*4], 4);
           }
           put4byte(&aData[4], k-1);
