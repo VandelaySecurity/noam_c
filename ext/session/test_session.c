@@ -869,7 +869,13 @@ static void *testGetByteArrayFromObj(Tcl_Obj *p, Tcl_Size *pnByte){
   Tcl_Size nByte = 0;
   void *aByte = Tcl_GetByteArrayFromObj(p, &nByte);
   void *aCopy = malloc(nByte ? (size_t)nByte : 1);
-  memcpy(aCopy, aByte, (size_t)nByte);
+  if( aCopy==0 ){
+    *pnByte = 0;
+    return 0;
+  }
+  if( aByte && nByte>0 ){
+    memcpy(aCopy, aByte, (size_t)nByte);
+  }
   *pnByte = nByte;
   return aCopy;
 }
