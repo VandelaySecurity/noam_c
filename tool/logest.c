@@ -148,7 +148,15 @@ int main(int argc, char **argv){
     }else if( strcmp(z,"inv")==0 ){
       if( n>0 ) a[n-1] = -a[n-1];
     }else if( z[0]=='^' ){
-      a[n++] = (LogEst)atoi(z+1);
+      char *endptr;
+      long val;
+      errno = 0;
+      val = strtol(z+1, &endptr, 10);
+      if( errno==ERANGE || endptr==z+1 || *endptr!='\0' ){
+        showHelp(argv[0]);
+      }else{
+        a[n++] = (LogEst)val;
+      }
     }else if( isInteger(z) ){
       a[n++] = logEstFromInteger(atoll(z));
     }else if( isFloat(z) && z[0]!='-' ){
