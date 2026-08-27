@@ -505,8 +505,13 @@ SQLITE_API int sqlite3_carray_bind_v2(
     }else if( mFlags==CARRAY_BLOB ){
       struct iovec *p = (struct iovec*)pNew->aData;
       unsigned char *z = (unsigned char*)&p[nData];
+      unsigned char *zEnd = (unsigned char*)pNew->aData + sz;
       for(i=0; i<nData; i++){
         size_t n = ((struct iovec*)aData)[i].iov_len;
+        if( z + n > zEnd ){
+          rc = SQLITE_ERROR;
+          goto carray_bind_error;
+        }
         p[i].iov_len = n;
         p[i].iov_base = z;
         z += n;
