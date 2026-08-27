@@ -819,6 +819,9 @@ unsigned char *sqlite3_serialize(
         for(pgno=1; pgno<=nPage; pgno++){
           DbPage *pPage = 0;
           unsigned char *pTo = pOut + szPage*(sqlite3_int64)(pgno-1);
+          if( (sqlite3_int64)(pgno) * szPage > sz ){
+            break;
+          }
           rc = sqlite3PagerGet(pPager, pgno, (DbPage**)&pPage, 0);
           if( rc==SQLITE_OK ){
             memcpy(pTo, sqlite3PagerGetData(pPage), szPage);
