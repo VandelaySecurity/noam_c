@@ -672,7 +672,9 @@ static void SHA1Update(
     } else {
         i = 0;
     }
-    (void)memcpy(&context->buffer[j], &data[i], len - i);
+    if (j + (len - i) <= 64) {
+        (void)memcpy(&context->buffer[j], &data[i], len - i);
+    }
 }
 
 
