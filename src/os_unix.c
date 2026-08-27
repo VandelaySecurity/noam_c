@@ -8054,7 +8054,7 @@ static int proxyReleaseConch(unixFile *pFile){
 */
 static int proxyCreateConchPathname(char *dbPath, char **pConchPath){
   int i;                        /* Loop counter */
-  int len = (int)strlen(dbPath); /* Length of database filename - dbPath */
+  int len = (int)strnlen(dbPath, PATH_MAX); /* Length of database filename - dbPath */
   char *conchPath;              /* buffer in which to construct conch name */
 
   /* Allocate space for the conch filename and initialize the name to
@@ -8084,7 +8084,6 @@ static int proxyCreateConchPathname(char *dbPath, char **pConchPath){
 
   return SQLITE_OK;
 }
-
 
 /* Takes a fully configured proxy locking-style unix file and switches
 ** the local lock file path
