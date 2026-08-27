@@ -2203,6 +2203,7 @@ static int resizeIndexObject(Parse *pParse, Index *pIdx, int N){
   memcpy(zExtra, pIdx->azColl, sizeof(char*)*pIdx->nColumn);
   pIdx->azColl = (const char**)zExtra;
   zExtra += sizeof(char*)*N;
+  assert( pIdx->nKeyCol+1 <= N );
   memcpy(zExtra, pIdx->aiRowLogEst, sizeof(LogEst)*(pIdx->nKeyCol+1));
   pIdx->aiRowLogEst = (LogEst*)zExtra;
   zExtra += sizeof(LogEst)*N;
