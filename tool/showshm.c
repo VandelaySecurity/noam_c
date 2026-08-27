@@ -56,6 +56,7 @@ static unsigned char *getContent(int ofst, int nByte){
 */
 static void print_decode_line(
   unsigned char *aData,      /* Content being decoded */
+  int aDataSize,             /* Size of aData buffer */
   int ofst, int nByte,       /* Start and size of decode */
   unsigned flg,              /* Display flags */
   const char *zMsg           /* Message to append */
@@ -63,6 +64,10 @@ static void print_decode_line(
   int i, j;
   int val = aData[ofst];
   char zBuf[100];
+  if( ofst + nByte > aDataSize ){
+    printf("ERROR: Buffer access out of bounds (ofst=%d, nByte=%d, size=%d)\n", ofst, nByte, aDataSize);
+    return;
+  }
   sprintf(zBuf, " %03x: %02x", ofst, aData[ofst]);
   i = (int)strlen(zBuf);
   for(j=1; j<4; j++){
@@ -106,13 +111,13 @@ static void print_index_hdr(unsigned char *aData, int ix){
   int i;
   assert( ix==0 || ix==1 );
   i = ix ? 48 : 0;
-  print_decode_line(aData, 0+i, 4, FG_NBO,  "Wal-index version");
-  print_decode_line(aData, 4+i, 4, 0,       "unused padding");
-  print_decode_line(aData, 8+i, 4, FG_NBO,  "transaction counter");
-  print_decode_line(aData,12+i, 1, 0,       "1 when initialized");
-  print_decode_line(aData,13+i, 1, 0,       "true if WAL cksums are bigendian");
-  print_decode_line(aData,14+i, 2, FG_PGSZ, "database page size");
-  print_decode_line(aData,16+i, 4, FG_NBO,  "mxFrame");
+  print_decode_line(aData, 96, 0+i, 4, FG_NBO,  "Wal-index version");
+  print_decode_line(aData, 96, 4+i, 4, 0,       "unused padding");
+  print_decode_line(aData, 96, 8+i, 4, FG_NBO,  "transaction counter");
+  print_decode_line(aData, 96,12+i, 1, 0,       "1 when initialized");
+  print_decode_line(aData, 96,13+i, 1, 0,       "true if WAL cksums are bigendian");
+  print_decode_line(aData, 96,14+i, 2, FG_PGSZ, "database page size");
+  print_decode_line(aData, 96,16+i, 4, FG_NBO,  "mxFrame");
   print_decode_line(aData,20+i, 4, FG_NBO,  "Size of database in pages");
   print_decode_line(aData,24+i, 8, 0, "Cksum of last frame in -wal");
   print_decode_line(aData,32+i, 8, 0,  "Salt values from the -wal");
