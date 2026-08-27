@@ -2040,7 +2040,7 @@ static int SQLITE_TCLAPI test_sqlite3changeset_start(
   }
   pNew->pIter = pIter;
 
-  sprintf(zCmd, "csiter%d", iCmd++);
+  snprintf(zCmd, sizeof(zCmd), "csiter%d", iCmd++);
   Tcl_CreateObjCommand(interp, zCmd, test_iter_cmd, (void*)pNew, test_iter_del);
   Tcl_SetObjResult(interp, Tcl_NewStringObj(zCmd, -1));
   return TCL_OK;
