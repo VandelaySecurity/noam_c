@@ -1141,6 +1141,9 @@ static void page_usage_report(const char *zPrg, const char *zDbName){
     if( g.bCSV ){
       const char *z = g.zPageUse[i];
       const char *s;
+      char *endptr;
+      long lval;
+      int ival;
       printf("%u,", i);
       if( g.bTmstmp ){
         const unsigned char *a = g.aPageTag[i].a;
@@ -1156,21 +1159,36 @@ static void page_usage_report(const char *zPrg, const char *zDbName){
         printf("%u,", x);
       }
       if( (s = strstr(z, " of page "))!=0 ){
-        printf("%d,", atoi(s+9));
+        errno = 0;
+        lval = strtol(s+9, &endptr, 10);
+        ival = (endptr != s+9 && errno != ERANGE && lval >= INT_MIN && lval <= INT_MAX) ? (int)lval : 0;
+        printf("%d,", ival);
       }else if( (s = strstr(z, " of trunk page "))!=0 ){
-        printf("%d,", atoi(s+15));
+        errno = 0;
+        lval = strtol(s+15, &endptr, 10);
+        ival = (endptr != s+15 && errno != ERANGE && lval >= INT_MIN && lval <= INT_MAX) ? (int)lval : 0;
+        printf("%d,", ival);
       }else{
         printf("0,");
       }
       if( (s = strstr(z, "], child "))!=0 ){
-        printf("%d,", atoi(s+9));
+        errno = 0;
+        lval = strtol(s+9, &endptr, 10);
+        ival = (endptr != s+9 && errno != ERANGE && lval >= INT_MIN && lval <= INT_MAX) ? (int)lval : -1;
+        printf("%d,", ival);
       }else if( (s = strstr(z, " from cell "))!=0 ){
-        printf("%d,", atoi(s+12));
+        errno = 0;
+        lval = strtol(s+12, &endptr, 10);
+        ival = (endptr != s+12 && errno != ERANGE && lval >= INT_MIN && lval <= INT_MAX) ? (int)lval : -1;
+        printf("%d,", ival);
       }else{
         printf("-1,");
       }
       if( strncmp(z,"overflow ", 9)==0 ){
-        printf("%d,", atoi(z+9));
+        errno = 0;
+        lval = strtol(z+9, &endptr, 10);
+        ival = (endptr != z+9 && errno != ERANGE && lval >= INT_MIN && lval <= INT_MAX) ? (int)lval : -1;
+        printf("%d,", ival);
       }else{
         printf("-1,");
       }
