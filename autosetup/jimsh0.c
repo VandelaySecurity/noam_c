@@ -4952,18 +4952,65 @@ static int file_cmd_rename(Jim_Interp *interp, int argc, Jim_Obj *const *argv)
     source = Jim_String(argv[0]);
     dest = Jim_String(argv[1]);
 
-    if (!force && access(dest, F_OK) == 0) {
+    char source_real[PATH_MAX];
+    char dest_real[PATH_MAX];
+
+    if (realpath(source, source_real) == NULL) {
+        Jim_SetResultFormatted(interp, "error resolving source path \"%#s\": %s", argv[0], strerror(errno));
+        return JIM_ERR;
+    }
+
+    if (realpath(dest, dest_real) == NULL) {
+        if (errno == ENOENT) {
+            char *dest_copy = strdup(dest);
+            char *dest_dir = dirname(dest_copy);
+            char dest_parent_real[PATH_MAX];
+            
+            if (realpath(dest_dir, dest_parent_real) == NULL) {
+                free(dest_copy);
+                Jim_SetResultFormatted(interp, "error resolving destination path \"%#s\": %s", argv[1], strerror(errno));
+                return JIM_ERR;
+            }
+            
+            char *dest_copy2 = strdup(dest);
+            char *dest_base = basename(dest_copy2);
+            snprintf(dest_real, PATH_MAX, "%s/%s", dest_parent_real, dest_base);
+            free(dest_copy);
+            free(dest_copy2);
+        } else {
+            Jim_SetResultFormatted(interp, "error resolving destination path \"%#s\": %s", argv[1], strerror(errno));
+            return JIM_ERR;
+        }
+    }
+
+    #ifndef SAFE_BASE_DIR
+    #define SAFE_BASE_DIR "/safe/workspace"
+    #endif
+
+    size_t base_len = strlen(SAFE_BASE_DIR);
+    if (strncmp(source_real, SAFE_BASE_DIR, base_len) != 0 || 
+        (source_real[base_len] != '/' && source_real[base_len] != '\0')) {
+        Jim_SetResultFormatted(interp, "error: path traversal detected in rename operation");
+        return JIM_ERR;
+    }
+    if (strncmp(dest_real, SAFE_BASE_DIR, base_len) != 0 || 
+        (dest_real[base_len] != '/' && dest_real[base_len] != '\0')) {
+        Jim_SetResultFormatted(interp, "error: path traversal detected in rename operation");
+        return JIM_ERR;
+    }
+
+    if (!force && access(dest_real, F_OK) == 0) {
         Jim_SetResultFormatted(interp, "error renaming \"%#s\" to \"%#s\": target exists", argv[0],
             argv[1]);
         return JIM_ERR;
     }
 #if ISWINDOWS
-    if (access(dest, F_OK) == 0) {
+    if (access(dest_real, F_OK) == 0) {
 
-        remove(dest);
+        remove(dest_real);
     }
 #endif
-    if (rename(source, dest) != 0) {
+    if (rename(source_real, dest_real) != 0) {
         Jim_SetResultFormatted(interp, "error renaming \"%#s\" to \"%#s\": %s", argv[0], argv[1],
             strerror(errno));
         return JIM_ERR;
