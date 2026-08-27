@@ -2936,7 +2936,7 @@ static void qrfFinalize(Qrf *p){
     if( p->spec.pzOutput[0] ){
       sqlite3_int64 n, sz;
       char *zCombined;
-      sz = strlen(p->spec.pzOutput[0]);
+      sz = strnlen(p->spec.pzOutput[0], 0x7fffffff);
       n = sqlite3_str_length(p->pOut);
       zCombined = sqlite3_realloc64(p->spec.pzOutput[0], sz+n+1);
       if( zCombined==0 ){
@@ -2966,7 +2966,6 @@ static void qrfFinalize(Qrf *p){
     sqlite3_close(db);
   }
 }
-
 /*
 ** Run the prepared statement pStmt and format the results according
 ** to the specification provided in pSpec.  Return an error code.
