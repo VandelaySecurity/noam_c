@@ -177,14 +177,35 @@ int main(int argc, char **argv){
     char *zOpt = argv[i];
     char *zArg = argv[i+1];
     if( strcmp(zOpt, "-fts")==0 ){
-      iFts = atoi(zArg);
+      char *endptr;
+      long val;
+      errno = 0;
+      val = strtol(zArg, &endptr, 10);
+      if (errno == ERANGE || endptr == zArg || *endptr != '\0' || val < INT_MIN || val > INT_MAX) {
+        showHelp(argv[0]);
+      }
+      iFts = (int)val;
       if( iFts!=3 && iFts!=4 && iFts!= 5) showHelp(argv[0]);
     }
     else if( strcmp(zOpt, "-trans")==0 ){
-      nRowPerTrans = atoi(zArg);
+      char *endptr;
+      long val;
+      errno = 0;
+      val = strtol(zArg, &endptr, 10);
+      if (errno == ERANGE || endptr == zArg || *endptr != '\0' || val < 0 || val > INT_MAX) {
+        showHelp(argv[0]);
+      }
+      nRowPerTrans = (int)val;
     }
     else if( strcmp(zOpt, "-idx")==0 ){
-      bMap = atoi(zArg);
+      char *endptr;
+      long val;
+      errno = 0;
+      val = strtol(zArg, &endptr, 10);
+      if (errno == ERANGE || endptr == zArg || *endptr != '\0' || val < INT_MIN || val > INT_MAX) {
+        showHelp(argv[0]);
+      }
+      bMap = (int)val;
       if( bMap!=0 && bMap!=1 ) showHelp(argv[0]);
     }
     else if( strcmp(zOpt, "-dir")==0 ){
@@ -207,7 +228,6 @@ int main(int argc, char **argv){
   rc = sqlite3_create_function(db, "readtext", 1, SQLITE_UTF8, 0,
                                readfileFunc, 0, 0);
   if( rc!=SQLITE_OK ) sqlite_error_out("sqlite3_create_function()", db);
-
   /* Create the FTS table */
   zSql = sqlite3_mprintf("CREATE VIRTUAL TABLE fts USING fts%d(content)", iFts);
   rc = sqlite3_exec(db, zSql, 0, 0, 0);
