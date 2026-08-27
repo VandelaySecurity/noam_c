@@ -405,14 +405,14 @@ static i64 describeCell(
     a += 4;
     n += 4;
     sprintf(zDesc, "lx: %d ", leftChild);
-    nDesc = strlen(zDesc);
+    nDesc = strnlen(zDesc, sizeof(zDesc));
   }
   if( cType!=5 ){
     i = decodeVarint(a, &nPayload);
     a += i;
     n += i;
     sprintf(&zDesc[nDesc], "n: %lld ", nPayload);
-    nDesc += strlen(&zDesc[nDesc]);
+    nDesc += strnlen(&zDesc[nDesc], sizeof(zDesc) - nDesc);
     nLocal = localPayload(nPayload, cType);
   }else{
     nPayload = nLocal = 0;
@@ -422,14 +422,14 @@ static i64 describeCell(
     a += i;
     n += i;
     sprintf(&zDesc[nDesc], "r: %lld ", rowid);
-    nDesc += strlen(&zDesc[nDesc]);
+    nDesc += strnlen(&zDesc[nDesc], sizeof(zDesc) - nDesc);
   }
   if( nLocal<nPayload ){
     int ovfl;
     unsigned char *b = &a[nLocal];
     ovfl = ((b[0]*256 + b[1])*256 + b[2])*256 + b[3];
     sprintf(&zDesc[nDesc], "ov: %d ", ovfl);
-    nDesc += strlen(&zDesc[nDesc]);
+    nDesc += strnlen(&zDesc[nDesc], sizeof(zDesc) - nDesc);
     n += 4;
   }
   if( showCellContent && cType!=5 ){
