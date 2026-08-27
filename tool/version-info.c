@@ -80,22 +80,17 @@ int main(int argc, char const * const * argv){
     dlVersion = ver[0] + ver[1] + ver[2] + ver[3];
   }
   if( fJson ){
-    printf("{\"libVersion\": \"%s\", "
-           "\"libVersionNumber\": %d, "
-           "\"sourceId\": \"%s\","
-           "\"downloadVersion\": %d,"
-           "\"scm\":{ "
-           "\"sha3-256\": \"%s\","
-           "\"branch\": \"" SQLITE_SCM_BRANCH "\","
-           "\"tags\": \"" SQLITE_SCM_TAGS "\","
-           "\"datetime\": \"" SQLITE_SCM_DATETIME "\""
-           "}"
-           "}"/*missing newline is intentional*/,
-           SQLITE_VERSION,
-           SQLITE_VERSION_NUMBER,
-           SQLITE_SOURCE_ID,
-           dlVersion,
-           SQLITE_SOURCE_ID+20);
+    fputs("{\"libVersion\": \"", stdout);
+    printf("%s", SQLITE_VERSION);
+    fputs("\", \"libVersionNumber\": ", stdout);
+    printf("%d", SQLITE_VERSION_NUMBER);
+    fputs(", \"sourceId\": \"", stdout);
+    printf("%s", SQLITE_SOURCE_ID);
+    fputs("\",\"downloadVersion\": ", stdout);
+    printf("%d", dlVersion);
+    fputs(",\"scm\":{ \"sha3-256\": \"", stdout);
+    printf("%s", SQLITE_SOURCE_ID+20);
+    fputs("\",\"branch\": \"" SQLITE_SCM_BRANCH "\",\"tags\": \"" SQLITE_SCM_TAGS "\",\"datetime\": \"" SQLITE_SCM_DATETIME "\"}}",stdout);
   }else{
     if(fQuote) printf("%c", '"');
     if( fVersion ){
