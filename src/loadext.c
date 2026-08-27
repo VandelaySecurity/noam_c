@@ -674,7 +674,7 @@ static int sqlite3LoadExtension(
   }
   if( xInit==0 ){
     if( pzErrMsg ){
-      nMsg += strlen(zEntry) + 300;
+      nMsg += strnlen(zEntry, ncFile+30) + 300;
       *pzErrMsg = zErrmsg = sqlite3_malloc64(nMsg);
       if( zErrmsg ){
         assert( nMsg<0x7fffffff );  /* zErrmsg would be NULL if not so */
