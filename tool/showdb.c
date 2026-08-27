@@ -177,7 +177,10 @@ static unsigned char *fileRead(sqlite3_int64 ofst, int nByte){
   if( g.aPageTag && nByte==(int)g.pagesize ){
     unsigned int pgno = (unsigned int)(ofst/g.pagesize) + 1;
     if( pgno>0 && pgno<=g.mxPage ){
-      memcpy(g.aPageTag[pgno].a, &aData[nByte-16], 16);
+      if( memcpy_s(g.aPageTag[pgno].a, sizeof(g.aPageTag[pgno].a), &aData[nByte-16], 16) != 0 ){
+        fprintf(stderr, "Buffer overflow prevented in page tag copy\n");
+        exit(1);
+      }
     }
   }
   return aData;
