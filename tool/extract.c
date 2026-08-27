@@ -9,6 +9,8 @@
 */
 #include <stdio.h>
 #include <stdlib.h>
+#include <errno.h>
+#include <limits.h>
 
 int main(int argc, char **argv){
   FILE *f;
@@ -16,6 +18,9 @@ int main(int argc, char **argv){
   int ofst;
   int n;
   size_t got;
+  char *endptr;
+  long ofst_long;
+  long n_long;
 
   if( argc!=4 ){
     fprintf(stderr, "Usage: %s FILENAME OFFSET AMOUNT\n", *argv);
@@ -26,8 +31,20 @@ int main(int argc, char **argv){
     fprintf(stderr, "cannot open \"%s\"\n", argv[1]);
     return 1;
   }
-  ofst = atoi(argv[2]);
-  n = atoi(argv[3]);
+  errno = 0;
+  ofst_long = strtol(argv[2], &endptr, 10);
+  if( errno==ERANGE || *endptr!='\0' || ofst_long<0 || ofst_long>INT_MAX ){
+    fprintf(stderr, "invalid offset: %s\n", argv[2]);
+    return 1;
+  }
+  ofst = (int)ofst_long;
+  errno = 0;
+  n_long = strtol(argv[3], &endptr, 10);
+  if( errno==ERANGE || *endptr!='\0' || n_long<0 || n_long>INT_MAX ){
+    fprintf(stderr, "invalid amount: %s\n", argv[3]);
+    return 1;
+  }
+  n = (int)n_long;
   zBuf = malloc( n );
   if( zBuf==0 ){
     fprintf(stderr, "out of memory\n");
