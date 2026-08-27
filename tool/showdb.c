@@ -778,7 +778,7 @@ static void decode_trunk_page(
       for(i=0; i<n && i<g.usablesize/4; i++){
         u32 x = decodeInt32(&a[8+4*i]);
         char zIdx[13];
-        sprintf(zIdx, "[%d]", i);
+        snprintf(zIdx, sizeof(zIdx), "[%d]", i);
         printf("  %5s %7u", zIdx, x);
         if( i%5==4 ) printf("\n");
       }
