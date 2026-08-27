@@ -583,6 +583,7 @@ static int SQLITE_TCLAPI testPendingByte(
 */
 static Tcl_Interp *faultSimInterp = 0;
 static int faultSimScriptSize = 0;
+static int faultSimScriptCapacity = 0;
 static char *faultSimScript;
 static int faultSimCallback(int x){
   char zInt[30];
@@ -590,6 +591,7 @@ static int faultSimCallback(int x){
   int isNeg;
   int rc;
   if( x==0 ){
+    if( faultSimScriptSize + 2 > faultSimScriptCapacity ) return SQLITE_ERROR;
     memcpy(faultSimScript+faultSimScriptSize, "0", 2);
   }else{
     /* Convert x to text without using any sqlite3 routines */
@@ -604,6 +606,8 @@ static int faultSimCallback(int x){
       zInt[i] = (x%10) + '0';
     }
     if( isNeg ) zInt[i--] = '-';
+    int copySize = sizeof(zInt) - i - 1;
+    if( faultSimScriptSize + copySize > faultSimScriptCapacity ) return SQLITE_ERROR;
     memcpy(faultSimScript+faultSimScriptSize, zInt+i+1, sizeof(zInt)-i-1);
   }
   rc = Tcl_Eval(faultSimInterp, faultSimScript);
