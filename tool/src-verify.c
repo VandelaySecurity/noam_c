@@ -873,6 +873,10 @@ int main(int argc, char **argv){
     fprintf(stderr, "Directory argument too short.\n");
     return 1;
   }
+  if( nDir + 10 > sizeof(zFile) ){
+    fprintf(stderr, "Directory path too long for buffer.\n");
+    return 1;
+  }
   memcpy(zFile, zDir, nDir);
   if( zFile[nDir-1]!='/' ){
     zFile[nDir++] = '/';
