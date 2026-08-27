@@ -6542,9 +6542,23 @@ static void sessionAppendRecordMerge(
   u8 *a2, int n2,                 /* Record 2 */
   int *pRc                        /* IN/OUT: error code */
 ){
-  sessionBufferGrow(pBuf, n1+n2, pRc);
+  int i;
+  u8 *tmp1 = a1;
+  u8 *tmp2 = a2;
+  int nReq = 0;
+  for(i=0; i<nCol; i++){
+    int nn1 = sessionSerialLen(tmp1);
+    int nn2 = sessionSerialLen(tmp2);
+    if( *tmp1==0 || *tmp1==0xFF ){
+      nReq += nn2;
+    }else{
+      nReq += nn1;
+    }
+    tmp1 += nn1;
+    tmp2 += nn2;
+  }
+  sessionBufferGrow(pBuf, nReq, pRc);
   if( *pRc==SQLITE_OK ){
-    int i;
     u8 *pOut = &pBuf->aBuf[pBuf->nBuf];
     for(i=0; i<nCol; i++){
       int nn1 = sessionSerialLen(a1);
