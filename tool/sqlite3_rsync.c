@@ -933,6 +933,8 @@ const char *file_tail(const char *z){
 /*
 ** Append error message text to the error file, if an error file is
 ** specified.  In any case, increment the error count.
+** SECURITY: zFormat must be a string literal. Never pass user-controlled
+** data as the format string.
 */
 static void logError(SQLiteRsync *p, const char *zFormat, ...){
   if( p->zErrFile ){
@@ -951,6 +953,8 @@ static void logError(SQLiteRsync *p, const char *zFormat, ...){
 /*
 ** Append text to the debugging mesage file, if an that file is
 ** specified.
+** SECURITY: zFormat must be a string literal. Never pass user-controlled
+** data as the format string.
 */
 static void debugMessage(SQLiteRsync *p, const char *zFormat, ...){
   if( p->zDebugFile ){
