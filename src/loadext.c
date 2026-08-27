@@ -663,7 +663,7 @@ static int sqlite3LoadExtension(
       iFile++;
       if( sqlite3_strnicmp(zFile+iFile, "lib", 3)==0 ) iFile += 3;
       for(iEntry=8; (c = zFile[iFile])!=0 && c!='.'; iFile++){
-        if( sqlite3Isalpha(c) || (cnt && sqlite3Isdigit(c)) ){
+        if( (sqlite3Isalpha(c) || (cnt && sqlite3Isdigit(c))) && iEntry < ncFile+30-6 ){
           zAltEntry[iEntry++] = (char)sqlite3UpperToLower[(unsigned)c];
         }
       }
