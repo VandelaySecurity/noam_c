@@ -6687,7 +6687,7 @@ static int sessionRebase(
       sessionAppendByte(&sOut, pIter->bPatchset ? 'P' : 'T', &rc);
       sessionAppendVarint(&sOut, pIter->nCol, &rc);
       sessionAppendBlob(&sOut, pIter->abPK, pIter->nCol, &rc);
-      sessionAppendBlob(&sOut,(u8*)pIter->zTab,(int)strlen(pIter->zTab)+1,&rc);
+      sessionAppendBlob(&sOut,(u8*)pIter->zTab,(int)strnlen(pIter->zTab, SQLITE_MAX_LENGTH)+1,&rc);
     }
 
     if( pTab && rc==SQLITE_OK ){
