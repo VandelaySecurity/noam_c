@@ -1842,8 +1842,7 @@ SQLITE_WASM_EXPORT2(void,sqlite3__wasm_test_stack_overflow,(int recurse)){
 SQLITE_WASM_EXPORT2(char *,sqlite3__wasm_test_str_hello,(int fail)){
   char * s = fail ? 0 : (char *)sqlite3_malloc(6);
   if(s){
-    memcpy(s, "hello", 5);
-    s[5] = 0;
+    sqlite3_snprintf(6, s, "hello");
   }
   return s;
 }
