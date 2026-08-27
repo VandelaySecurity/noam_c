@@ -122,7 +122,11 @@ void SHA1Transform(unsigned int state[5], const unsigned char buffer[64])
   static int one = 1;
   unsigned int block[16];
   memcpy(block, buffer, 64);
-  memcpy(qq,state,5*sizeof(unsigned int));
+  qq[0] = state[0];
+  qq[1] = state[1];
+  qq[2] = state[2];
+  qq[3] = state[3];
+  qq[4] = state[4];
 
   /* Copy context->state[] to working vars */
   /*
