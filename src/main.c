@@ -4805,7 +4805,7 @@ static const char *databaseName(const char *zName){
 ** character after then zero terminator on the new text in p[].
 */
 static char *appendText(char *p, const char *z){
-  size_t n = strlen(z);
+  size_t n = strnlen(z, SIZE_MAX);
   memcpy(p, z, n+1);
   return p+n+1;
 }
@@ -4829,9 +4829,9 @@ const char *sqlite3_create_filename(
   sqlite3_int64 nByte;
   int i;
   char *pResult, *p;
-  nByte = strlen(zDatabase) + strlen(zJournal) + strlen(zWal) + 10;
+  nByte = strnlen(zDatabase, SIZE_MAX) + strnlen(zJournal, SIZE_MAX) + strnlen(zWal, SIZE_MAX) + 10;
   for(i=0; i<nParam*2; i++){
-    nByte += strlen(azParam[i])+1;
+    nByte += strnlen(azParam[i], SIZE_MAX)+1;
   }
   pResult = p = sqlite3_malloc64( nByte );
   if( p==0 ) return 0;
@@ -4860,7 +4860,6 @@ void sqlite3_free_filename(const char *p){
   p = databaseName(p);
   sqlite3_free((char*)p - 4);
 }
-
 
 /*
 ** This is a utility routine, useful to VFS implementations, that checks
