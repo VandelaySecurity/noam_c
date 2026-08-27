@@ -206,9 +206,9 @@ static int win32_create_child_process(
   return rc!=0;
 }
 void *win32_utf8_to_unicode(const char *zUtf8){
-  int nByte = MultiByteToWideChar(CP_UTF8, 0, zUtf8, -1, 0, 0);
-  wchar_t *zUnicode = malloc( nByte*2 );
-  MultiByteToWideChar(CP_UTF8, 0, zUtf8, -1, zUnicode, nByte);
+  int nChar = MultiByteToWideChar(CP_UTF8, 0, zUtf8, -1, 0, 0);
+  wchar_t *zUnicode = malloc( nChar * sizeof(wchar_t) );
+  MultiByteToWideChar(CP_UTF8, 0, zUtf8, -1, zUnicode, nChar);
   return zUnicode;
 }
 #endif
