@@ -243,6 +243,7 @@ static int memjrnlWrite(
         }
 
         assert( pChunk!=0 );
+        assert( iChunkOffset + iSpace <= p->nChunkSize );
         memcpy((u8*)pChunk->zChunk + iChunkOffset, zWrite, iSpace);
         zWrite += iSpace;
         nWrite -= iSpace;
