@@ -4632,7 +4632,7 @@ static void jsonPrettyFunc(
     x.zIndent = "    ";
     x.szIndent = 4;
   }else{
-    x.szIndent = (u32)strlen(x.zIndent);
+    x.szIndent = (u32)strnlen(x.zIndent, 1000);
   }
   jsonTranslateBlobToPrettyText(&x, 0);
   jsonReturnString(&s, 0, 0);
