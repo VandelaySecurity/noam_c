@@ -764,7 +764,7 @@ char *sqlite3DbStrDup(sqlite3 *db, const char *z){
   if( z==0 ){
     return 0;
   }
-  n = strlen(z) + 1;
+  n = strnlen(z, 0x7fffffff) + 1;
   zNew = sqlite3DbMallocRaw(db, n);
   if( zNew ){
     memcpy(zNew, z, n);
