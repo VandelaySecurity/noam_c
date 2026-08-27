@@ -550,6 +550,10 @@ int main(int argc, char **argv){
   for(i=j=k=0; i<nKeyword; i++){
     Keyword *p = &aKeywordTable[i];
     if( p->substrId ) continue;
+    if( k + p->len > nChar ){
+      fprintf(stderr, "Buffer overflow prevented: keyword data exceeds allocated size\n");
+      exit(1);
+    }
     memcpy(&zKWText[k], p->zName, p->len);
     k += p->len;
     if( j+p->len>70 ){
