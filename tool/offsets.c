@@ -49,9 +49,14 @@ static void ofstError(GState *p, const char *zFormat, ...){
 */
 static void ofstTrace(GState *p, const char *zFormat, ...){
   va_list ap;
+  char *zMsg = 0;
   if( p->bTrace ){
     va_start(ap, zFormat);
-    vprintf(zFormat, ap);
+    zMsg = sqlite3_vmprintf(zFormat, ap);
+    if( zMsg ){
+      printf("%s", zMsg);
+      sqlite3_free(zMsg);
+    }
     va_end(ap);
   }
 }
