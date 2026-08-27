@@ -24496,6 +24496,16 @@ int Jim_MakeTempFile(Jim_Interp *interp, const char *filename_template, int unli
 
     if (filename_template == NULL) {
         const char *tmpdir = getenv("TMPDIR");
+        char resolved_path[PATH_MAX];
+        if (tmpdir != NULL && *tmpdir != '\0') {
+            if (realpath(tmpdir, resolved_path) == NULL) {
+                tmpdir = NULL;
+            } else if (strncmp(resolved_path, "/tmp", 4) != 0 && strncmp(resolved_path, "/var/tmp", 8) != 0) {
+                tmpdir = NULL;
+            } else {
+                tmpdir = resolved_path;
+            }
+        }
         if (tmpdir == NULL || *tmpdir == '\0' || access(tmpdir, W_OK) != 0) {
             tmpdir = "/tmp/";
         }
