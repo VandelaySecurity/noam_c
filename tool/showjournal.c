@@ -53,7 +53,7 @@ static unsigned print_decode_line(
   unsigned val = aData[ofst];
   char zBuf[100];
   sprintf(zBuf, " %05x: %02x", ofst, aData[ofst]);
-  i = (int)strlen(zBuf);
+  i = (int)strnlen(zBuf, sizeof(zBuf));
   for(j=1; j<4; j++){
     if( j>=nByte ){
       sprintf(&zBuf[i], "   ");
@@ -61,7 +61,7 @@ static unsigned print_decode_line(
       sprintf(&zBuf[i], " %02x", aData[ofst+j]);
       val = val*256 + aData[ofst+j];
     }
-    i += (int)strlen(&zBuf[i]);
+    i += (int)strnlen(&zBuf[i], sizeof(zBuf) - i);
   }
   sprintf(&zBuf[i], "   %10u", val);
   printf("%s  %s\n", zBuf, zMsg);
