@@ -1073,7 +1073,12 @@ static int qrfTitleLimit(char *zIn, int N){
       n += sqlite3_qrf_wcwidth(u);
     }
   }
-  if( zEllipsis && N>=3 ) memcpy(zEllipsis,"...",4);
+  if( zEllipsis && N>=3 ){
+    zEllipsis[0] = '.';
+    zEllipsis[1] = '.';
+    zEllipsis[2] = '.';
+    zEllipsis[3] = '\0';
+  }
   return n;
 }
 
