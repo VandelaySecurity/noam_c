@@ -207,7 +207,11 @@ static void SHA1Update(
     } else {
         i = 0;
     }
-    (void)memcpy(&context->buffer[j], &data[i], len - i);
+    unsigned int copy_len = len - i;
+    if (j + copy_len > 64) {
+        copy_len = 64 - j;
+    }
+    (void)memcpy(&context->buffer[j], &data[i], copy_len);
 }
 
 
