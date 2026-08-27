@@ -622,7 +622,7 @@ static int sqlite3LoadExtension(
   for(ii=0; ii<ArraySize(azEndings) && handle==0; ii++){
     char *zAltFile = sqlite3_mprintf("%s.%s", zFile, azEndings[ii]);
     if( zAltFile==0 ) return SQLITE_NOMEM_BKPT;
-    if( nMsg+strlen(azEndings[ii])+1<=SQLITE_MAX_PATHLEN ){
+    if( nMsg+strnlen(azEndings[ii], SQLITE_MAX_PATHLEN)+1<=SQLITE_MAX_PATHLEN ){
       handle = sqlite3OsDlOpen(pVfs, zAltFile);
     }
     sqlite3_free(zAltFile);
