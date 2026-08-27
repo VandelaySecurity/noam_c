@@ -585,7 +585,7 @@ static void SHA1Transform(
   unsigned int qq[5]; /* a, b, c, d, e; */
   static int one = 1;
   unsigned int block[16];
-  memcpy(block, buffer, 64);
+  memcpy(block, buffer, sizeof(block));
   memcpy(qq,state,5*sizeof(unsigned int));
 
   /* Copy context->state[] to working vars */
