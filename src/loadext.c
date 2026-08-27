@@ -658,16 +658,18 @@ static int sqlite3LoadExtension(
       return SQLITE_NOMEM_BKPT;
     }
     do{
-      memcpy(zAltEntry, "sqlite3_", 8);
+      memcpy_s(zAltEntry, ncFile+30, "sqlite3_", 8);
       for(iFile=ncFile-1; iFile>=0 && !DirSep(zFile[iFile]); iFile--){}
       iFile++;
       if( sqlite3_strnicmp(zFile+iFile, "lib", 3)==0 ) iFile += 3;
       for(iEntry=8; (c = zFile[iFile])!=0 && c!='.'; iFile++){
         if( sqlite3Isalpha(c) || (cnt && sqlite3Isdigit(c)) ){
-          zAltEntry[iEntry++] = (char)sqlite3UpperToLower[(unsigned)c];
+          if( iEntry < ncFile+30-6 ){
+            zAltEntry[iEntry++] = (char)sqlite3UpperToLower[(unsigned)c];
+          }
         }
       }
-      memcpy(zAltEntry+iEntry, "_init", 6);
+      memcpy_s(zAltEntry+iEntry, ncFile+30-iEntry, "_init", 6);
       zEntry = zAltEntry;
       xInit = (sqlite3_loadext_entry)sqlite3OsDlSym(pVfs, handle, zEntry);
     }while( xInit==0 && (++cnt)<2 );
