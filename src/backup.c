@@ -250,7 +250,7 @@ static int backupOnePage(
   */
   for(iOff=iEnd-(i64)nSrcPgsz; rc==SQLITE_OK && iOff<iEnd; iOff+=nDestPgsz){
     DbPage *pDestPg = 0;
-    Pgno iDest = (Pgno)(iOff/nDestPgsz)+1;
+    Pgno iDest = (Pgno)(iOff/nSrcPgsz)+1;
     if( iDest==PENDING_BYTE_PAGE(p->pDest->pBt) ) continue;
     if( SQLITE_OK==(rc = sqlite3PagerGet(pDestPager, iDest, &pDestPg, 0))
      && SQLITE_OK==(rc = sqlite3PagerWrite(pDestPg))
@@ -266,7 +266,9 @@ static int backupOnePage(
       ** cached parse of the page). MemPage.isInit is marked 
       ** "MUST BE FIRST" for this purpose.
       */
-      memcpy(zOut, zIn, nCopy);
+      size_t nDestRemaining = nDestPgsz - (iOff % nDestPgsz);
+      size_t nSafeCopy = (nCopy < nDestRemaining) ? nCopy : nDestRemaining;
+      memcpy(zOut, zIn, nSafeCopy);
       ((u8 *)sqlite3PagerGetExtra(pDestPg))[0] = 0;
       if( iOff==0 && bUpdate==0 ){
         sqlite3Put4byte(&zOut[28], sqlite3BtreeLastPage(p->pSrc));
