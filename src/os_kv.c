@@ -221,8 +221,8 @@ static int kvrecordWrite(
   fd = fopen(zXKey, "wb");
   if( fd ){
     SQLITE_KV_TRACE(("KVVFS-WRITE  %-15s (%d) %.50s%s\n", zXKey,
-                 (int)strlen(zData), zData,
-                 strlen(zData)>50 ? "..." : ""));
+                 (int)strnlen(zData, 4096), zData,
+                 strnlen(zData, 4096)>50 ? "..." : ""));
     fputs(zData, fd);
     fclose(fd);
     return 0;
