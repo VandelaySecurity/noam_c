@@ -3731,7 +3731,7 @@ rebuild_from_cache:
     int isRCStr = sqlite3ValueIsOfClass(pArg, sqlite3RCStrUnref);
     int rc;
     if( !isRCStr ){
-      char *zNew = sqlite3RCStrNew( p->nJson );
+      char *zNew = sqlite3RCStrNew( p->nJson + 1 );
       if( zNew==0 ) goto json_pfa_oom;
       memcpy(zNew, p->zJson, p->nJson);
       p->zJson = zNew;
