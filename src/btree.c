@@ -9729,6 +9729,9 @@ int sqlite3BtreeTransferRow(BtCursor *pDest, BtCursor *pSrc, i64 iKey){
     return SQLITE_CORRUPT_PAGE(pSrc->pPage);
   }
   nRem = pSrc->info.nPayload;
+  if( (aOut - pBt->pTmpSpace) + nIn > pBt->pageSize ){
+    return SQLITE_CORRUPT_PAGE(pSrc->pPage);
+  }
   if( nIn==nRem && nIn<pDest->pPage->maxLocal ){
     memcpy(aOut, aIn, nIn);
     pBt->nPreformatSize = nIn + (int)(aOut - pBt->pTmpSpace);
