@@ -1392,7 +1392,7 @@ int sqlite3VdbeMemSetText(
   }
 
   if( nByte<0 ){
-    nByte = strlen(z);
+    nByte = strnlen(z, pMem->db->aLimit[SQLITE_LIMIT_LENGTH]);
     flags = MEM_Str|MEM_Term;
   }else{
     flags = MEM_Str;
