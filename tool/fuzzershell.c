@@ -838,7 +838,7 @@ int main(int argc, char **argv){
   iBegin = timeOfDay();
   sqlite3_shutdown();
   zFailCode = getenv("TEST_FAILURE");
-  if( zFailCode != NULL && strlen(zFailCode) > 100 ){
+  if( zFailCode != NULL && strnlen(zFailCode, 1024) > 100 ){
     zFailCode = NULL;  /* Reject excessively long values */
   }
   g.zArgv0 = argv[0];
