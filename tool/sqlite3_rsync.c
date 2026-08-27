@@ -207,7 +207,7 @@ static int win32_create_child_process(
 }
 void *win32_utf8_to_unicode(const char *zUtf8){
   int nByte = MultiByteToWideChar(CP_UTF8, 0, zUtf8, -1, 0, 0);
-  wchar_t *zUnicode = malloc( nByte*2 );
+  wchar_t *zUnicode = malloc( nByte * sizeof(wchar_t) );
   MultiByteToWideChar(CP_UTF8, 0, zUtf8, -1, zUnicode, nByte);
   return zUnicode;
 }
@@ -236,7 +236,6 @@ static int popen2(
   SECURITY_ATTRIBUTES saAttr;
   DWORD childPid = 0;
   int fd;
-
   saAttr.nLength = sizeof(saAttr);
   saAttr.bInheritHandle = TRUE;
   saAttr.lpSecurityDescriptor = NULL;
