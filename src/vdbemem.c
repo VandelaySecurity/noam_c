@@ -121,6 +121,7 @@ static void vdbeMemRenderNum(int sz, char *zBuf, Mem *p){
     p->n = sqlite3Int64ToText(p->u.i, zBuf);
 #endif
     if( p->flags & MEM_IntReal ){
+      assert( p->n + 3 <= sz );
       memcpy(zBuf+p->n,".0", 3);
       p->n += 2;
     }
