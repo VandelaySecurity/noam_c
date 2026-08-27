@@ -527,7 +527,11 @@ static int SQLITE_TCLAPI fake_big_file(
 #endif
 
   pVfs = sqlite3_vfs_find(0);
-  nFile = (int)strlen(argv[2]);
+  nFile = (int)strnlen(argv[2], 4096);
+  if( nFile >= 4096 ){
+    Tcl_AppendResult(interp, "file path too long", NULL);
+    return TCL_ERROR;
+  }
   zFile = sqlite3_malloc( nFile+2 );
   if( zFile==0 ) return TCL_ERROR;
   memcpy(zFile, argv[2], nFile+1);
