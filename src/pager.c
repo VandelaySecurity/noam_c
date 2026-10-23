@@ -2470,6 +2470,10 @@ static int pager_playback_one_page(
     */
     void *pData;
     pData = pPg->pData;
+    assert( pPager->pageSize > 0 && pPager->pageSize <= SQLITE_MAX_PAGE_SIZE );
+    if( pPager->pageSize <= 0 || pPager->pageSize > SQLITE_MAX_PAGE_SIZE ){
+      return SQLITE_CORRUPT;
+    }
     memcpy(pData, (u8*)aData, pPager->pageSize);
     pPager->xReiniter(pPg);
     /* It used to be that sqlite3PcacheMakeClean(pPg) was called here.  But
