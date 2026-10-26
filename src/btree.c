@@ -8750,6 +8750,10 @@ static int balance_nonroot(
     }else{
       pOld = apOld[nOld-1];
     }
+    if( pBt->usableSize < 12 ){
+      rc = SQLITE_CORRUPT_PAGE(pOld->pgno);
+      goto balance_cleanup;
+    }
     memcpy(&apNew[nNew-1]->aData[8], &pOld->aData[8], 4);
   }
 
