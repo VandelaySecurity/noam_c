@@ -8163,6 +8163,10 @@ static void copyNodeContent(MemPage *pFrom, MemPage *pTo, int *pRC){
     /* Copy the b-tree node content from page pFrom to page pTo. */
     iData = get2byte(&aFrom[iFromHdr+5]);
     memcpy(&aTo[iData], &aFrom[iData], pBt->usableSize-iData);
+    if( pFrom->cellOffset + 2*pFrom->nCell > (int)pBt->usableSize - iToHdr ){
+      *pRC = SQLITE_CORRUPT;
+      return;
+    }
     memcpy(&aTo[iToHdr], &aFrom[iFromHdr], pFrom->cellOffset + 2*pFrom->nCell);
  
     /* Reinitialize page pTo so that the contents of the MemPage structure
