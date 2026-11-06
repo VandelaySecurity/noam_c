@@ -8478,9 +8478,10 @@ static int balance_nonroot(
       assert( b.nCell<nMaxCells );
       b.szCell[b.nCell] = sz;
       pTemp = &aSpace1[iSpace1];
+      if( sz > pBt->maxLocal+23 || iSpace1 + sz > (int)pBt->pageSize ){
+        return SQLITE_CORRUPT_BKPT;
+      }
       iSpace1 += sz;
-      assert( sz<=pBt->maxLocal+23 );
-      assert( iSpace1 <= (int)pBt->pageSize );
       memcpy(pTemp, apDiv[i], sz);
       b.apCell[b.nCell] = pTemp+leafCorrection;
       assert( leafCorrection==0 || leafCorrection==4 );
